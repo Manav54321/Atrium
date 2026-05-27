@@ -1,15 +1,13 @@
 """
 FastAPI backend for the Atrium simulator.
 
-Hosts the OpenAI Assistants proxy (atrium-attending grading) and the
-real-time voice token mint endpoint (`/voice/token`). Real-time voice
-itself runs in `voice_agent.py` as a separate LiveKit Agents worker —
-this server only issues access tokens and pre-creates rooms with
-patient persona metadata.
+Hosts the attending grading proxy and the OpenAI Realtime client-secret
+mint endpoint (`/voice/realtime-secret`). Real-time patient voice runs
+directly between the browser and OpenAI Realtime over WebRTC.
 
 GET  /health         → backend + agent status report
 POST /agent/...      → OpenAI Assistants proxy (atrium-attending)
-POST /voice/token    → mint LiveKit JWT for a patient room
+POST /voice/realtime-secret → mint a short-lived OpenAI Realtime secret
 """
 
 from __future__ import annotations
@@ -47,24 +45,10 @@ _load_env_local()
 def _validate_env() -> None:
     import sys
 
-    groq_key = os.environ.get("GROQ_API_KEY")
-    if not groq_key:
+    openai_key = os.environ.get("OPENAI_API_KEY")
+    if not openai_key:
         print(
-            "⚠️  WARNING: GROQ_API_KEY is not set in environment. Chat, triage, and grading features will not work.",
-            file=sys.stderr,
-        )
-
-    lk_url = os.environ.get("LIVEKIT_URL")
-    lk_key = os.environ.get("LIVEKIT_API_KEY")
-    lk_secret = os.environ.get("LIVEKIT_API_SECRET")
-
-    if not (lk_url and lk_key and lk_secret):
-        print(
-            "⚠️  WARNING: LIVEKIT_URL, LIVEKIT_API_KEY, or LIVEKIT_API_SECRET is missing.",
-            file=sys.stderr,
-        )
-        print(
-            "   Real-time voice simulation will be disabled. Text-chat fallback will be used.",
+            "WARNING: OPENAI_API_KEY is not set. Realtime voice, triage, and grading features will not work.",
             file=sys.stderr,
         )
 
@@ -82,7 +66,7 @@ from slowapi.util import get_remote_address
 
 # Shared secret protects /agent/* and /voice/* against direct curl abuse.
 # Vercel Edge Middleware injects this header for browser traffic; a
-# missing/wrong value returns 401 before we burn any OpenAI / LiveKit
+# missing/wrong value returns 401 before we burn any OpenAI
 # credits. Localhost origins bypass for `npm run dev`.
 SHARED_SECRET = os.environ.get("BACKEND_SHARED_SECRET", "")
 ALLOWED_ORIGINS = ["https://atrium.vercel.app"]
@@ -157,19 +141,15 @@ def health():
     """Frontend polls this before showing the attending dock so a missing
     API key or unbootstrapped agent surfaces a clearer error than a blank
     SSE failure."""
-    has_key = bool(os.environ.get("GROQ_API_KEY"))
-    agent_id = os.environ.get("ATRIUM_AGENT_ID") or "atrium-attending-groq"
+    has_key = bool(os.environ.get("OPENAI_API_KEY"))
+    agent_id = os.environ.get("ATRIUM_AGENT_ID") or "atrium-attending-openai"
     bootstrapped = True
-    livekit_ok = bool(
-        os.environ.get("LIVEKIT_URL")
-        and os.environ.get("LIVEKIT_API_KEY")
-        and os.environ.get("LIVEKIT_API_SECRET")
-    )
     return {
         "ok": True,
         "voice": {
-            "transport": "livekit",
-            "livekit_configured": livekit_ok,
+            "transport": "openai-realtime-webrtc",
+            "model": os.environ.get("OPENAI_REALTIME_MODEL", "gpt-realtime"),
+            "api_key_configured": has_key,
         },
         "agent": {
             "openai_sdk_installed": _HAS_OPENAI,
@@ -182,14 +162,14 @@ def health():
 
 
 # ───────────────────────────────────────────────────────────────────────────
-# Attending Grader Session Manager (Groq/Llama-3.3 Attending Grading)
+# Attending Grader Session Manager (OpenAI direct inference)
 # ───────────────────────────────────────────────────────────────────────────
 #
 # The browser talks to this server to manage sessions and stream evaluation
 # results.
 #
 # Per-env vars:
-#   GROQ_API_KEY    — required. Server-side only; never exposed to the browser.
+#   OPENAI_API_KEY  — required. Server-side only; never exposed to the browser.
 #   ATRIUM_AGENT_ID — persisted agent ID (uses cached ID to skip re-creating).
 #
 # Endpoints:
@@ -234,7 +214,7 @@ _bootstrap_lock = threading.Lock()
 # SSE keepalive interval (seconds).
 SSE_KEEPALIVE_SEC = 15.0
 
-PRIMARY_MODEL = "llama-3.3-70b-versatile"
+PRIMARY_MODEL = os.environ.get("OPENAI_AGENT_MODEL", "gpt-4.1")
 AGENT_MODEL = PRIMARY_MODEL          # attending grader
 AGENT_NAME = "atrium-attending"
 
@@ -544,8 +524,8 @@ ATRIUM_CUSTOM_TOOLS: list[dict] = [
     },
 ]
 
-_groq_client: Optional["OpenAI"] = None
-_async_groq_client: Optional["AsyncOpenAI"] = None
+_openai_client: Optional["OpenAI"] = None
+_async_openai_client: Optional["AsyncOpenAI"] = None
 
 # In-memory session manager to replace OpenAI Assistants threads
 SESSIONS: dict[str, list[dict]] = {}
@@ -562,36 +542,30 @@ def _ensure_openai_available() -> None:
         )
 
 
-def _require_groq_api_key() -> str:
-    key = os.environ.get("GROQ_API_KEY")
+def _require_openai_api_key() -> str:
+    key = os.environ.get("OPENAI_API_KEY")
     if not key:
         raise HTTPException(
             status_code=500,
-            detail="GROQ_API_KEY is not set server-side.",
+            detail="OPENAI_API_KEY is not set server-side.",
         )
     return key
 
 
-def get_groq_client() -> "OpenAI":
-    global _groq_client
+def get_openai_client() -> "OpenAI":
+    global _openai_client
     _ensure_openai_available()
-    if _groq_client is None:
-        _groq_client = OpenAI(
-            api_key=_require_groq_api_key(),
-            base_url="https://api.groq.com/openai/v1"
-        )
-    return _groq_client
+    if _openai_client is None:
+        _openai_client = OpenAI(api_key=_require_openai_api_key())
+    return _openai_client
 
 
-def get_async_groq_client() -> "AsyncOpenAI":
-    global _async_groq_client
+def get_async_openai_client() -> "AsyncOpenAI":
+    global _async_openai_client
     _ensure_openai_available()
-    if _async_groq_client is None:
-        _async_groq_client = AsyncOpenAI(
-            api_key=_require_groq_api_key(),
-            base_url="https://api.groq.com/openai/v1"
-        )
-    return _async_groq_client
+    if _async_openai_client is None:
+        _async_openai_client = AsyncOpenAI(api_key=_require_openai_api_key())
+    return _async_openai_client
 
 
 def get_session_messages(session_id: str) -> list[dict]:
@@ -607,10 +581,10 @@ class BootstrapResponse(BaseModel):
 
 @app.post("/agent/bootstrap", response_model=BootstrapResponse)
 def bootstrap_agent():
-    """Mock bootstrap for Groq architecture."""
-    agent_id = os.environ.get("ATRIUM_AGENT_ID") or "atrium-attending-groq"
+    """Mock bootstrap for the direct OpenAI architecture."""
+    agent_id = os.environ.get("ATRIUM_AGENT_ID") or "atrium-attending-openai"
     os.environ["ATRIUM_AGENT_ID"] = agent_id
-    _agent_log.info("bootstrap: cached agent_id=%s (Groq mode)", agent_id)
+    _agent_log.info("bootstrap: cached agent_id=%s (OpenAI mode)", agent_id)
     return BootstrapResponse(agent_id=agent_id, created=False)
 
 
@@ -620,9 +594,9 @@ class RefreshAgentResponse(BaseModel):
 
 @app.post("/agent/refresh", response_model=RefreshAgentResponse)
 def refresh_agent():
-    """No-op refresh for Groq mode."""
-    agent_id = os.environ.get("ATRIUM_AGENT_ID") or "atrium-attending-groq"
-    _agent_log.info("refresh: agent_id=%s (Groq mode)", agent_id)
+    """No-op refresh for direct OpenAI mode."""
+    agent_id = os.environ.get("ATRIUM_AGENT_ID") or "atrium-attending-openai"
+    _agent_log.info("refresh: agent_id=%s (OpenAI mode)", agent_id)
     return RefreshAgentResponse(agent_id=agent_id)
 
 
@@ -640,7 +614,7 @@ def create_session(req: CreateSessionRequest):
     import uuid
     session_id = f"thread_{uuid.uuid4().hex[:12]}"
     SESSIONS[session_id] = []
-    _agent_log.info("create_session: thread %s (Groq mode)", session_id)
+    _agent_log.info("create_session: thread %s (OpenAI mode)", session_id)
     return CreateSessionResponse(session_id=session_id)
 
 
@@ -723,11 +697,11 @@ async def list_events(session_id: str, limit: int = 1000):
 
 @app.get("/agent/sessions/{session_id}/stream")
 async def stream_events(session_id: str, request: Request):
-    """SSE: run Groq LLM on the thread and stream output as SSE events."""
+    """SSE: run OpenAI LLM on the thread and stream output as SSE events."""
     import uuid
     import time
 
-    client = get_async_groq_client()
+    client = get_async_openai_client()
     msgs = get_session_messages(session_id)
 
     async def generator():
@@ -735,27 +709,27 @@ async def stream_events(session_id: str, request: Request):
         yield f"event: session.status_running\ndata: {json.dumps({'id': session_id, 'type': 'session.status_running'})}\n\n"
 
         try:
-            # Build messages history for Groq Chat API
-            groq_messages = [{"role": "system", "content": ATRIUM_ATTENDING_SYSTEM_PROMPT}]
+            # Build messages history for OpenAI Chat Completions.
+            openai_messages = [{"role": "system", "content": ATRIUM_ATTENDING_SYSTEM_PROMPT}]
             for m in msgs:
-                groq_msg = {
+                openai_msg = {
                     "role": m["role"],
                     "content": m.get("content") or ""
                 }
                 if "tool_calls" in m:
-                    groq_msg["tool_calls"] = m["tool_calls"]
-                    if not groq_msg["content"]:
-                        groq_msg["content"] = None
+                    openai_msg["tool_calls"] = m["tool_calls"]
+                    if not openai_msg["content"]:
+                        openai_msg["content"] = None
                 if m["role"] == "tool":
-                    groq_msg["tool_call_id"] = m["tool_call_id"]
-                groq_messages.append(groq_msg)
+                    openai_msg["tool_call_id"] = m["tool_call_id"]
+                openai_messages.append(openai_msg)
 
             # Debug log prompt payload
-            _agent_log.debug("Groq prompt payload: %r", groq_messages)
+            _agent_log.debug("OpenAI prompt payload: %r", openai_messages)
 
             response_stream = await client.chat.completions.create(
                 model=PRIMARY_MODEL,
-                messages=groq_messages,
+                messages=openai_messages,
                 tools=ATRIUM_CUSTOM_TOOLS,
                 stream=True
             )
@@ -1122,213 +1096,123 @@ def run_triage_reasoning(
 
 @app.post("/agent/triage/classify", response_model=TriageClassifyResponse)
 def triage_classify(req: TriageClassifyRequest):
-    """gpt-4.1-mini one-shot ESI classification for ER arrivals. Stateless
+    """OpenAI one-shot ESI classification for ER arrivals. Stateless
     direct inference endpoint, separate from the Assistants thread."""
-    client = get_groq_client()
+    client = get_openai_client()
     return run_triage_reasoning(client, req)
 
 
 # ───────────────────────────────────────────────────────────────────────────
-# Patient persona streaming — gpt-4.1-mini
-# ───────────────────────────────────────────────────────────────────────────
-#
-# Routes patient-persona streaming through the backend so the OpenAI key
-# stays server-side. SSE frames carry `{"text": "..."}` deltas, terminated
-# with `{"done": true}`.
-
-PATIENT_MODEL = "gpt-4.1-mini"
-PATIENT_MAX_TOKENS = 256
-
-
-class PatientChatMessage(BaseModel):
-    role: str  # 'user' | 'assistant'
-    content: str
-
-
-class PatientStreamRequest(BaseModel):
-    system: str
-    messages: list[PatientChatMessage]
-
-
-@app.post("/agent/patient/stream")
-async def patient_stream(req: PatientStreamRequest):
-    client = get_async_groq_client()
-
-    async def generator():
-        try:
-            stream = await client.chat.completions.create(
-                model=PATIENT_MODEL,
-                max_tokens=PATIENT_MAX_TOKENS,
-                stream=True,
-                messages=[
-                    {"role": "system", "content": req.system},
-                    *[{"role": m.role, "content": m.content} for m in req.messages],
-                ],
-            )
-            async for chunk in stream:
-                delta = chunk.choices[0].delta if chunk.choices else None
-                text = getattr(delta, "content", None) if delta else None
-                if text:
-                    yield "data: " + json.dumps({"text": text}) + "\n\n"
-            yield "data: " + json.dumps({"done": True}) + "\n\n"
-        except asyncio.CancelledError:
-            raise
-        except Exception as e:
-            _agent_log.exception("patient stream failed")
-            yield "data: " + json.dumps({"error": str(e)}) + "\n\n"
-
-    return StreamingResponse(
-        generator(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache, no-transform",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",
-        },
-    )
-
-
-# ───────────────────────────────────────────────────────────────────────────
-# Real-time voice — LiveKit access tokens
+# Real-time voice — OpenAI Realtime client secrets
 # ───────────────────────────────────────────────────────────────────────────
 
-import json as _json
-import secrets as _secrets
-import asyncio as _asyncio
-
-from livekit import api as _lkapi
+import httpx
 
 
-class VoiceTokenRequest(BaseModel):
+OPENAI_REALTIME_MODEL = os.environ.get("OPENAI_REALTIME_MODEL", "gpt-realtime")
+OPENAI_REALTIME_DEFAULT_VOICE = os.environ.get("OPENAI_REALTIME_VOICE", "marin")
+
+
+class RealtimeSecretRequest(BaseModel):
     caseId: str
     systemPrompt: str
     initialLine: str
     gender: str  # 'M' | 'F' — speaker gender (parent for pediatric)
-    voiceId: Optional[str] = None  # explicit override
-    identity: Optional[str] = None  # browser-side participant identity
-    age: Optional[int] = 35        # patient age — used for voice bucket selection
+    voice: Optional[str] = None
+    age: Optional[int] = 35
     severity: Optional[str] = 'stable'  # 'stable' | 'urgent' | 'critical'
 
 
-class VoiceTokenResponse(BaseModel):
-    token: str
-    url: str
-    roomName: str
+class RealtimeSecretResponse(BaseModel):
+    value: str
+    model: str
+    voice: str
+    expires_at: Optional[int] = None
 
 
-@app.post("/voice/token", response_model=VoiceTokenResponse)
-async def voice_token(req: VoiceTokenRequest):
-    lk_url = os.environ.get("LIVEKIT_URL")
-    lk_key = os.environ.get("LIVEKIT_API_KEY")
-    lk_secret = os.environ.get("LIVEKIT_API_SECRET")
-    if not (lk_url and lk_key and lk_secret):
-        _agent_log.warning("voice_token: LiveKit keys missing in environment.")
-        raise HTTPException(
-            status_code=503,
-            detail="LIVEKIT_URL/LIVEKIT_API_KEY/LIVEKIT_API_SECRET not configured. Please configure them in backend/.env.local and restart the server.",
-        )
+def _realtime_voice_for(req: RealtimeSecretRequest) -> str:
+    if req.voice:
+        return req.voice
+    
+    gender = (req.gender or "F").upper()
+    if gender == "M":
+        return os.environ.get("OPENAI_REALTIME_MALE_VOICE") or os.environ.get("OPENAI_REALTIME_VOICE") or "ballad"
+    else:
+        return os.environ.get("OPENAI_REALTIME_FEMALE_VOICE") or os.environ.get("OPENAI_REALTIME_VOICE") or "shimmer"
 
-    _agent_log.info("[Lifecycle] Consultation start: generating token for caseId=%s, gender=%s", req.caseId, req.gender)
-    nonce = _secrets.token_urlsafe(8)
-    safe_case = "".join(c for c in req.caseId if c.isalnum() or c in "-_")[:32] or "case"
-    room_name = f"atr-{safe_case}-{nonce}"
-    identity = req.identity or f"doctor-{_secrets.token_hex(4)}"
 
-    metadata = _json.dumps(
-        {
-            "caseId": req.caseId,
-            "systemPrompt": req.systemPrompt,
-            "initialLine": req.initialLine,
-            "voiceGender": req.gender,
-            "voiceId": req.voiceId,
-            "age": req.age or 35,
-            "severity": req.severity or "stable",
-        }
+@app.post("/voice/realtime-secret", response_model=RealtimeSecretResponse)
+async def realtime_secret(req: RealtimeSecretRequest):
+    api_key = _require_openai_api_key()
+    voice = _realtime_voice_for(req)
+    _agent_log.info(
+        "[Realtime] minting client secret caseId=%s model=%s voice=%s severity=%s",
+        req.caseId,
+        OPENAI_REALTIME_MODEL,
+        voice,
+        req.severity,
     )
 
-    # Pre-create the room so metadata is set before the agent dispatches in.
-    _agent_log.info("voice_token: pre-creating room %s at URL %s...", room_name, lk_url)
-    lkapi = _lkapi.LiveKitAPI(lk_url, lk_key, lk_secret)
-    try:
-        await lkapi.room.create_room(
-            _lkapi.CreateRoomRequest(
-                name=room_name,
-                metadata=metadata,
-                empty_timeout=120,
-                agents=[_lkapi.RoomAgentDispatch(agent_name="atrium-voice")],
-            )
-        )
-        _agent_log.info("voice_token: room %s created successfully.", room_name)
-    except Exception as e:
-        msg = str(e).lower()
-        if "already" not in msg and "exists" not in msg:
-            _agent_log.exception("voice_token: room creation failed for room %s", room_name)
-            await lkapi.aclose()
-            raise HTTPException(status_code=502, detail=f"livekit room create failed: {e}")
-        else:
-            _agent_log.info("voice_token: room %s already exists (ignoring create exception).", room_name)
-    finally:
-        try:
-            await lkapi.aclose()
-        except Exception:
-            pass
-
-    _agent_log.debug("voice_token: signing AccessToken for identity=%s", identity)
-    token = (
-        _lkapi.AccessToken(lk_key, lk_secret)
-        .with_identity(identity)
-        .with_name(identity)
-        .with_grants(
-            _lkapi.VideoGrants(
-                room_join=True,
-                room=room_name,
-                can_publish=True,
-                can_subscribe=True,
-                can_publish_data=True,
-            )
-        )
-        .to_jwt()
+    session_instructions = (
+        req.systemPrompt
+        + "\n\nREALTIME VOICE DELIVERY:\n"
+        + "- Use natural spoken pacing with small pauses.\n"
+        + "- Stay emotionally consistent with the patient's pain, fear, or relief.\n"
+        + "- Let the doctor interrupt you naturally; stop talking when interrupted.\n"
+        + "- Do not reveal hidden diagnosis or lab/imaging results unless the doctor tells you.\n"
+        + "- Keep every response short and human: usually 1-2 sentences.\n"
     )
+    payload = {
+        "expires_after": {"anchor": "created_at", "seconds": 600},
+        "session": {
+            "type": "realtime",
+            "model": OPENAI_REALTIME_MODEL,
+            "instructions": session_instructions,
+            "output_modalities": ["audio"],
+            "audio": {
+                "input": {
+                    "turn_detection": {
+                        "type": "semantic_vad",
+                        "eagerness": "high",
+                        "interrupt_response": True,
+                        "create_response": True,
+                    },
+                    "transcription": {
+                        "model": "gpt-4o-mini-transcribe",
+                        "language": "en",
+                    },
+                },
+                "output": {
+                    "voice": voice,
+                    "speed": 1.0,
+                },
+            },
+            "include": ["item.input_audio_transcription.logprobs"],
+        },
+    }
 
-    _agent_log.info("voice_token: issued token successfully for room %s", room_name)
-    return VoiceTokenResponse(token=token, url=lk_url, roomName=room_name)
-
-
-class CloseRoomRequest(BaseModel):
-    roomName: str
-
-
-@app.post("/voice/close-room")
-async def close_room(req: CloseRoomRequest):
-    lk_url = os.environ.get("LIVEKIT_URL")
-    lk_key = os.environ.get("LIVEKIT_API_KEY")
-    lk_secret = os.environ.get("LIVEKIT_API_SECRET")
-    if not (lk_url and lk_key and lk_secret):
-        _agent_log.warning("close_room: LiveKit keys missing in environment.")
-        raise HTTPException(
-            status_code=503,
-            detail="LIVEKIT_URL/LIVEKIT_API_KEY/LIVEKIT_API_SECRET not configured.",
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        r = await client.post(
+            "https://api.openai.com/v1/realtime/client_secrets",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json=payload,
         )
-
-    _agent_log.info("[Lifecycle] Consultation end / Room disconnect: deleting room %s", req.roomName)
-    lkapi = _lkapi.LiveKitAPI(lk_url, lk_key, lk_secret)
-    try:
-        await lkapi.room.delete_room(
-            _lkapi.DeleteRoomRequest(room=req.roomName)
-        )
-        _agent_log.info("[Lifecycle] Room %s deleted successfully.", req.roomName)
-    except Exception as e:
-        msg = str(e).lower()
-        if "not found" in msg or "not_found" in msg or "404" in msg:
-            _agent_log.info("[Lifecycle] Room %s already deleted or not found.", req.roomName)
-        else:
-            _agent_log.exception("[Lifecycle] Failed to delete room %s: %s", req.roomName, e)
-    finally:
-        try:
-            await lkapi.aclose()
-        except Exception:
-            pass
-    return {"ok": True}
+    if r.status_code >= 400:
+        _agent_log.error("[Realtime] client secret mint failed: %s %s", r.status_code, r.text[:500])
+        raise HTTPException(status_code=502, detail=f"OpenAI Realtime secret mint failed: {r.text}")
+    data = r.json()
+    value = data.get("value")
+    if not value:
+        raise HTTPException(status_code=502, detail="OpenAI Realtime secret response did not include a value.")
+    return RealtimeSecretResponse(
+        value=value,
+        model=data.get("session", {}).get("model") or OPENAI_REALTIME_MODEL,
+        voice=voice,
+        expires_at=data.get("expires_at"),
+    )
 
 
 class FrontendLogRequest(BaseModel):

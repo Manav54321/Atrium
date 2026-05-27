@@ -258,9 +258,10 @@ class Store {
     this.set({
       selectedCaseId: id,
       screen: 'brief',
-      polyclinic: clinic
-        ? { ...this.state.polyclinic, clinic }
-        : this.state.polyclinic,
+      polyclinic: {
+        clinic: clinic ?? this.state.polyclinic.clinic,
+        patient: null,
+      },
     });
   };
 

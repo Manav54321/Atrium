@@ -168,10 +168,12 @@ function Kbd({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Ambient mic indicator — subtle pulsing dot when voice is live. */
-function MicIndicator({ muted }: { muted: boolean }) {
+/** Ambient mic indicator — subtle pulsing dot when voice is live. Clickable to toggle mute. */
+function MicIndicator({ muted, onToggle }: { muted: boolean; onToggle?: () => void }) {
   return (
-    <div
+    <button
+      type="button"
+      onClick={onToggle}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -185,6 +187,8 @@ function MicIndicator({ muted }: { muted: boolean }) {
         fontWeight: 800,
         color: muted ? 'var(--ink-soft)' : 'var(--mint-deep)',
         letterSpacing: '0.04em',
+        cursor: 'pointer',
+        fontFamily: 'inherit',
       }}
     >
       <span
@@ -199,7 +203,7 @@ function MicIndicator({ muted }: { muted: boolean }) {
         }}
       />
       {muted ? 'MIC MUTED' : 'VOICE LIVE'}
-    </div>
+    </button>
   );
 }
 
@@ -249,6 +253,13 @@ export function EncounterScreen() {
     interactionBus.setActive(null);
   }, [examineOpen]);
 
+  const toggleMute = () => {
+    const conv = getExistingConversation(POLYCLINIC_BED_INDEX);
+    if (conv) {
+      conv.toggleMicMute().then((muted) => setMicMuted(muted));
+    }
+  };
+
   // Global hotkeys:
   //   E → examine
   //   M → soft mic mute/unmute (session stays alive)
@@ -270,10 +281,7 @@ export function EncounterScreen() {
       // M — toggle mic mute (soft mute, session stays alive)
       if (e.key === 'm' || e.key === 'M') {
         e.preventDefault();
-        const conv = getExistingConversation(POLYCLINIC_BED_INDEX);
-        if (conv) {
-          conv.toggleMicMute().then((muted) => setMicMuted(muted));
-        }
+        toggleMute();
         return;
       }
     };
@@ -407,7 +415,7 @@ export function EncounterScreen() {
             alignItems: 'center',
           }}
         >
-          <MicIndicator muted={micMuted} />
+          <MicIndicator muted={micMuted} onToggle={toggleMute} />
           {pointerLocked ? (
             <div
               style={{

@@ -123,9 +123,8 @@ function derivePersonaTraits(c: PatientCase): PersonaTraits {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Returns a delivery instruction string the voice agent embeds in its
- * `generate_reply` call for the opening line, so Groq understands the
- * emotional register of the delivery.
+ * Returns a delivery instruction string the realtime session can use for
+ * the opening line, so the model understands the emotional register.
  */
 export function buildOpeningLineInstruction(c: PatientCase): string {
   const line = c.chiefComplaint;

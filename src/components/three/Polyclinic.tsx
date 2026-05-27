@@ -2983,7 +2983,7 @@ export function Polyclinic({
           head so the bubble doesn't cover their face. The speech-tail on
           the bubble still points down toward the patient, giving the
           classic comic-book look without clipping the head. */}
-      {patient && (
+      {patient && voiceActive && (
         <FloatingVoicePanel
           bedPosition={PATIENT_CHAIR_POS}
           bedRotationY={Math.PI}

@@ -23,11 +23,10 @@ import sys
 import unittest
 from pathlib import Path
 
-# Stub required env BEFORE importing server — it otherwise refuses to
-# boot some paths. The GROQ_API_KEY value is a dummy; we never
-# call Groq in these tests.
+# Stub required env BEFORE importing server. The OpenAI key is a dummy;
+# these tests never call the API.
 os.environ["EHR_API_TOKEN"] = "vault-secret-test-token-93af2d"
-os.environ.setdefault("GROQ_API_KEY", "gsk_test-dummy-groq-key")
+os.environ.setdefault("OPENAI_API_KEY", "sk-test-dummy-openai-key")
 
 # Make ``backend/`` importable whether unittest is launched from the
 # repo root or from inside ``backend/``.

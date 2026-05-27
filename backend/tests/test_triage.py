@@ -25,7 +25,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
-os.environ.setdefault("GROQ_API_KEY", "gsk_test-dummy-groq-key")
+os.environ.setdefault("OPENAI_API_KEY", "sk-test-dummy-openai-key")
 os.environ.setdefault("EHR_API_TOKEN", "test-token-not-relevant-here")
 
 _BACKEND_DIR = Path(__file__).resolve().parents[1]
@@ -75,11 +75,11 @@ SAMPLE_REQUEST = server.TriageClassifyRequest(
 
 class TriageReasoningTests(unittest.TestCase):
     # ─── model routing ───────────────────────────────────────────
-    def test_uses_groq_model(self) -> None:
+    def test_uses_openai_model(self) -> None:
         client = _fake_client(WELL_FORMED_JSON)
         server.run_triage_reasoning(client, SAMPLE_REQUEST)
         kwargs = client.chat.completions.create.call_args.kwargs
-        self.assertEqual(kwargs["model"], "llama-3.3-70b-versatile")
+        self.assertEqual(kwargs["model"], server.TRIAGE_MODEL)
 
     def test_system_prompt_contains_esi_rules(self) -> None:
         client = _fake_client(WELL_FORMED_JSON)
@@ -112,7 +112,7 @@ class TriageReasoningTests(unittest.TestCase):
         result = server.run_triage_reasoning(client, SAMPLE_REQUEST)
         self.assertEqual(result.patient_id, "er-101")
         self.assertEqual(result.esi_level, "critical")
-        self.assertEqual(result.model, "llama-3.3-70b-versatile")
+        self.assertEqual(result.model, server.TRIAGE_MODEL)
         self.assertIn("ST elevation", result.rationale)
         self.assertEqual(len(result.red_flags), 1)
 
@@ -170,8 +170,8 @@ class TriageEndpointIntegrationTests(unittest.TestCase):
     def test_endpoint_returns_response_from_mocked_client(self) -> None:
         # Patch the lazy-built client so the route sees our mock.
         fake = _fake_client(WELL_FORMED_JSON)
-        original = server._groq_client
-        server._groq_client = fake
+        original = server._openai_client
+        server._openai_client = fake
         try:
             resp = self.client.post(
                 "/agent/triage/classify",
@@ -189,11 +189,11 @@ class TriageEndpointIntegrationTests(unittest.TestCase):
                 },
             )
         finally:
-            server._groq_client = original
+            server._openai_client = original
         self.assertEqual(resp.status_code, 200, resp.text)
         body = resp.json()
         self.assertEqual(body["esi_level"], "critical")
-        self.assertEqual(body["model"], "llama-3.3-70b-versatile")
+        self.assertEqual(body["model"], server.TRIAGE_MODEL)
 
 
 if __name__ == "__main__":

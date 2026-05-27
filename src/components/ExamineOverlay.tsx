@@ -7,7 +7,7 @@ import { POLYCLINIC_DIAGNOSIS_LABELS, getCaseSpecialty } from '../data/polyclini
 import { MEDICATIONS, CATEGORY_LABELS, SPECIALTY_MEDICATION_CATEGORIES, medicationById, type Medication, type MedicationCategory } from '../data/medications';
 import { CLINIC_LABELS } from '../game/clinic';
 import { getExistingConversation } from '../voice/conversationStore';
-import type { ChatMessage } from '../voice/patientStream';
+import type { ChatMessage } from '../voice/conversation';
 
 type Tab = 'history' | 'chat' | 'tests' | 'results' | 'diagnose' | 'rx';
 
@@ -1127,7 +1127,7 @@ function ChatTab({ patientName }: { patientName: string }) {
       </form>
       {isVoiceDisabled && (
         <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ink-soft)', fontStyle: 'italic', textAlign: 'center' }}>
-          Real-time voice is disabled (LiveKit credentials missing). Using text chat mode.
+          Real-time voice is unavailable. Using text chat mode.
         </div>
       )}
     </div>

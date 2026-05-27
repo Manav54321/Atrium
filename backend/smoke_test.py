@@ -125,9 +125,9 @@ def main() -> int:
             "install openai>=1.78.0 in backend venv",
         )
         r.check(
-            "health: GROQ_API_KEY configured",
+            "health: OPENAI_API_KEY configured",
             bool(agent.get("api_key_configured")),
-            "set GROQ_API_KEY in backend/.env.local",
+            "set OPENAI_API_KEY in backend/.env.local",
         )
         r.check(
             "health: agent bootstrapped",

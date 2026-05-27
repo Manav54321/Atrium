@@ -1,8 +1,0 @@
-# Voice agent worker — separate venv from the FastAPI server.
-# Install with: pip install -r voice_agent_requirements.txt
-
-# LiveKit agents core + provider plugins
-livekit-agents[openai,deepgram,cartesia,silero]~=1.0
-
-# Env loading
-python-dotenv~=1.0
