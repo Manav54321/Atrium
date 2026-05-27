@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>atrium — Design System</title>
+  <!--
+    Portable, single-file capture of the atrium simulator's visual language.
+
+    Purpose: this file is the reference the demo video (video/remotion/)
+    and any future landing page import instead of re-deriving tokens
+    from the running app. Tharek's pattern — produces a single portable
+    artifact, keeps the demo on-brand without the designer's overhead.
+
+    SOURCE OF TRUTH for the live app is still src/styles/global.css.
+    If a token here drifts from global.css, global.css wins — update this
+    file to match, not the other way around.
+  -->
+  <style>
+    :root {
+      /* Atrium Dayshift palette — mirrors src/styles/global.css :root */
+      --bg: #f0ebe1;
+      --bg-soft: #faf7f0;
+      --bg-accent: #ece6d8;
+      --panel: rgba(255, 250, 240, 0.78);
+      --panel-solid: #fbf7ec;
+      --panel-inner: #f5efe1;
+      --border: rgba(60, 40, 20, 0.15);
+      --border-strong: rgba(60, 40, 20, 0.28);
+      --trim: #d4a574;
+      --accent: #e07856;
+      --accent-soft: rgba(224, 120, 86, 0.14);
+      --text: #1a1a1a;
+      --text-dim: #5a5a5a;
+      --text-faint: #8b7a63;
+      --success: #4a7a3e;
+      --warn: #b8541f;
+      --danger: #b83c3c;
+      --critical: #b83c3c;
+      --urgent: #d4a574;
+      --stable: #4a7a3e;
+
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-mono: 'ui-monospace', 'SF Mono', Menlo, Consolas, monospace;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+
+      --shadow-inset: inset 0 0 0 1px rgba(60, 40, 20, 0.08);
+      --shadow-card: 0 1px 0 rgba(60, 40, 20, 0.04), 0 8px 20px rgba(60, 40, 20, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 32px;
+      background: linear-gradient(180deg, var(--bg-soft) 0%, var(--bg-accent) 100%);
+      color: var(--text);
+      font-family: var(--font-serif);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 60%, rgba(60,40,20,0.18) 100%);
+    }
+
+    h1, h2, h3 { font-family: var(--font-serif); margin: 0 0 8px; }
+    h1 { font-size: 22px; font-variant: small-caps; letter-spacing: 0.05em; }
+    h2 { font-size: 16px; font-variant: small-caps; letter-spacing: 0.08em; color: var(--text-dim); margin-top: 32px; }
+    h3 { font-size: 13px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.12em; }
+
+    .mono {
+      font-family: var(--font-mono);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+    .panel {
+      background: var(--panel-solid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-card), var(--shadow-inset);
+    }
+
+    .swatch {
+      height: 64px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+    .swatch-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; margin-top: 8px; }
+    .swatch-row .mono { font-size: 11px; }
+
+    /* ── Buttons ── */
+    button, .btn {
+      font-family: var(--font-serif);
+      font-size: 13px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--panel-solid);
+      color: var(--text);
+      cursor: pointer;
+      box-shadow: var(--shadow-inset);
+    }
+    .btn--primary { background: var(--accent); color: #fff; border-color: transparent; }
+    .btn--danger { background: var(--danger); color: #fff; border-color: transparent; }
+    .btn--ghost { background: transparent; }
+
+    /* ── Triage chips ── */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--panel-inner);
+    }
+    .chip--red { background: var(--critical); color: #fff; border-color: transparent; }
+    .chip--yellow { background: var(--urgent); color: var(--text); border-color: transparent; }
+    .chip--green { background: var(--stable); color: #fff; border-color: transparent; }
+
+    /* ── Cards used by the Managed Agent panel ── */
+    .agent-card {
+      padding: 12px;
+      background: var(--panel-inner);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 13px;
+    }
+    .agent-card header {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+    .agent-card--triage-red { border-left: 4px solid var(--critical); }
+    .agent-card--triage-yellow { border-left: 4px solid var(--urgent); }
+    .agent-card--triage-green { border-left: 4px solid var(--stable); }
+
+    table.tokens { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.tokens th, table.tokens td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+    table.tokens th { color: var(--text-dim); font-weight: normal; font-variant: small-caps; letter-spacing: 0.05em; }
+    code.inline { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>atrium — Design System</h1>
+    <p class="mono">Atrium Dayshift · day 1 · ref for video + demo</p>
+
+    <h2>Palette</h2>
+    <div class="grid">
+      <div class="panel">
+        <div class="swatch" style="background: var(--bg-soft);"></div>
+        <div class="swatch-row"><span>Page bg-soft</span><span class="mono">#faf7f0</span></div>
+      </div>
+      <div class="panel">
+        <div class="swatch" style="background: var(--panel-solid);"></div>
+        <div class="swatch-row"><span>Panel</span><span class="mono">#fbf7ec</span></div>
+      </div>
+      <div class="panel">
+        <div class="swatch" style="background: var(--accent);"></div>
+        <div class="swatch-row"><span>Accent</span><span class="mono">#e07856</span></div>
+      </div>
+      <div class="panel">
+        <div class="swatch" style="background: var(--critical);"></div>
+        <div class="swatch-row"><span>Critical / Red</span><span class="mono">#b83c3c</span></div>
+      </div>
+      <div class="panel">
+        <div class="swatch" style="background: var(--urgent);"></div>
+        <div class="swatch-row"><span>Urgent / Yellow</span><span class="mono">#d4a574</span></div>
+      </div>
+      <div class="panel">
+        <div class="swatch" style="background: var(--stable);"></div>
+        <div class="swatch-row"><span>Stable / Green</span><span class="mono">#4a7a3e</span></div>
+      </div>
+    </div>
+
+    <h2>Typography</h2>
+    <div class="panel">
+      <table class="tokens">
+        <tr><th>Serif (body)</th><td>Georgia, Times New Roman, serif</td></tr>
+        <tr><th>Mono (labels)</th><td>ui-monospace, SF Mono, Menlo, Consolas, monospace</td></tr>
+        <tr><th>Small caps label style</th><td><span class="mono">Ordered tests</span></td></tr>
+        <tr><th>Title</th><td style="font-size:22px;font-variant:small-caps;letter-spacing:0.05em;">Case debrief</td></tr>
+      </table>
+    </div>
+
+    <h2>Buttons</h2>
+    <div class="panel">
+      <button class="btn">Order test</button>
+      <button class="btn btn--primary">Submit diagnosis</button>
+      <button class="btn btn--danger">End shift</button>
+      <button class="btn btn--ghost">Skip</button>
+    </div>
+
+    <h2>Triage chips</h2>
+    <div class="panel">
+      <span class="chip chip--red">Red · critical</span>
+      <span class="chip chip--yellow">Yellow · urgent</span>
+      <span class="chip chip--green">Green · stable</span>
+    </div>
+
+    <h2>Managed Agent cards</h2>
+    <p class="mono">These are rendered by <code class="inline">src/agents/eventStreamRenderer.tsx</code>.</p>
+    <div class="grid">
+      <div class="agent-card agent-card--triage-red">
+        <header>Triage · RED</header>
+        <p>ST elevation in II, III, aVF · troponin 3.2 — anterior wall MI. Time-to-balloon matters.</p>
+      </div>
+      <div class="agent-card">
+        <header>Case grade · 92</header>
+        <ul>
+          <li>Correct dx: STEMI.</li>
+          <li>Aspirin + cath lab activated within 8 minutes.</li>
+          <li>Supplemental O2 not indicated (SpO2 95 on RA).</li>
+        </ul>
+      </div>
+      <div class="agent-card">
+        <header>Timeline · patient mi-001</header>
+        <p>ECG 00:02 · Troponin 00:04 · Aspirin 00:03 · Cath 00:08 · Admit ICU 00:18</p>
+      </div>
+    </div>
+
+    <h2>Tokens</h2>
+    <div class="panel">
+      <table class="tokens">
+        <tr><th>radius-sm</th><td><code class="inline">6px</code></td></tr>
+        <tr><th>radius-md</th><td><code class="inline">10px</code></td></tr>
+        <tr><th>radius-lg</th><td><code class="inline">14px</code></td></tr>
+        <tr><th>shadow-card</th><td><code class="inline">0 1px 0 rgba(60,40,20,0.04), 0 8px 20px rgba(60,40,20,0.08)</code></td></tr>
+        <tr><th>vignette</th><td><code class="inline">radial-gradient(ellipse at center, transparent 60%, rgba(60,40,20,0.18) 100%)</code></td></tr>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
