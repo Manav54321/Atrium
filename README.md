@@ -1,6 +1,6 @@
 # Atrium — Immersive Clinical Intelligence Platform
 
-Atrium is an AI-native medical simulation workspace for advanced clinical training and PLAB2 / OSCE preparation. It places the user in the role of a consulting clinician inside an immersive 3D room, conducting real-time voice interviews with patients, ordering tests, forming diagnoses, prescribing treatments, and receiving an automated attending evaluation cited to real-world clinical guidelines.
+Atrium is an AI-native medical simulation workspace for advanced clinical training, supporting both global/UK workflows (PLAB2 / OSCE) and Indian workflows (NEXT / FMGE / MBBS practicals). It places the user in the role of a consulting clinician inside an immersive 3D room, conducting real-time voice interviews with patients, ordering tests, forming diagnoses, prescribing treatments, and receiving an automated attending evaluation cited to real-world clinical guidelines.
 
 ---
 
@@ -9,9 +9,21 @@ Atrium is an AI-native medical simulation workspace for advanced clinical traini
 - **Cinematic 3D Consult Room** — A stylized polyclinic room rendered in real-time with Three.js (`@react-three/fiber` / `@react-three/drei`). Patients walk in, sit down, and react dynamically.
 - **OpenAI Realtime Voice** — Direct browser WebRTC sessions with the OpenAI Realtime API. Speech-to-text, reasoning, interruption handling, and text-to-speech all flow through a single OpenAI connection — zero third-party STT or TTS services.
 - **Gender-Aware Voice Selection** — Male patients speak with a male voice (`ballad`); female patients and pediatric case parents speak with a female voice (`shimmer`). Fully deterministic and configurable via env vars.
-- **Autonomous Patient Personas** — Deterministic clinical personas stay in-character, reveal history gradually, express realistic emotions, and adapt to English or Hindi input.
+- **Autonomous Patient Personas** — Deterministic clinical personas stay in-character, reveal history gradually, express realistic emotions, and support English, Hindi, and Hinglish.
 - **Automated Attending Debrief** — A structured OSCE scoring engine (OpenAI Assistants) grades performance across data-gathering, clinical management, and interpersonal domains — with every criterion cited to a real guideline.
-- **Multi-Specialty Case Library** — Cases spanning Internal Medicine, Pediatrics, Cardiology, Respiratory, Neurology, Emergency Medicine, and more.
+- **Multi-Specialty Case Library** — Cases spanning Internal Medicine, Pediatrics, Cardiology, Respiratory, Neurology, Emergency Medicine, and endemic infectious diseases (Dengue, Tuberculosis, Typhoid, Heat stroke, Malnutrition, Rheumatic heart disease, Maternal anemia, Organophosphate poisoning).
+
+---
+
+## India-Focused Clinical Training
+
+Atrium natively supports Indian clinical training pathways and workflows, ensuring alignment with the National Medical Commission (NMC) competency standards, the National Exit Test (NEXT), and FMGE preparation.
+
+Key features include:
+- **Low-Resource Clinical Reasoning** — Scenarios requiring clinical judgment in low-resource environments (e.g., opting for essential-only tests, prescribing cost-effective generic medications as per NMC guidelines).
+- **India-Native Case Scenarios** — Practice cases featuring endemic diseases (Dengue fever, Tuberculosis, Typhoid), environmental emergencies (Heat stroke), pediatric conditions (Malnutrition), and acute toxicological presentations (Organophosphate poisoning).
+- **OPD & Consultation Realism** — Simulate high-pressure government hospital OPD environments or structured private hospital consultations.
+- **Cultural & Communication Realism** — Patients present with realistic behaviors, such as family members speaking on behalf of patients, concerns about treatment/test costs, medicine non-adherence, and code-switching mid-conversation between English, Hindi, and Hinglish.
 
 ---
 
@@ -62,7 +74,7 @@ Atrium/
 │   │
 │   ├── data/                        Static medical knowledge base
 │   │   ├── polyclinicPatients.ts    Full case database (histories, vitals, tests, rubrics)
-│   │   ├── guidelines.ts            Clinical guideline citation registry (NICE, BNF, SIGN…)
+│   │   ├── guidelines.ts            Clinical guideline registry (NICE, BNF, SIGN, ICMR, NMC, AIIMS, RSSDI, IAP, FOGSI, NABH, NHM)
 │   │   ├── cases.ts                 Case catalogue compiler
 │   │   ├── tests.ts                 Lab, imaging, and bedside test index
 │   │   ├── treatments.ts            Treatment catalogue
@@ -242,7 +254,7 @@ All variables are read from `backend/.env.local`. See `backend/.env.example` for
 
 ---
 
-## Voice Pipeline
+## Voice Pipeline & Routing Validation
 
 Patient voice runs entirely through OpenAI:
 
@@ -256,6 +268,12 @@ Speaker    ← Audio track        ← OpenAI Realtime API
 2. The browser opens a `RTCPeerConnection`, adds the microphone track, and sends an SDP offer to `https://api.openai.com/v1/realtime/calls` using the secret as a Bearer token.
 3. OpenAI streams audio back. The patient persona (system prompt + opening line) is injected at session creation time.
 4. Gender-appropriate voice (`ballad` / `shimmer`) is selected server-side by `_realtime_voice_for()` based on `gender` in the request body.
+5. Voice routing is deterministic and environment-configurable (using `OPENAI_REALTIME_MALE_VOICE` and `OPENAI_REALTIME_FEMALE_VOICE` env variables):
+   - **Adult Male Patients** → male voice (default: `ballad`)
+   - **Adult Female Patients** → female voice (default: `shimmer`)
+   - **Pediatric Mother Speaker** → female voice (default: `shimmer`)
+   - **Pediatric Father Speaker** → male voice (default: `ballad`)
+   Deterministic routing is mapped by taking the case ID hash on initialization to decide the parent speaker gender, guaranteeing that the 3D visual avatar and speaking voice are consistently matched.
 
 ---
 

@@ -51,9 +51,17 @@ export interface Guideline {
     | 'ATS'
     | 'GOLD'
     | 'GINA'
-    | 'KDIGO';
+    | 'KDIGO'
+    | 'ICMR'
+    | 'NMC'
+    | 'AIIMS'
+    | 'RSSDI'
+    | 'IAP'
+    | 'FOGSI'
+    | 'NABH'
+    | 'NHM';
   year: number;
-  region: 'UK' | 'EU' | 'US' | 'Global';
+  region: 'UK' | 'EU' | 'US' | 'India' | 'Global';
   title: string;
   url: string;
   pdfUrl?: string;
@@ -242,6 +250,162 @@ export const GUIDELINES: Guideline[] = [
         text: 'Do not routinely offer follow-up chest X-rays to people discharged from inpatient care after an episode of pneumonia.',
         topic: 'follow-up imaging',
         system: 'respiratory',
+      },
+    ],
+  },
+  {
+    id: 'icmr-tb-2023',
+    body: 'ICMR',
+    year: 2023,
+    region: 'India',
+    title: 'ICMR Guidelines for Diagnosis and Management of Tuberculosis',
+    url: 'https://main.icmr.nic.in/',
+    verificationStatus: 'auto-fetched',
+    lastVerified: '2026-05-28',
+    recommendations: [
+      {
+        recId: 'tb-diagnostic-microscopy',
+        text: 'Diagnose pulmonary tuberculosis by performing sputum smear microscopy or rapid molecular diagnostics (such as CBNAAT/TrueNat) as the first-line test.',
+        topic: 'TB diagnosis',
+        system: 'infectious',
+      },
+      {
+        recId: 'tb-drug-regimen',
+        text: 'Initiate the standard daily regimen of Isoniazid, Rifampicin, Pyrazinamide, and Ethambutol (HRZE) for 2 months, followed by 4 months of HRE.',
+        topic: 'TB treatment',
+        system: 'infectious',
+      },
+    ],
+  },
+  {
+    id: 'nmc-generic-drugs-2023',
+    body: 'NMC',
+    year: 2023,
+    region: 'India',
+    title: 'NMC Regulations on Professional Conduct: Generic Medicine Prescribing',
+    url: 'https://www.nmc.org.in/',
+    verificationStatus: 'auto-fetched',
+    lastVerified: '2026-05-28',
+    recommendations: [
+      {
+        recId: 'generic-prescription-requirement',
+        text: 'Every physician should prescribe drugs with generic names legibly and preferably in capital letters, and they should ensure that there is a rational prescription and use of drugs.',
+        topic: 'generic prescribing',
+        system: 'other',
+      },
+    ],
+  },
+  {
+    id: 'aiims-dengue-2024',
+    body: 'AIIMS',
+    year: 2024,
+    region: 'India',
+    title: 'AIIMS Protocol for Management of Dengue Fever',
+    url: 'https://www.aiims.edu/',
+    verificationStatus: 'auto-fetched',
+    lastVerified: '2026-05-28',
+    recommendations: [
+      {
+        recId: 'dengue-monitoring-platelets',
+        text: 'Monitor hematocrit and platelet count daily or twice-daily during the critical phase of dengue. Platelet transfusion is indicated only if counts fall below 10,000/µL or if there is active bleeding.',
+        topic: 'dengue monitoring',
+        system: 'infectious',
+      },
+      {
+        recId: 'dengue-fluid-resuscitation',
+        text: 'Use isotonic crystalloids (e.g., Normal Saline or Ringer\'s Lactate) for fluid resuscitation in patients with dengue warning signs or shock.',
+        topic: 'dengue fluid management',
+        system: 'infectious',
+      },
+    ],
+  },
+  {
+    id: 'rssdi-t2dm-2023',
+    body: 'RSSDI',
+    year: 2023,
+    region: 'India',
+    title: 'RSSDI Clinical Practice Recommendations for Management of Type 2 Diabetes',
+    url: 'https://www.rssdi.in/',
+    verificationStatus: 'auto-fetched',
+    lastVerified: '2026-05-28',
+    recommendations: [
+      {
+        recId: 'rssdi-first-line-metformin',
+        text: 'Initiate Metformin as the first-line drug of choice unless contraindicated, and customize subsequent therapy based on patient comorbidities and financial capabilities.',
+        topic: 'first-line diabetes treatment',
+        system: 'endocrine',
+      },
+    ],
+  },
+  {
+    id: 'iap-sam-2022',
+    body: 'IAP',
+    year: 2022,
+    region: 'India',
+    title: 'IAP Guidelines for Management of Severe Acute Malnutrition',
+    url: 'https://iapindia.org/',
+    verificationStatus: 'auto-fetched',
+    lastVerified: '2026-05-28',
+    recommendations: [
+      {
+        recId: 'sam-feeding-phases',
+        text: 'For children with severe acute malnutrition (SAM) with complications, manage in nutritional rehabilitation centers using F-75 formula during the stabilization phase, transitioning to F-100/RUTF during rehabilitation.',
+        topic: 'malnutrition management',
+        system: 'other',
+      },
+    ],
+  },
+  {
+    id: 'fogsi-anemia-2023',
+    body: 'FOGSI',
+    year: 2023,
+    region: 'India',
+    title: 'FOGSI Clinical Practice Guidelines on Maternal Anemia',
+    url: 'https://www.fogsi.org/',
+    verificationStatus: 'auto-fetched',
+    lastVerified: '2026-05-28',
+    recommendations: [
+      {
+        recId: 'anemia-iron-sucrose',
+        text: 'In pregnant women with moderate to severe iron deficiency anemia (hemoglobin 5.0–7.9 g/dL) who are non-compliant or intolerant to oral iron, administer intravenous iron sucrose or ferric carboxymaltose.',
+        topic: 'maternal anemia',
+        system: 'other',
+      },
+    ],
+  },
+  {
+    id: 'nabh-patient-safety-2023',
+    body: 'NABH',
+    year: 2023,
+    region: 'India',
+    title: 'NABH Standards for Patient Safety and Quality of Care',
+    url: 'https://www.nabh.co/',
+    verificationStatus: 'auto-fetched',
+    lastVerified: '2026-05-28',
+    recommendations: [
+      {
+        recId: 'nabh-prescription-double-check',
+        text: 'High-alert medications and pediatric drug dosages must be double-checked by a qualified nurse or doctor before administration.',
+        topic: 'patient safety',
+        system: 'other',
+      },
+    ],
+  },
+  {
+    id: 'nhm-anc-2023',
+    body: 'NHM',
+    year: 2023,
+    region: 'India',
+    title: 'NHM Operational Guidelines for Antenatal Care',
+    url: 'https://nhm.gov.in/',
+    verificationStatus: 'auto-fetched',
+    lastVerified: '2026-05-28',
+    recommendations: [
+      {
+        recId: 'nhm-iron-folic-acid',
+        text: 'Provide a minimum of 180 tablets of Iron and Folic Acid (IFA) containing 100 mg elemental iron and 0.5 mg folic acid to all pregnant women starting from the second trimester.',
+        topic: 'antenatal care',
+        system: 'other',
       },
     ],
   },

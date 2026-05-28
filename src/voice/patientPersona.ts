@@ -64,6 +64,14 @@ interface PersonaTraits {
   personalityNote: string;
   /** Hesitation vocabulary (varies by style) */
   fillerPhrases: string;
+  /** Socioeconomic setting: rural vs urban communication styles */
+  socioeconomicContext: 'rural' | 'urban';
+  /** Treatment cost concern level */
+  costSensitivity: 'low' | 'moderate' | 'high';
+  /** Medicine adherence behavior pattern */
+  adherence: 'adherent' | 'non-adherent' | 'alternative-remedies';
+  /** Family dynamic in the consultation room */
+  familyInvolvement: 'solo' | 'accompanied-helper' | 'family-spokesperson';
 }
 
 function derivePersonaTraits(c: PatientCase): PersonaTraits {
@@ -115,7 +123,40 @@ function derivePersonaTraits(c: PatientCase): PersonaTraits {
     communicationStyle === 'rambling' ? '"matlab", "you know", "like", going off on tangents'  :
                                        '"um", "sort of", measured pauses before answering';
 
-  return { anxietyLevel, communicationStyle, medicalKnowledge, emotionalState, personalityNote, fillerPhrases };
+  // Socioeconomic and clinical realism seeds
+  const socioRoll = h % 2;
+  const socioeconomicContext: 'rural' | 'urban' = socioRoll === 0 ? 'rural' : 'urban';
+
+  const costRoll = (h >> 2) % 3;
+  const costSensitivity: 'low' | 'moderate' | 'high' =
+    costRoll === 0 ? 'low' :
+    costRoll === 1 ? 'moderate' :
+                     'high';
+
+  const adherenceRoll = (h >> 4) % 3;
+  const adherence: 'adherent' | 'non-adherent' | 'alternative-remedies' =
+    adherenceRoll === 0 ? 'adherent' :
+    adherenceRoll === 1 ? 'non-adherent' :
+                          'alternative-remedies';
+
+  const familyRoll = (h >> 6) % 3;
+  const familyInvolvement: 'solo' | 'accompanied-helper' | 'family-spokesperson' =
+    familyRoll === 0 ? 'solo' :
+    familyRoll === 1 ? 'accompanied-helper' :
+                       'family-spokesperson';
+
+  return {
+    anxietyLevel,
+    communicationStyle,
+    medicalKnowledge,
+    emotionalState,
+    personalityNote,
+    fillerPhrases,
+    socioeconomicContext,
+    costSensitivity,
+    adherence,
+    familyInvolvement,
+  };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -246,6 +287,42 @@ ${knowledgeDesc}
   - "Doctor, I'm feeling really unwell right now, my head is spinning... I don't know anything about that."
   - "Uh... I'm not really sure doctor, I haven't thought much about that. Can we focus on my checkup?"`;
 
+  // ── Block 5c: India-Native Clinical Realism ────────────────────────────────
+  const socioDesc =
+    traits.socioeconomicContext === 'rural'
+      ? '• Socioeconomic Setting (Rural): You are from a rural or semi-urban area. You speak simply, might have travelled far to reach the hospital, and are worried about losing daily wages. You are less familiar with complex tests.'
+      : '• Socioeconomic Setting (Urban): You live in a city. You are more familiar with modern hospital setups but remain highly anxious about your busy schedule and work stress.';
+
+  const costDesc =
+    traits.costSensitivity === 'high'
+      ? '• Cost Concerns (High): You are paying out-of-pocket and have serious budget concerns. You must actively ask about test costs (e.g. "Is this CT scan very expensive, doctor?") and prefer cheaper/generic medications or ask if a test is absolutely necessary.'
+      : traits.costSensitivity === 'moderate'
+      ? '• Cost Concerns (Moderate): You prefer cost-effective treatment. If the doctor orders many expensive tests or brands, gently ask if there are cheaper options.'
+      : '• Cost Concerns (Low): You are concerned about your health first, but still appreciate reasonable costs.';
+
+  const adherenceDesc =
+    traits.adherence === 'non-adherent'
+      ? '• Medication Adherence: You have a history of stopping your medication (like BP or sugar pills) once you feel better, believing you are cured, or because you forgot to refill them.'
+      : traits.adherence === 'alternative-remedies'
+      ? '• Alternative Remedies: You tried home remedies, steam inhalation, local ayurvedic, or traditional mixtures first before coming to see a doctor.'
+      : '• Medication Adherence: You generally try to follow doctor\'s prescriptions, but may occasionally miss a dose.';
+
+  const familyDesc =
+    traits.familyInvolvement === 'family-spokesperson'
+      ? '• Family Involvement: You are accompanied by a family member (spouse, son, daughter) who answers on your behalf or corrects details (e.g. "He says he is fine doctor, but he didn\'t sleep all night"). When answering, occasionally frame it as: "My wife says I was breathing heavily..." or let them chime in.'
+      : traits.familyInvolvement === 'accompanied-helper'
+      ? '• Family Involvement: You are accompanied by a family member who sits beside you and occasionally prompts you when you forget a detail.'
+      : '• Family Involvement: You came alone today.';
+
+  const realismBlock = `\
+═══ INDIA-NATIVE CLINICAL REALISM & BEHAVIOR ═══
+${socioDesc}
+${costDesc}
+${adherenceDesc}
+${familyDesc}
+• Government Hospital OPD Pressure: You feel the pressure of a busy hospital OPD setting with many patients waiting. You want clear, direct, and fast communication.
+• Multilingual Switching (Hinglish/Regional): Switch between English and Hinglish patterns naturally (e.g. "Thoda pain ho raha hai", "Fever kal raat se tha"). If the doctor switches to Hindi, reply in Hindi/Hinglish. The platform architecture has an extensible multilingual design that supports regional code-switching (like Gujarati, Tamil, Bengali) if the doctor initiates it.`;
+
   // ── Block 6: Symptom & Memory Anchors ─────────────────────────────────────
   const qa = c.anamnesis
     .map((q) => `• If asked something like "${q.question}" → answer honestly: "${q.answer}"`)
@@ -327,6 +404,7 @@ Speak only what this person would naturally say to their doctor.`;
     communicationBlock,
     knowledgeBlock,
     deflectionBlock,
+    realismBlock,
     memoryBlock,
     hardRulesBlock,
     examplesBlock,
@@ -359,6 +437,39 @@ function buildPediatricParentPersona(c: PatientCase, setting: 'er' | 'polyclinic
   const qa = c.anamnesis
     .map((q) => `• If the doctor asks something like "${q.question}" → answer about your child: "${q.answer}"`)
     .join('\n');
+
+  const socioDesc =
+    traits.socioeconomicContext === 'rural'
+      ? '• Socioeconomic Setting (Rural): You brought your child from a rural area. You describe symptoms in very simple terms, worry about travel costs/daily wages, and are unfamiliar with high-tech diagnostic procedures.'
+      : '• Socioeconomic Setting (Urban): You live in a city. You are anxious about managing your child\'s illness alongside your busy job/routine.';
+
+  const costDesc =
+    traits.costSensitivity === 'high'
+      ? '• Cost Concerns (High): You are highly concerned about the cost of pediatric tests and medications. Ask the doctor if tests are expensive and request cheaper or generic alternatives.'
+      : traits.costSensitivity === 'moderate'
+      ? '• Cost Concerns (Moderate): You prefer cost-effective options and may ask if all prescribed tests are absolutely necessary.'
+      : '• Cost Concerns (Low): You prioritize your child\'s health and will do whatever is needed, though you still notice high charges.';
+
+  const adherenceDesc =
+    traits.adherence === 'non-adherent'
+      ? '• Medication Adherence: You have occasionally skipped giving the child their full course of antibiotics or syrup once their fever went down, thinking they were fully cured.'
+      : traits.adherence === 'alternative-remedies'
+      ? '• Alternative Remedies: You tried home remedies, tulsi/honey, or local traditional cures first before bringing the child in today.'
+      : '• Medication Adherence: You try to adhere to medical advice but sometimes forget exact timing.';
+
+  const familyDesc =
+    traits.familyInvolvement === 'family-spokesperson'
+      ? '• Family Involvement: You are accompanied by another family member (e.g. grandparent or spouse) who sits with you, occasionally chimes in, or corrects your answers about when the child got sick.'
+      : '• Family Involvement: You brought the child alone today.';
+
+  const realismBlock = `\
+═══ INDIA-NATIVE CLINICAL REALISM & BEHAVIOR ═══
+${socioDesc}
+${costDesc}
+${adherenceDesc}
+${familyDesc}
+• Government Hospital OPD Pressure: You are in a crowded OPD setting. You want prompt attention for your child and quick, clear instructions.
+• Multilingual Switching (Hinglish/Regional): Switch between English and Hinglish patterns naturally (e.g. "Crying nonstop kar raha hai", "Feed nahi le rahi"). The platform supports an extensible multilingual structure (Gujarati, Tamil, Bengali, etc.) to match the doctor\'s language choice.`;
 
   return `\
 ═══ WHO YOU ARE ═══
@@ -406,6 +517,8 @@ You are a regular person. You describe what you OBSERVE about your child, not me
 • Deflection examples:
   - "Doctor, I'm really worried about my child right now, my head is spinning... I don't know anything about that."
   - "Uh... I'm not really sure doctor, I haven't thought much about that. Can we focus on my child?"
+
+${realismBlock}
 
 ═══ WHAT YOU OBSERVED & WHAT YOU'D SAY ═══
 Chief complaint (what you said when the doctor walked in): "${c.chiefComplaint}"
