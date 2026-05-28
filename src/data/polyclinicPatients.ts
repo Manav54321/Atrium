@@ -4,7 +4,7 @@ import type { ClinicId } from '../game/clinic';
 const internalMedicine: PatientCase[] = [
   {
     id: 'im-001',
-    name: 'Mary Smith',
+    name: 'Priya Sharma',
     age: 34,
     gender: 'F',
     severity: 'stable',
@@ -35,7 +35,7 @@ const internalMedicine: PatientCase[] = [
   },
   {
     id: 'im-002',
-    name: 'James Johnson',
+    name: 'Aarav Kumar',
     age: 68,
     gender: 'M',
     severity: 'stable',
@@ -66,7 +66,7 @@ const internalMedicine: PatientCase[] = [
   },
   {
     id: 'im-003',
-    name: 'Michael Williams',
+    name: 'Vivaan Singh',
     age: 52,
     gender: 'M',
     severity: 'stable',
@@ -134,7 +134,7 @@ const internalMedicine: PatientCase[] = [
   },
   {
     id: 'im-004',
-    name: 'Patricia Brown',
+    name: 'Aisha Patel',
     age: 58,
     gender: 'F',
     severity: 'stable',
@@ -201,7 +201,7 @@ const internalMedicine: PatientCase[] = [
   },
   {
     id: 'im-005',
-    name: 'David Jones',
+    name: 'Aditya Sharma',
     age: 47,
     gender: 'M',
     severity: 'stable',
@@ -269,7 +269,7 @@ const internalMedicine: PatientCase[] = [
   },
   {
     id: 'im-006',
-    name: 'Jennifer Garcia',
+    name: 'Ananya Iyer',
     age: 42,
     gender: 'F',
     severity: 'stable',
@@ -299,7 +299,7 @@ const internalMedicine: PatientCase[] = [
   },
   {
     id: 'im-007',
-    name: 'Linda Miller',
+    name: 'Deepika Nair',
     age: 29,
     gender: 'F',
     severity: 'stable',
@@ -328,7 +328,7 @@ const internalMedicine: PatientCase[] = [
   },
   {
     id: 'im-008',
-    name: 'Robert Davis',
+    name: 'Vihaan Patel',
     age: 31,
     gender: 'M',
     severity: 'stable',
@@ -358,7 +358,7 @@ const internalMedicine: PatientCase[] = [
   },
   {
     id: 'im-009',
-    name: 'John Rodriguez',
+    name: 'Arjun Gupta',
     age: 55,
     gender: 'M',
     severity: 'stable',
@@ -389,7 +389,7 @@ const internalMedicine: PatientCase[] = [
   },
   {
     id: 'im-010',
-    name: 'Elizabeth Martinez',
+    name: 'Priyanka Rao',
     age: 38,
     gender: 'F',
     severity: 'stable',
@@ -424,7 +424,7 @@ const internalMedicine: PatientCase[] = [
 const cardiology: PatientCase[] = [
   {
     id: 'card-001',
-    name: 'William Hernandez',
+    name: 'Sai Krishna',
     age: 64,
     gender: 'M',
     severity: 'stable',
@@ -456,7 +456,7 @@ const cardiology: PatientCase[] = [
   },
   {
     id: 'card-002',
-    name: 'Barbara Lopez',
+    name: 'Aditi Joshi',
     age: 71,
     gender: 'F',
     severity: 'stable',
@@ -487,7 +487,7 @@ const cardiology: PatientCase[] = [
   },
   {
     id: 'card-003',
-    name: 'Thomas Gonzalez',
+    name: 'Reyansh Reddy',
     age: 68,
     gender: 'M',
     severity: 'stable',
@@ -519,7 +519,7 @@ const cardiology: PatientCase[] = [
   },
   {
     id: 'card-004',
-    name: 'Susan Wilson',
+    name: 'Kavita Reddy',
     age: 59,
     gender: 'F',
     severity: 'stable',
@@ -549,7 +549,7 @@ const cardiology: PatientCase[] = [
   },
   {
     id: 'card-005',
-    name: 'Christopher Anderson',
+    name: 'Aravind Nair',
     age: 24,
     gender: 'M',
     severity: 'stable',
@@ -579,7 +579,7 @@ const cardiology: PatientCase[] = [
   },
   {
     id: 'card-006',
-    name: 'Jessica Thomas',
+    name: 'Sunita Chaudhary',
     age: 33,
     gender: 'F',
     severity: 'stable',
@@ -610,7 +610,7 @@ const cardiology: PatientCase[] = [
   },
   {
     id: 'card-007',
-    name: 'Daniel Taylor',
+    name: 'Aryan Sen',
     age: 76,
     gender: 'M',
     severity: 'stable',
@@ -640,7 +640,7 @@ const cardiology: PatientCase[] = [
   },
   {
     id: 'card-008',
-    name: 'Sarah Moore',
+    name: 'Meera Krishnan',
     age: 45,
     gender: 'F',
     severity: 'stable',
@@ -670,7 +670,7 @@ const cardiology: PatientCase[] = [
   },
   {
     id: 'card-009',
-    name: 'Matthew Jackson',
+    name: 'Krishna Murthy',
     age: 57,
     gender: 'M',
     severity: 'urgent',
@@ -701,7 +701,7 @@ const cardiology: PatientCase[] = [
   },
   {
     id: 'card-010',
-    name: 'Karen Martin',
+    name: 'Sneha Sen',
     age: 62,
     gender: 'F',
     severity: 'stable',
@@ -735,7 +735,7 @@ const cardiology: PatientCase[] = [
 const neurology: PatientCase[] = [
   {
     id: 'neuro-001',
-    name: 'Nancy Lee',
+    name: 'Pooja Bannerjee',
     age: 31,
     gender: 'F',
     severity: 'stable',
@@ -765,7 +765,7 @@ const neurology: PatientCase[] = [
   },
   {
     id: 'neuro-002',
-    name: 'Anthony Perez',
+    name: 'Rahul Dravid',
     age: 44,
     gender: 'M',
     severity: 'stable',
@@ -795,7 +795,7 @@ const neurology: PatientCase[] = [
   },
   {
     id: 'neuro-003',
-    name: 'Lisa Thompson',
+    name: 'Riya Dutta',
     age: 38,
     gender: 'F',
     severity: 'urgent',
@@ -825,7 +825,7 @@ const neurology: PatientCase[] = [
   },
   {
     id: 'neuro-004',
-    name: 'Mark White',
+    name: 'Sachin Tendulkar',
     age: 46,
     gender: 'M',
     severity: 'stable',
@@ -855,7 +855,7 @@ const neurology: PatientCase[] = [
   },
   {
     id: 'neuro-005',
-    name: 'Donald Harris',
+    name: 'Virat Kohli',
     age: 67,
     gender: 'M',
     severity: 'stable',
@@ -885,7 +885,7 @@ const neurology: PatientCase[] = [
   },
   {
     id: 'neuro-006',
-    name: 'Margaret Sanchez',
+    name: 'Tanvi Hegde',
     age: 58,
     gender: 'F',
     severity: 'stable',
@@ -914,7 +914,7 @@ const neurology: PatientCase[] = [
   },
   {
     id: 'neuro-007',
-    name: 'Steven Clark',
+    name: 'Rohit Sharma',
     age: 40,
     gender: 'M',
     severity: 'stable',
@@ -943,7 +943,7 @@ const neurology: PatientCase[] = [
   },
   {
     id: 'neuro-008',
-    name: 'Paul Ramirez',
+    name: 'MS Dhoni',
     age: 42,
     gender: 'M',
     severity: 'urgent',
@@ -972,7 +972,7 @@ const neurology: PatientCase[] = [
   },
   {
     id: 'neuro-009',
-    name: 'Betty Lewis',
+    name: 'Divya Saxena',
     age: 66,
     gender: 'F',
     severity: 'stable',
@@ -1002,7 +1002,7 @@ const neurology: PatientCase[] = [
   },
   {
     id: 'neuro-010',
-    name: 'Andrew Robinson',
+    name: 'Yuvraj Singh',
     age: 74,
     gender: 'M',
     severity: 'stable',
@@ -1035,7 +1035,7 @@ const neurology: PatientCase[] = [
 const dermatology: PatientCase[] = [
   {
     id: 'derm-001',
-    name: 'Kenneth Walker',
+    name: 'Sourav Ganguly',
     age: 36,
     gender: 'M',
     severity: 'stable',
@@ -1061,7 +1061,7 @@ const dermatology: PatientCase[] = [
   },
   {
     id: 'derm-002',
-    name: 'Sandra Young',
+    name: 'Shruti Mishra',
     age: 22,
     gender: 'F',
     severity: 'stable',
@@ -1086,7 +1086,7 @@ const dermatology: PatientCase[] = [
   },
   {
     id: 'derm-003',
-    name: 'Joshua Allen',
+    name: 'Anil Kumble',
     age: 17,
     gender: 'M',
     severity: 'stable',
@@ -1111,7 +1111,7 @@ const dermatology: PatientCase[] = [
   },
   {
     id: 'derm-004',
-    name: 'Kevin King',
+    name: 'Javagal Srinath',
     age: 50,
     gender: 'M',
     severity: 'stable',
@@ -1136,7 +1136,7 @@ const dermatology: PatientCase[] = [
   },
   {
     id: 'derm-005',
-    name: 'Brian Wright',
+    name: 'Harbhajan Singh',
     age: 28,
     gender: 'M',
     severity: 'stable',
@@ -1161,7 +1161,7 @@ const dermatology: PatientCase[] = [
   },
   {
     id: 'derm-006',
-    name: 'Ashley Scott',
+    name: 'Neha Gupta',
     age: 39,
     gender: 'F',
     severity: 'stable',
@@ -1186,7 +1186,7 @@ const dermatology: PatientCase[] = [
   },
   {
     id: 'derm-007',
-    name: 'Kimberly Torres',
+    name: 'Swati Verma',
     age: 45,
     gender: 'F',
     severity: 'stable',
@@ -1211,7 +1211,7 @@ const dermatology: PatientCase[] = [
   },
   {
     id: 'derm-008',
-    name: 'George Nguyen',
+    name: 'Zaheer Khan',
     age: 54,
     gender: 'M',
     severity: 'urgent',
@@ -1237,7 +1237,7 @@ const dermatology: PatientCase[] = [
   },
   {
     id: 'derm-009',
-    name: 'Emily Hill',
+    name: 'Shalini Sinha',
     age: 27,
     gender: 'F',
     severity: 'stable',
@@ -1263,7 +1263,7 @@ const dermatology: PatientCase[] = [
   },
   {
     id: 'derm-010',
-    name: 'Donna Flores',
+    name: 'Payal Trivedi',
     age: 34,
     gender: 'F',
     severity: 'stable',
@@ -1291,7 +1291,7 @@ const dermatology: PatientCase[] = [
 const endocrinology: PatientCase[] = [
   {
     id: 'endo-001',
-    name: 'Michelle Smith',
+    name: 'Ritu Kapoor',
     age: 33,
     gender: 'F',
     severity: 'stable',
@@ -1318,7 +1318,7 @@ const endocrinology: PatientCase[] = [
   },
   {
     id: 'endo-002',
-    name: 'Carol Johnson',
+    name: 'Preeti Bhat',
     age: 29,
     gender: 'F',
     severity: 'urgent',
@@ -1345,7 +1345,7 @@ const endocrinology: PatientCase[] = [
   },
   {
     id: 'endo-003',
-    name: 'Edward Williams',
+    name: 'Virender Sehwag',
     age: 16,
     gender: 'M',
     severity: 'urgent',
@@ -1373,7 +1373,7 @@ const endocrinology: PatientCase[] = [
   },
   {
     id: 'endo-004',
-    name: 'Amanda Brown',
+    name: 'Jyoti Deshmukh',
     age: 25,
     gender: 'F',
     severity: 'stable',
@@ -1401,7 +1401,7 @@ const endocrinology: PatientCase[] = [
   },
   {
     id: 'endo-005',
-    name: 'Ronald Jones',
+    name: 'Gautam Gambhir',
     age: 41,
     gender: 'M',
     severity: 'urgent',
@@ -1428,7 +1428,7 @@ const endocrinology: PatientCase[] = [
   },
   {
     id: 'endo-006',
-    name: 'Melissa Garcia',
+    name: 'Nisha Kulkarni',
     age: 62,
     gender: 'F',
     severity: 'stable',
@@ -1456,7 +1456,7 @@ const endocrinology: PatientCase[] = [
   },
   {
     id: 'endo-007',
-    name: 'Deborah Miller',
+    name: 'Geeta Ranganathan',
     age: 67,
     gender: 'F',
     severity: 'stable',
@@ -1483,7 +1483,7 @@ const endocrinology: PatientCase[] = [
   },
   {
     id: 'endo-008',
-    name: 'Timothy Davis',
+    name: 'Shikhar Dhawan',
     age: 38,
     gender: 'M',
     severity: 'stable',
@@ -1510,7 +1510,7 @@ const endocrinology: PatientCase[] = [
   },
   {
     id: 'endo-009',
-    name: 'Jason Rodriguez',
+    name: 'KL Rahul',
     age: 58,
     gender: 'M',
     severity: 'stable',
@@ -1537,7 +1537,7 @@ const endocrinology: PatientCase[] = [
   },
   {
     id: 'endo-010',
-    name: 'Stephanie Martinez',
+    name: 'Lata Seshadri',
     age: 31,
     gender: 'F',
     severity: 'stable',
@@ -1566,7 +1566,7 @@ const endocrinology: PatientCase[] = [
 const gastroenterology: PatientCase[] = [
   {
     id: 'gi-001',
-    name: 'Rebecca Hernandez',
+    name: 'Hema Sundaram',
     age: 34,
     gender: 'F',
     severity: 'stable',
@@ -1593,7 +1593,7 @@ const gastroenterology: PatientCase[] = [
   },
   {
     id: 'gi-002',
-    name: 'Jeffrey Lopez',
+    name: 'Hardik Pandya',
     age: 55,
     gender: 'M',
     severity: 'stable',
@@ -1620,7 +1620,7 @@ const gastroenterology: PatientCase[] = [
   },
   {
     id: 'gi-003',
-    name: 'Laura Gonzalez',
+    name: 'Rekha Subramanian',
     age: 45,
     gender: 'F',
     severity: 'stable',
@@ -1646,7 +1646,7 @@ const gastroenterology: PatientCase[] = [
   },
   {
     id: 'gi-004',
-    name: 'Ryan Wilson',
+    name: 'Jasprit Bumrah',
     age: 37,
     gender: 'M',
     severity: 'stable',
@@ -1673,7 +1673,7 @@ const gastroenterology: PatientCase[] = [
   },
   {
     id: 'gi-005',
-    name: 'Jacob Anderson',
+    name: 'Ravindra Jadeja',
     age: 26,
     gender: 'M',
     severity: 'urgent',
@@ -1700,7 +1700,7 @@ const gastroenterology: PatientCase[] = [
   },
   {
     id: 'gi-006',
-    name: 'Sharon Thomas',
+    name: 'Madhuri Dixit',
     age: 30,
     gender: 'F',
     severity: 'stable',
@@ -1727,7 +1727,7 @@ const gastroenterology: PatientCase[] = [
   },
   {
     id: 'gi-007',
-    name: 'Gary Taylor',
+    name: 'Ravichandran Ashwin',
     age: 49,
     gender: 'M',
     severity: 'stable',
@@ -1755,7 +1755,7 @@ const gastroenterology: PatientCase[] = [
   },
   {
     id: 'gi-008',
-    name: 'Nicholas Moore',
+    name: 'Cheteshwar Pujara',
     age: 52,
     gender: 'M',
     severity: 'stable',
@@ -1780,7 +1780,7 @@ const gastroenterology: PatientCase[] = [
   },
   {
     id: 'gi-009',
-    name: 'Cynthia Jackson',
+    name: 'Kajol Devgn',
     age: 42,
     gender: 'F',
     severity: 'urgent',
@@ -1808,7 +1808,7 @@ const gastroenterology: PatientCase[] = [
   },
   {
     id: 'gi-010',
-    name: 'Eric Martin',
+    name: 'Ajinkya Rahane',
     age: 60,
     gender: 'M',
     severity: 'stable',
@@ -1836,7 +1836,7 @@ const gastroenterology: PatientCase[] = [
 const pulmonology: PatientCase[] = [
   {
     id: 'pulm-001',
-    name: 'Kathleen Lee',
+    name: 'Karishma Tanna',
     age: 28,
     gender: 'F',
     severity: 'stable',
@@ -1863,7 +1863,7 @@ const pulmonology: PatientCase[] = [
   },
   {
     id: 'pulm-002',
-    name: 'Jonathan Perez',
+    name: 'Umesh Yadav',
     age: 64,
     gender: 'M',
     severity: 'stable',
@@ -1890,7 +1890,7 @@ const pulmonology: PatientCase[] = [
   },
   {
     id: 'pulm-003',
-    name: 'Stephen Thompson',
+    name: 'Ishant Sharma',
     age: 53,
     gender: 'M',
     severity: 'stable',
@@ -1917,7 +1917,7 @@ const pulmonology: PatientCase[] = [
   },
   {
     id: 'pulm-004',
-    name: 'Larry White',
+    name: 'Mohammed Shami',
     age: 60,
     gender: 'M',
     severity: 'stable',
@@ -1943,7 +1943,7 @@ const pulmonology: PatientCase[] = [
   },
   {
     id: 'pulm-005',
-    name: 'Amy Harris',
+    name: 'Raveena Tandon',
     age: 34,
     gender: 'F',
     severity: 'stable',
@@ -1969,7 +1969,7 @@ const pulmonology: PatientCase[] = [
   },
   {
     id: 'pulm-006',
-    name: 'Justin Sanchez',
+    name: 'Bhuvneshwar Kumar',
     age: 68,
     gender: 'M',
     severity: 'stable',
@@ -1996,7 +1996,7 @@ const pulmonology: PatientCase[] = [
   },
   {
     id: 'pulm-007',
-    name: 'Scott Clark',
+    name: 'Shreyas Iyer',
     age: 52,
     gender: 'M',
     severity: 'urgent',
@@ -2023,7 +2023,7 @@ const pulmonology: PatientCase[] = [
   },
   {
     id: 'pulm-008',
-    name: 'Brandon Ramirez',
+    name: 'Rishabh Pant',
     age: 58,
     gender: 'M',
     severity: 'stable',
@@ -2050,7 +2050,7 @@ const pulmonology: PatientCase[] = [
   },
   {
     id: 'pulm-009',
-    name: 'Shirley Lewis',
+    name: 'Shilpa Shetty',
     age: 42,
     gender: 'F',
     severity: 'stable',
@@ -2078,7 +2078,7 @@ const pulmonology: PatientCase[] = [
   },
   {
     id: 'pulm-010',
-    name: 'Angela Robinson',
+    name: 'Sushmita Sen',
     age: 38,
     gender: 'F',
     severity: 'stable',
@@ -2107,7 +2107,7 @@ const pulmonology: PatientCase[] = [
 const nephrology: PatientCase[] = [
   {
     id: 'neph-001',
-    name: 'Benjamin Walker',
+    name: 'Shubman Gill',
     age: 68,
     gender: 'M',
     severity: 'stable',
@@ -2134,7 +2134,7 @@ const nephrology: PatientCase[] = [
   },
   {
     id: 'neph-002',
-    name: 'Frank Young',
+    name: 'Prithvi Shaw',
     age: 44,
     gender: 'M',
     severity: 'urgent',
@@ -2161,7 +2161,7 @@ const nephrology: PatientCase[] = [
   },
   {
     id: 'neph-003',
-    name: 'Helen Allen',
+    name: 'Aishwarya Rai',
     age: 29,
     gender: 'F',
     severity: 'stable',
@@ -2188,7 +2188,7 @@ const nephrology: PatientCase[] = [
   },
   {
     id: 'neph-004',
-    name: 'Samuel King',
+    name: 'Ishan Kishan',
     age: 62,
     gender: 'M',
     severity: 'stable',
@@ -2215,7 +2215,7 @@ const nephrology: PatientCase[] = [
   },
   {
     id: 'neph-005',
-    name: 'Anna Wright',
+    name: 'Rani Mukerji',
     age: 27,
     gender: 'F',
     severity: 'urgent',
@@ -2242,7 +2242,7 @@ const nephrology: PatientCase[] = [
   },
   {
     id: 'neph-006',
-    name: 'James Scott',
+    name: 'Suryakumar Yadav',
     age: 40,
     gender: 'M',
     severity: 'stable',
@@ -2269,7 +2269,7 @@ const nephrology: PatientCase[] = [
   },
   {
     id: 'neph-007',
-    name: 'Michael Torres',
+    name: 'Sanju Samson',
     age: 70,
     gender: 'M',
     severity: 'stable',
@@ -2296,7 +2296,7 @@ const nephrology: PatientCase[] = [
   },
   {
     id: 'neph-008',
-    name: 'Brenda Nguyen',
+    name: 'Preity Zinta',
     age: 56,
     gender: 'F',
     severity: 'urgent',
@@ -2323,7 +2323,7 @@ const nephrology: PatientCase[] = [
   },
   {
     id: 'neph-009',
-    name: 'David Hill',
+    name: 'Deepak Chahar',
     age: 72,
     gender: 'M',
     severity: 'stable',
@@ -2350,7 +2350,7 @@ const nephrology: PatientCase[] = [
   },
   {
     id: 'neph-010',
-    name: 'Pamela Flores',
+    name: 'Kareena Kapoor',
     age: 52,
     gender: 'F',
     severity: 'urgent',
@@ -2379,7 +2379,7 @@ const nephrology: PatientCase[] = [
 const rheumatology: PatientCase[] = [
   {
     id: 'rheum-001',
-    name: 'Nicole Smith',
+    name: 'Katrina Kaif',
     age: 42,
     gender: 'F',
     severity: 'stable',
@@ -2406,7 +2406,7 @@ const rheumatology: PatientCase[] = [
   },
   {
     id: 'rheum-002',
-    name: 'Samantha Johnson',
+    name: 'Deepika Padukone',
     age: 26,
     gender: 'F',
     severity: 'stable',
@@ -2433,7 +2433,7 @@ const rheumatology: PatientCase[] = [
   },
   {
     id: 'rheum-003',
-    name: 'Robert Williams',
+    name: 'Shardul Thakur',
     age: 51,
     gender: 'M',
     severity: 'urgent',
@@ -2460,7 +2460,7 @@ const rheumatology: PatientCase[] = [
   },
   {
     id: 'rheum-004',
-    name: 'Katherine Brown',
+    name: 'Anushka Sharma',
     age: 68,
     gender: 'F',
     severity: 'stable',
@@ -2486,7 +2486,7 @@ const rheumatology: PatientCase[] = [
   },
   {
     id: 'rheum-005',
-    name: 'John Jones',
+    name: 'Axar Patel',
     age: 30,
     gender: 'M',
     severity: 'stable',
@@ -2513,7 +2513,7 @@ const rheumatology: PatientCase[] = [
   },
   {
     id: 'rheum-006',
-    name: 'Mary Garcia',
+    name: 'Sonam Kapoor',
     age: 72,
     gender: 'F',
     severity: 'stable',
@@ -2540,7 +2540,7 @@ const rheumatology: PatientCase[] = [
   },
   {
     id: 'rheum-007',
-    name: 'Patricia Miller',
+    name: 'Alia Bhatt',
     age: 55,
     gender: 'F',
     severity: 'stable',
@@ -2566,7 +2566,7 @@ const rheumatology: PatientCase[] = [
   },
   {
     id: 'rheum-008',
-    name: 'Jennifer Davis',
+    name: 'Shraddha Kapoor',
     age: 49,
     gender: 'F',
     severity: 'stable',
@@ -2593,7 +2593,7 @@ const rheumatology: PatientCase[] = [
   },
   {
     id: 'rheum-009',
-    name: 'Linda Rodriguez',
+    name: 'Kriti Sanon',
     age: 44,
     gender: 'F',
     severity: 'stable',
@@ -2620,7 +2620,7 @@ const rheumatology: PatientCase[] = [
   },
   {
     id: 'rheum-010',
-    name: 'William Martinez',
+    name: 'Washington Sundar',
     age: 28,
     gender: 'M',
     severity: 'stable',
@@ -2649,7 +2649,7 @@ const rheumatology: PatientCase[] = [
 const hematology: PatientCase[] = [
   {
     id: 'heme-001',
-    name: 'Elizabeth Hernandez',
+    name: 'Kiara Advani',
     age: 32,
     gender: 'F',
     severity: 'stable',
@@ -2676,7 +2676,7 @@ const hematology: PatientCase[] = [
   },
   {
     id: 'heme-002',
-    name: 'Barbara Lopez',
+    name: 'Sara Ali Khan',
     age: 28,
     gender: 'F',
     severity: 'stable',
@@ -2702,7 +2702,7 @@ const hematology: PatientCase[] = [
   },
   {
     id: 'heme-003',
-    name: 'Thomas Gonzalez',
+    name: 'Mohammed Siraj',
     age: 70,
     gender: 'M',
     severity: 'stable',
@@ -2729,7 +2729,7 @@ const hematology: PatientCase[] = [
   },
   {
     id: 'heme-004',
-    name: 'Christopher Wilson',
+    name: 'Prasidh Krishna',
     age: 62,
     gender: 'M',
     severity: 'stable',
@@ -2756,7 +2756,7 @@ const hematology: PatientCase[] = [
   },
   {
     id: 'heme-005',
-    name: 'Daniel Anderson',
+    name: 'Devdutt Padikkal',
     age: 52,
     gender: 'M',
     severity: 'stable',
@@ -2783,7 +2783,7 @@ const hematology: PatientCase[] = [
   },
   {
     id: 'heme-006',
-    name: 'Susan Thomas',
+    name: 'Janhvi Kapoor',
     age: 74,
     gender: 'F',
     severity: 'stable',
@@ -2809,7 +2809,7 @@ const hematology: PatientCase[] = [
   },
   {
     id: 'heme-007',
-    name: 'Jessica Taylor',
+    name: 'Ananya Panday',
     age: 24,
     gender: 'F',
     severity: 'stable',
@@ -2835,7 +2835,7 @@ const hematology: PatientCase[] = [
   },
   {
     id: 'heme-008',
-    name: 'Matthew Moore',
+    name: 'Ruturaj Gaikwad',
     age: 55,
     gender: 'M',
     severity: 'stable',
@@ -2862,7 +2862,7 @@ const hematology: PatientCase[] = [
   },
   {
     id: 'heme-009',
-    name: 'Anthony Jackson',
+    name: 'Venkatesh Iyer',
     age: 27,
     gender: 'M',
     severity: 'stable',
@@ -2888,7 +2888,7 @@ const hematology: PatientCase[] = [
   },
   {
     id: 'heme-010',
-    name: 'Mark Martin',
+    name: 'Avesh Khan',
     age: 68,
     gender: 'M',
     severity: 'urgent',
@@ -2916,7 +2916,7 @@ const hematology: PatientCase[] = [
 const infectiousDisease: PatientCase[] = [
   {
     id: 'id-001',
-    name: 'Donald Lee',
+    name: 'Harshal Patel',
     age: 38,
     gender: 'M',
     severity: 'stable',
@@ -2947,7 +2947,7 @@ const infectiousDisease: PatientCase[] = [
   },
   {
     id: 'id-002',
-    name: 'Steven Perez',
+    name: 'Arshdeep Singh',
     age: 54,
     gender: 'M',
     severity: 'stable',
@@ -2978,7 +2978,7 @@ const infectiousDisease: PatientCase[] = [
   },
   {
     id: 'id-003',
-    name: 'Paul Thompson',
+    name: 'Umran Malik',
     age: 29,
     gender: 'M',
     severity: 'urgent',
@@ -3010,7 +3010,7 @@ const infectiousDisease: PatientCase[] = [
   },
   {
     id: 'id-004',
-    name: 'Sarah White',
+    name: 'Radhika Apte',
     age: 42,
     gender: 'F',
     severity: 'stable',
@@ -3040,7 +3040,7 @@ const infectiousDisease: PatientCase[] = [
   },
   {
     id: 'id-005',
-    name: 'Andrew Harris',
+    name: 'Ravi Bishnoi',
     age: 32,
     gender: 'M',
     severity: 'critical',
@@ -3071,7 +3071,7 @@ const infectiousDisease: PatientCase[] = [
   },
   {
     id: 'id-006',
-    name: 'Kenneth Sanchez',
+    name: 'Kuldeep Yadav',
     age: 45,
     gender: 'M',
     severity: 'stable',
@@ -3098,7 +3098,7 @@ const infectiousDisease: PatientCase[] = [
   },
   {
     id: 'id-007',
-    name: 'Karen Clark',
+    name: 'Bhumi Pednekar',
     age: 26,
     gender: 'F',
     severity: 'urgent',
@@ -3126,7 +3126,7 @@ const infectiousDisease: PatientCase[] = [
   },
   {
     id: 'id-008',
-    name: 'Joshua Ramirez',
+    name: 'Yuzvendra Chahal',
     age: 56,
     gender: 'M',
     severity: 'stable',
@@ -3153,7 +3153,7 @@ const infectiousDisease: PatientCase[] = [
   },
   {
     id: 'id-009',
-    name: 'Nancy Lewis',
+    name: 'Taapsee Pannu',
     age: 60,
     gender: 'F',
     severity: 'urgent',
@@ -3179,7 +3179,7 @@ const infectiousDisease: PatientCase[] = [
   },
   {
     id: 'id-010',
-    name: 'Kevin Robinson',
+    name: 'Amit Mishra',
     age: 48,
     gender: 'M',
     severity: 'stable',
@@ -3208,7 +3208,7 @@ const infectiousDisease: PatientCase[] = [
 const allergyImmunology: PatientCase[] = [
   {
     id: 'allergy-001',
-    name: 'Lisa Walker',
+    name: 'Vidya Balan',
     age: 22,
     gender: 'F',
     severity: 'stable',
@@ -3233,7 +3233,7 @@ const allergyImmunology: PatientCase[] = [
   },
   {
     id: 'allergy-002',
-    name: 'Brian Young',
+    name: 'Piyush Chawla',
     age: 8,
     gender: 'M',
     severity: 'urgent',
@@ -3259,7 +3259,7 @@ const allergyImmunology: PatientCase[] = [
   },
   {
     id: 'allergy-003',
-    name: 'George Allen',
+    name: 'Pragyan Ojha',
     age: 35,
     gender: 'M',
     severity: 'stable',
@@ -3284,7 +3284,7 @@ const allergyImmunology: PatientCase[] = [
   },
   {
     id: 'allergy-004',
-    name: 'Margaret King',
+    name: 'Kangana Ranaut',
     age: 40,
     gender: 'F',
     severity: 'stable',
@@ -3310,7 +3310,7 @@ const allergyImmunology: PatientCase[] = [
   },
   {
     id: 'allergy-005',
-    name: 'Edward Wright',
+    name: 'Murali Kartik',
     age: 5,
     gender: 'M',
     severity: 'stable',
@@ -3336,7 +3336,7 @@ const allergyImmunology: PatientCase[] = [
   },
   {
     id: 'allergy-006',
-    name: 'Betty Scott',
+    name: 'Priyanka Chopra',
     age: 30,
     gender: 'F',
     severity: 'stable',
@@ -3362,7 +3362,7 @@ const allergyImmunology: PatientCase[] = [
   },
   {
     id: 'allergy-007',
-    name: 'Ronald Torres',
+    name: 'Ramesh Powar',
     age: 42,
     gender: 'M',
     severity: 'urgent',
@@ -3387,7 +3387,7 @@ const allergyImmunology: PatientCase[] = [
   },
   {
     id: 'allergy-008',
-    name: 'Sandra Nguyen',
+    name: 'Sonakshi Sinha',
     age: 35,
     gender: 'F',
     severity: 'urgent',
@@ -3412,7 +3412,7 @@ const allergyImmunology: PatientCase[] = [
   },
   {
     id: 'allergy-009',
-    name: 'Timothy Hill',
+    name: 'Laxmipathy Balaji',
     age: 28,
     gender: 'M',
     severity: 'stable',
@@ -3437,7 +3437,7 @@ const allergyImmunology: PatientCase[] = [
   },
   {
     id: 'allergy-010',
-    name: 'Ashley Flores',
+    name: 'Jacqueline Fernandez',
     age: 38,
     gender: 'F',
     severity: 'stable',
@@ -3465,7 +3465,7 @@ const allergyImmunology: PatientCase[] = [
 const psychiatry: PatientCase[] = [
   {
     id: 'psych-001',
-    name: 'Kimberly Smith',
+    name: 'Yami Gautam',
     age: 34,
     gender: 'F',
     severity: 'stable',
@@ -3491,7 +3491,7 @@ const psychiatry: PatientCase[] = [
   },
   {
     id: 'psych-002',
-    name: 'Jason Johnson',
+    name: 'Ashish Nehra',
     age: 42,
     gender: 'M',
     severity: 'stable',
@@ -3516,7 +3516,7 @@ const psychiatry: PatientCase[] = [
   },
   {
     id: 'psych-003',
-    name: 'Emily Williams',
+    name: 'Ileana Cruz',
     age: 27,
     gender: 'F',
     severity: 'urgent',
@@ -3543,7 +3543,7 @@ const psychiatry: PatientCase[] = [
   },
   {
     id: 'psych-004',
-    name: 'Jeffrey Brown',
+    name: 'Ajit Agarkar',
     age: 38,
     gender: 'M',
     severity: 'stable',
@@ -3568,7 +3568,7 @@ const psychiatry: PatientCase[] = [
   },
   {
     id: 'psych-005',
-    name: 'Donna Jones',
+    name: 'Tamannaah Bhatia',
     age: 29,
     gender: 'F',
     severity: 'stable',
@@ -3594,7 +3594,7 @@ const psychiatry: PatientCase[] = [
   },
   {
     id: 'psych-006',
-    name: 'Ryan Garcia',
+    name: 'Sanjay Bangar',
     age: 33,
     gender: 'M',
     severity: 'stable',
@@ -3619,7 +3619,7 @@ const psychiatry: PatientCase[] = [
   },
   {
     id: 'psych-007',
-    name: 'Michelle Miller',
+    name: 'Kajal Aggarwal',
     age: 25,
     gender: 'F',
     severity: 'stable',
@@ -3644,7 +3644,7 @@ const psychiatry: PatientCase[] = [
   },
   {
     id: 'psych-008',
-    name: 'Jacob Davis',
+    name: 'Rohan Gavaskar',
     age: 22,
     gender: 'M',
     severity: 'stable',
@@ -3669,7 +3669,7 @@ const psychiatry: PatientCase[] = [
   },
   {
     id: 'psych-009',
-    name: 'Carol Rodriguez',
+    name: 'Samantha Ruth',
     age: 46,
     gender: 'F',
     severity: 'stable',
@@ -3694,7 +3694,7 @@ const psychiatry: PatientCase[] = [
   },
   {
     id: 'psych-010',
-    name: 'Gary Martinez',
+    name: 'Parthiv Patel',
     age: 52,
     gender: 'M',
     severity: 'stable',
@@ -3723,7 +3723,7 @@ const psychiatry: PatientCase[] = [
 const obgyn: PatientCase[] = [
   {
     id: 'obgyn-001',
-    name: 'Amanda Hernandez',
+    name: 'Rashmika Mandanna',
     age: 28,
     gender: 'F',
     severity: 'stable',
@@ -3750,7 +3750,7 @@ const obgyn: PatientCase[] = [
   },
   {
     id: 'obgyn-002',
-    name: 'Melissa Lopez',
+    name: 'Nayanthara Kurian',
     age: 26,
     gender: 'F',
     severity: 'critical',
@@ -3778,7 +3778,7 @@ const obgyn: PatientCase[] = [
   },
   {
     id: 'obgyn-003',
-    name: 'Deborah Gonzalez',
+    name: 'Keerthy Suresh',
     age: 41,
     gender: 'F',
     severity: 'stable',
@@ -3805,7 +3805,7 @@ const obgyn: PatientCase[] = [
   },
   {
     id: 'obgyn-004',
-    name: 'Stephanie Wilson',
+    name: 'Trisha Krishnan',
     age: 24,
     gender: 'F',
     severity: 'stable',
@@ -3832,7 +3832,7 @@ const obgyn: PatientCase[] = [
   },
   {
     id: 'obgyn-005',
-    name: 'Rebecca Anderson',
+    name: 'Anushka Shetty',
     age: 32,
     gender: 'F',
     severity: 'stable',
@@ -3858,7 +3858,7 @@ const obgyn: PatientCase[] = [
   },
   {
     id: 'obgyn-006',
-    name: 'Laura Thomas',
+    name: 'Richa Chadha',
     age: 33,
     gender: 'F',
     severity: 'stable',
@@ -3885,7 +3885,7 @@ const obgyn: PatientCase[] = [
   },
   {
     id: 'obgyn-007',
-    name: 'Sharon Taylor',
+    name: 'Huma Qureshi',
     age: 52,
     gender: 'F',
     severity: 'stable',
@@ -3911,7 +3911,7 @@ const obgyn: PatientCase[] = [
   },
   {
     id: 'obgyn-008',
-    name: 'Cynthia Moore',
+    name: 'Swara Bhasker',
     age: 23,
     gender: 'F',
     severity: 'urgent',
@@ -3939,7 +3939,7 @@ const obgyn: PatientCase[] = [
   },
   {
     id: 'obgyn-009',
-    name: 'Kathleen Jackson',
+    name: 'Konkona Sen',
     age: 29,
     gender: 'F',
     severity: 'stable',
@@ -3965,7 +3965,7 @@ const obgyn: PatientCase[] = [
   },
   {
     id: 'obgyn-010',
-    name: 'Amy Martin',
+    name: 'Nandita Das',
     age: 30,
     gender: 'F',
     severity: 'stable',
@@ -3993,7 +3993,7 @@ const obgyn: PatientCase[] = [
 const urology: PatientCase[] = [
   {
     id: 'uro-001',
-    name: 'Nicholas Lee',
+    name: 'Dinesh Karthik',
     age: 68,
     gender: 'M',
     severity: 'stable',
@@ -4020,7 +4020,7 @@ const urology: PatientCase[] = [
   },
   {
     id: 'uro-002',
-    name: 'Eric Perez',
+    name: 'Robin Uthappa',
     age: 45,
     gender: 'M',
     severity: 'stable',
@@ -4047,7 +4047,7 @@ const urology: PatientCase[] = [
   },
   {
     id: 'uro-003',
-    name: 'Jonathan Thompson',
+    name: 'Suresh Raina',
     age: 52,
     gender: 'M',
     severity: 'urgent',
@@ -4074,7 +4074,7 @@ const urology: PatientCase[] = [
   },
   {
     id: 'uro-004',
-    name: 'Shirley White',
+    name: 'Shabana Azmi',
     age: 38,
     gender: 'F',
     severity: 'stable',
@@ -4101,7 +4101,7 @@ const urology: PatientCase[] = [
   },
   {
     id: 'uro-005',
-    name: 'Stephen Harris',
+    name: 'Irfan Pathan',
     age: 55,
     gender: 'M',
     severity: 'stable',
@@ -4128,7 +4128,7 @@ const urology: PatientCase[] = [
   },
   {
     id: 'uro-006',
-    name: 'Larry Sanchez',
+    name: 'Yusuf Pathan',
     age: 19,
     gender: 'M',
     severity: 'urgent',
@@ -4154,7 +4154,7 @@ const urology: PatientCase[] = [
   },
   {
     id: 'uro-007',
-    name: 'Angela Clark',
+    name: 'Smita Patil',
     age: 62,
     gender: 'F',
     severity: 'stable',
@@ -4181,7 +4181,7 @@ const urology: PatientCase[] = [
   },
   {
     id: 'uro-008',
-    name: 'Helen Ramirez',
+    name: 'Waheeda Rehman',
     age: 55,
     gender: 'F',
     severity: 'stable',
@@ -4207,7 +4207,7 @@ const urology: PatientCase[] = [
   },
   {
     id: 'uro-009',
-    name: 'Justin Lewis',
+    name: 'Sreesanth Nair',
     age: 60,
     gender: 'M',
     severity: 'stable',
@@ -4233,7 +4233,7 @@ const urology: PatientCase[] = [
   },
   {
     id: 'uro-010',
-    name: 'Scott Robinson',
+    name: 'Munaf Patel',
     age: 30,
     gender: 'M',
     severity: 'stable',
@@ -4260,7 +4260,7 @@ const urology: PatientCase[] = [
 const ophthalmology: PatientCase[] = [
   {
     id: 'oph-001',
-    name: 'Brandon Walker',
+    name: 'RP Singh',
     age: 66,
     gender: 'M',
     severity: 'stable',
@@ -4285,7 +4285,7 @@ const ophthalmology: PatientCase[] = [
   },
   {
     id: 'oph-002',
-    name: 'Anna Young',
+    name: 'Vyjayanthimala Bali',
     age: 74,
     gender: 'F',
     severity: 'stable',
@@ -4310,7 +4310,7 @@ const ophthalmology: PatientCase[] = [
   },
   {
     id: 'oph-003',
-    name: 'Benjamin Allen',
+    name: 'Manoj Tiwary',
     age: 58,
     gender: 'M',
     severity: 'stable',
@@ -4336,7 +4336,7 @@ const ophthalmology: PatientCase[] = [
   },
   {
     id: 'oph-004',
-    name: 'Brenda King',
+    name: 'Madhubala Deval',
     age: 78,
     gender: 'F',
     severity: 'stable',
@@ -4361,7 +4361,7 @@ const ophthalmology: PatientCase[] = [
   },
   {
     id: 'oph-005',
-    name: 'Frank Wright',
+    name: 'Wriddhiman Saha',
     age: 42,
     gender: 'M',
     severity: 'urgent',
@@ -4386,7 +4386,7 @@ const ophthalmology: PatientCase[] = [
   },
   {
     id: 'oph-006',
-    name: 'Pamela Scott',
+    name: 'Nargis Dutt',
     age: 68,
     gender: 'F',
     severity: 'urgent',
@@ -4413,7 +4413,7 @@ const ophthalmology: PatientCase[] = [
   },
   {
     id: 'oph-007',
-    name: 'Nicole Torres',
+    name: 'Nutan Bahl',
     age: 62,
     gender: 'F',
     severity: 'stable',
@@ -4438,7 +4438,7 @@ const ophthalmology: PatientCase[] = [
   },
   {
     id: 'oph-008',
-    name: 'Samuel Nguyen',
+    name: 'Murali Vijay',
     age: 34,
     gender: 'M',
     severity: 'urgent',
@@ -4463,7 +4463,7 @@ const ophthalmology: PatientCase[] = [
   },
   {
     id: 'oph-009',
-    name: 'James Hill',
+    name: 'Karun Nair',
     age: 5,
     gender: 'M',
     severity: 'stable',
@@ -4488,7 +4488,7 @@ const ophthalmology: PatientCase[] = [
   },
   {
     id: 'oph-010',
-    name: 'Samantha Flores',
+    name: 'Asha Parekh',
     age: 52,
     gender: 'F',
     severity: 'stable',
@@ -4515,7 +4515,7 @@ const ophthalmology: PatientCase[] = [
 const ent: PatientCase[] = [
   {
     id: 'ent-001',
-    name: 'Michael Smith',
+    name: 'Hanuma Vihari',
     age: 37,
     gender: 'M',
     severity: 'urgent',
@@ -4540,7 +4540,7 @@ const ent: PatientCase[] = [
   },
   {
     id: 'ent-002',
-    name: 'Katherine Johnson',
+    name: 'Helen Richardson',
     age: 29,
     gender: 'F',
     severity: 'stable',
@@ -4565,7 +4565,7 @@ const ent: PatientCase[] = [
   },
   {
     id: 'ent-003',
-    name: 'David Williams',
+    name: 'Abhimanyu Easwaran',
     age: 17,
     gender: 'M',
     severity: 'stable',
@@ -4591,7 +4591,7 @@ const ent: PatientCase[] = [
   },
   {
     id: 'ent-004',
-    name: 'Mary Brown',
+    name: 'Zeenat Aman',
     age: 55,
     gender: 'F',
     severity: 'stable',
@@ -4617,7 +4617,7 @@ const ent: PatientCase[] = [
   },
   {
     id: 'ent-005',
-    name: 'Robert Jones',
+    name: 'Priyank Panchal',
     age: 48,
     gender: 'M',
     severity: 'stable',
@@ -4643,7 +4643,7 @@ const ent: PatientCase[] = [
   },
   {
     id: 'ent-006',
-    name: 'Patricia Garcia',
+    name: 'Parveen Babi',
     age: 32,
     gender: 'F',
     severity: 'stable',
@@ -4668,7 +4668,7 @@ const ent: PatientCase[] = [
   },
   {
     id: 'ent-007',
-    name: 'John Miller',
+    name: 'Kona Srikar',
     age: 50,
     gender: 'M',
     severity: 'stable',
@@ -4694,7 +4694,7 @@ const ent: PatientCase[] = [
   },
   {
     id: 'ent-008',
-    name: 'Jennifer Davis',
+    name: 'Neetu Singh',
     age: 44,
     gender: 'F',
     severity: 'stable',
@@ -4719,7 +4719,7 @@ const ent: PatientCase[] = [
   },
   {
     id: 'ent-009',
-    name: 'William Rodriguez',
+    name: 'Jayant Yadav',
     age: 39,
     gender: 'M',
     severity: 'stable',
@@ -4744,7 +4744,7 @@ const ent: PatientCase[] = [
   },
   {
     id: 'ent-010',
-    name: 'Linda Martinez',
+    name: 'Jaya Bhaduri',
     age: 55,
     gender: 'F',
     severity: 'urgent',
@@ -4772,7 +4772,7 @@ const ent: PatientCase[] = [
 const orthopedics: PatientCase[] = [
   {
     id: 'ortho-001',
-    name: 'Elizabeth Hernandez',
+    name: 'Dimple Kapadia',
     age: 54,
     gender: 'F',
     severity: 'stable',
@@ -4802,7 +4802,7 @@ const orthopedics: PatientCase[] = [
   },
   {
     id: 'ortho-002',
-    name: 'Thomas Lopez',
+    name: 'Shahbaz Ahmed',
     age: 60,
     gender: 'M',
     severity: 'stable',
@@ -4831,7 +4831,7 @@ const orthopedics: PatientCase[] = [
   },
   {
     id: 'ortho-003',
-    name: 'Christopher Gonzalez',
+    name: 'KS Bharat',
     age: 38,
     gender: 'M',
     severity: 'stable',
@@ -4861,7 +4861,7 @@ const orthopedics: PatientCase[] = [
   },
   {
     id: 'ortho-004',
-    name: 'Daniel Wilson',
+    name: 'Deepak Hooda',
     age: 34,
     gender: 'M',
     severity: 'stable',
@@ -4889,7 +4889,7 @@ const orthopedics: PatientCase[] = [
   },
   {
     id: 'ortho-005',
-    name: 'Matthew Anderson',
+    name: 'Krunal Pandya',
     age: 46,
     gender: 'M',
     severity: 'stable',
@@ -4918,7 +4918,7 @@ const orthopedics: PatientCase[] = [
   },
   {
     id: 'ortho-006',
-    name: 'Barbara Thomas',
+    name: 'Sridevi Kapoor',
     age: 48,
     gender: 'F',
     severity: 'stable',
@@ -4948,7 +4948,7 @@ const orthopedics: PatientCase[] = [
   },
   {
     id: 'ortho-007',
-    name: 'Susan Taylor',
+    name: 'Juhi Chawla',
     age: 42,
     gender: 'F',
     severity: 'stable',
@@ -4977,7 +4977,7 @@ const orthopedics: PatientCase[] = [
   },
   {
     id: 'ortho-008',
-    name: 'Anthony Moore',
+    name: 'Shivam Dube',
     age: 25,
     gender: 'M',
     severity: 'stable',
@@ -5005,7 +5005,7 @@ const orthopedics: PatientCase[] = [
   },
   {
     id: 'ortho-009',
-    name: 'Jessica Jackson',
+    name: 'Manisha Koirala',
     age: 55,
     gender: 'F',
     severity: 'stable',
@@ -5035,7 +5035,7 @@ const orthopedics: PatientCase[] = [
   },
   {
     id: 'ortho-010',
-    name: 'Mark Martin',
+    name: 'Vijay Shankar',
     age: 62,
     gender: 'M',
     severity: 'stable',
@@ -5067,7 +5067,7 @@ const orthopedics: PatientCase[] = [
 const pediatrics: PatientCase[] = [
   {
     id: 'peds-001',
-    name: 'Donald Lee',
+    name: 'Manish Pandey',
     age: 3,
     gender: 'M',
     severity: 'stable',
@@ -5097,7 +5097,7 @@ const pediatrics: PatientCase[] = [
   },
   {
     id: 'peds-002',
-    name: 'Sarah Perez',
+    name: 'Urmila Matondkar',
     age: 7,
     gender: 'F',
     severity: 'urgent',
@@ -5128,7 +5128,7 @@ const pediatrics: PatientCase[] = [
   },
   {
     id: 'peds-003',
-    name: 'Steven Thompson',
+    name: 'Kedar Jadhav',
     age: 4,
     gender: 'M',
     severity: 'stable',
@@ -5158,7 +5158,7 @@ const pediatrics: PatientCase[] = [
   },
   {
     id: 'peds-004',
-    name: 'Karen White',
+    name: 'Tabassum Hashmi',
     age: 2,
     gender: 'F',
     severity: 'stable',
@@ -5188,7 +5188,7 @@ const pediatrics: PatientCase[] = [
   },
   {
     id: 'peds-005',
-    name: 'Paul Harris',
+    name: 'Ambati Rayudu',
     age: 1,
     gender: 'M',
     severity: 'urgent',
@@ -5215,7 +5215,7 @@ const pediatrics: PatientCase[] = [
   },
   {
     id: 'peds-006',
-    name: 'Nancy Sanchez',
+    name: 'Sonali Bendre',
     age: 5,
     gender: 'F',
     severity: 'stable',
@@ -5240,7 +5240,7 @@ const pediatrics: PatientCase[] = [
   },
   {
     id: 'peds-007',
-    name: 'Lisa Clark',
+    name: 'Twinkle Khanna',
     age: 6,
     gender: 'F',
     severity: 'stable',
@@ -5265,7 +5265,7 @@ const pediatrics: PatientCase[] = [
   },
   {
     id: 'peds-008',
-    name: 'Andrew Ramirez',
+    name: 'Gurkeerat Singh',
     age: 8,
     gender: 'M',
     severity: 'stable',
@@ -5290,7 +5290,7 @@ const pediatrics: PatientCase[] = [
   },
   {
     id: 'peds-009',
-    name: 'Margaret Lewis',
+    name: 'Shilpa Shirodkar',
     age: 1,
     gender: 'F',
     severity: 'stable',
@@ -5315,7 +5315,7 @@ const pediatrics: PatientCase[] = [
   },
   {
     id: 'peds-010',
-    name: 'Kenneth Robinson',
+    name: 'Rishi Dhawan',
     age: 0,
     gender: 'M',
     severity: 'stable',
@@ -5342,7 +5342,7 @@ const pediatrics: PatientCase[] = [
 const generalSurgery: PatientCase[] = [
   {
     id: 'gs-001',
-    name: 'Joshua Walker',
+    name: 'Stuart Binny',
     age: 52,
     gender: 'M',
     severity: 'stable',
@@ -5368,7 +5368,7 @@ const generalSurgery: PatientCase[] = [
   },
   {
     id: 'gs-002',
-    name: 'Betty Young',
+    name: 'Karisma Kapoor',
     age: 45,
     gender: 'F',
     severity: 'stable',
@@ -5393,7 +5393,7 @@ const generalSurgery: PatientCase[] = [
   },
   {
     id: 'gs-003',
-    name: 'Kevin Allen',
+    name: 'Saurabh Tiwary',
     age: 25,
     gender: 'M',
     severity: 'stable',
@@ -5418,7 +5418,7 @@ const generalSurgery: PatientCase[] = [
   },
   {
     id: 'gs-004',
-    name: 'Sandra King',
+    name: 'Pooja Bhatt',
     age: 48,
     gender: 'F',
     severity: 'stable',
@@ -5445,7 +5445,7 @@ const generalSurgery: PatientCase[] = [
   },
   {
     id: 'gs-005',
-    name: 'Brian Wright',
+    name: 'Naman Ojha',
     age: 40,
     gender: 'M',
     severity: 'stable',
@@ -5470,7 +5470,7 @@ const generalSurgery: PatientCase[] = [
   },
   {
     id: 'gs-006',
-    name: 'Ashley Scott',
+    name: 'Divya Bharti',
     age: 35,
     gender: 'F',
     severity: 'stable',
@@ -5495,7 +5495,7 @@ const generalSurgery: PatientCase[] = [
   },
   {
     id: 'gs-007',
-    name: 'George Torres',
+    name: 'S Badrinath',
     age: 34,
     gender: 'M',
     severity: 'stable',
@@ -5520,7 +5520,7 @@ const generalSurgery: PatientCase[] = [
   },
   {
     id: 'gs-008',
-    name: 'Kimberly Nguyen',
+    name: 'Mamta Kulkarni',
     age: 28,
     gender: 'F',
     severity: 'stable',
@@ -5545,7 +5545,7 @@ const generalSurgery: PatientCase[] = [
   },
   {
     id: 'gs-009',
-    name: 'Edward Hill',
+    name: 'Abhishek Nayar',
     age: 42,
     gender: 'M',
     severity: 'stable',
@@ -5570,7 +5570,7 @@ const generalSurgery: PatientCase[] = [
   },
   {
     id: 'gs-010',
-    name: 'Emily Flores',
+    name: 'Sonali Kulkarni',
     age: 46,
     gender: 'F',
     severity: 'stable',
@@ -5601,7 +5601,7 @@ const generalSurgery: PatientCase[] = [
 const oncology: PatientCase[] = [
   {
     id: 'onc-001',
-    name: 'Walter Bennett',
+    name: 'Jaydev Unadkat',
     age: 67,
     gender: 'M',
     severity: 'urgent',
@@ -5628,7 +5628,7 @@ const oncology: PatientCase[] = [
   },
   {
     id: 'onc-002',
-    name: 'Margaret Sullivan',
+    name: 'Gracy Singh',
     age: 58,
     gender: 'F',
     severity: 'urgent',
@@ -5655,7 +5655,7 @@ const oncology: PatientCase[] = [
   },
   {
     id: 'onc-003',
-    name: 'Robert Castellanos',
+    name: 'Varun Aaron',
     age: 72,
     gender: 'M',
     severity: 'urgent',
@@ -5682,7 +5682,7 @@ const oncology: PatientCase[] = [
   },
   {
     id: 'onc-004',
-    name: 'Yelena Markova',
+    name: 'Amrita Rao',
     age: 49,
     gender: 'F',
     severity: 'urgent',
@@ -5709,7 +5709,7 @@ const oncology: PatientCase[] = [
   },
   {
     id: 'onc-005',
-    name: 'Henry Olsson',
+    name: 'Vinay Kumar',
     age: 64,
     gender: 'M',
     severity: 'stable',
@@ -5736,7 +5736,7 @@ const oncology: PatientCase[] = [
   },
   {
     id: 'onc-006',
-    name: 'Diane Whitford',
+    name: 'Esha Deol',
     age: 71,
     gender: 'F',
     severity: 'urgent',
@@ -5763,7 +5763,7 @@ const oncology: PatientCase[] = [
   },
   {
     id: 'onc-007',
-    name: 'Alicia Romero',
+    name: 'Lara Dutta',
     age: 44,
     gender: 'F',
     severity: 'stable',
@@ -5790,7 +5790,7 @@ const oncology: PatientCase[] = [
   },
   {
     id: 'onc-008',
-    name: 'George Whitaker',
+    name: 'Abhimanyu Mithun',
     age: 61,
     gender: 'M',
     severity: 'urgent',
@@ -5817,7 +5817,7 @@ const oncology: PatientCase[] = [
   },
   {
     id: 'onc-009',
-    name: 'Marcus Delaney',
+    name: 'Sudeep Tyagi',
     age: 38,
     gender: 'M',
     severity: 'urgent',
@@ -5845,7 +5845,7 @@ const oncology: PatientCase[] = [
   },
   {
     id: 'onc-010',
-    name: 'Edith Pemberton',
+    name: 'Dia Mirza',
     age: 69,
     gender: 'F',
     severity: 'urgent',
@@ -5875,7 +5875,7 @@ const oncology: PatientCase[] = [
 const neurosurgery: PatientCase[] = [
   {
     id: 'nsg-001',
-    name: 'Howard Bennett',
+    name: 'Manpreet Gony',
     age: 58,
     gender: 'M',
     severity: 'stable',
@@ -5906,7 +5906,7 @@ const neurosurgery: PatientCase[] = [
   },
   {
     id: 'nsg-002',
-    name: 'Patricia Holland',
+    name: 'Celina Jaitly',
     age: 47,
     gender: 'F',
     severity: 'stable',
@@ -5937,7 +5937,7 @@ const neurosurgery: PatientCase[] = [
   },
   {
     id: 'nsg-003',
-    name: 'Gregory Patterson',
+    name: 'Ranveer Singh',
     age: 41,
     gender: 'M',
     severity: 'stable',
@@ -5965,7 +5965,7 @@ const neurosurgery: PatientCase[] = [
   },
   {
     id: 'nsg-004',
-    name: 'Eleanor Whitfield',
+    name: 'Rimi Sen',
     age: 73,
     gender: 'F',
     severity: 'stable',
@@ -5992,7 +5992,7 @@ const neurosurgery: PatientCase[] = [
   },
   {
     id: 'nsg-005',
-    name: 'Walter Reinhardt',
+    name: 'Ranbir Kapoor',
     age: 78,
     gender: 'M',
     severity: 'stable',
@@ -6020,7 +6020,7 @@ const neurosurgery: PatientCase[] = [
   },
   {
     id: 'nsg-006',
-    name: 'Ruth Blackwood',
+    name: 'Udita Goswami',
     age: 76,
     gender: 'F',
     severity: 'stable',
@@ -6048,7 +6048,7 @@ const neurosurgery: PatientCase[] = [
   },
   {
     id: 'nsg-007',
-    name: 'Frederick Osei',
+    name: 'Hrithik Roshan',
     age: 64,
     gender: 'M',
     severity: 'stable',
@@ -6076,7 +6076,7 @@ const neurosurgery: PatientCase[] = [
   },
   {
     id: 'nsg-008',
-    name: 'Diana Castellanos',
+    name: 'Neha Dhupia',
     age: 52,
     gender: 'F',
     severity: 'stable',
@@ -6103,7 +6103,7 @@ const neurosurgery: PatientCase[] = [
   },
   {
     id: 'nsg-009',
-    name: 'Constance Petrov',
+    name: 'Koena Mitra',
     age: 62,
     gender: 'F',
     severity: 'stable',
@@ -6131,7 +6131,7 @@ const neurosurgery: PatientCase[] = [
   },
   {
     id: 'nsg-010',
-    name: 'Marcus Delaney',
+    name: 'Abhishek Bachchan',
     age: 49,
     gender: 'M',
     severity: 'stable',
@@ -6161,7 +6161,7 @@ const neurosurgery: PatientCase[] = [
 const pmr: PatientCase[] = [
   {
     id: 'pmr-001',
-    name: 'Robert Johnson',
+    name: 'Saif Ali Khan',
     age: 68,
     gender: 'M',
     severity: 'stable',
@@ -6192,7 +6192,7 @@ const pmr: PatientCase[] = [
   },
   {
     id: 'pmr-002',
-    name: 'Patricia Williams',
+    name: 'Tanushree Dutta',
     age: 52,
     gender: 'F',
     severity: 'stable',
@@ -6222,7 +6222,7 @@ const pmr: PatientCase[] = [
   },
   {
     id: 'pmr-003',
-    name: 'George Davis',
+    name: 'Akshay Kumar',
     age: 71,
     gender: 'M',
     severity: 'stable',
@@ -6252,7 +6252,7 @@ const pmr: PatientCase[] = [
   },
   {
     id: 'pmr-004',
-    name: 'Susan Miller',
+    name: 'Minissha Lamba',
     age: 47,
     gender: 'F',
     severity: 'stable',
@@ -6281,7 +6281,7 @@ const pmr: PatientCase[] = [
   },
   {
     id: 'pmr-005',
-    name: 'Dorothy Brown',
+    name: 'Soha Ali Khan',
     age: 76,
     gender: 'F',
     severity: 'stable',
@@ -6313,7 +6313,7 @@ const pmr: PatientCase[] = [
   },
   {
     id: 'pmr-006',
-    name: 'Margaret Wilson',
+    name: 'Mugdha Godse',
     age: 58,
     gender: 'F',
     severity: 'stable',
@@ -6339,7 +6339,7 @@ const pmr: PatientCase[] = [
   },
   {
     id: 'pmr-007',
-    name: 'Linda Garcia',
+    name: 'Sayyeshaa Saigal',
     age: 49,
     gender: 'F',
     severity: 'stable',
@@ -6364,7 +6364,7 @@ const pmr: PatientCase[] = [
   },
   {
     id: 'pmr-008',
-    name: 'Karen Martinez',
+    name: 'Radhika Madan',
     age: 54,
     gender: 'F',
     severity: 'stable',
@@ -6391,7 +6391,7 @@ const pmr: PatientCase[] = [
   },
   {
     id: 'pmr-009',
-    name: 'Jennifer Anderson',
+    name: 'Mithila Palkar',
     age: 42,
     gender: 'F',
     severity: 'stable',
@@ -6418,7 +6418,7 @@ const pmr: PatientCase[] = [
   },
   {
     id: 'pmr-010',
-    name: 'James Thompson',
+    name: 'Ajay Devgn',
     age: 39,
     gender: 'M',
     severity: 'stable',
@@ -6446,7 +6446,7 @@ const pmr: PatientCase[] = [
 const cardiothoracicVascularSurgery: PatientCase[] = [
   {
     id: 'ctv-001',
-    name: 'Richard Coleman',
+    name: 'Sunil Shetty',
     age: 67,
     gender: 'M',
     severity: 'stable',
@@ -6474,7 +6474,7 @@ const cardiothoracicVascularSurgery: PatientCase[] = [
   },
   {
     id: 'ctv-002',
-    name: 'Margaret Foster',
+    name: 'Sanya Malhotra',
     age: 62,
     gender: 'F',
     severity: 'stable',
@@ -6501,7 +6501,7 @@ const cardiothoracicVascularSurgery: PatientCase[] = [
   },
   {
     id: 'ctv-003',
-    name: 'Tyler Bennett',
+    name: 'Sanjay Dutt',
     age: 26,
     gender: 'M',
     severity: 'stable',
@@ -6528,7 +6528,7 @@ const cardiothoracicVascularSurgery: PatientCase[] = [
   },
   {
     id: 'ctv-004',
-    name: 'Donald Reeves',
+    name: 'Sunny Deol',
     age: 71,
     gender: 'M',
     severity: 'urgent',
@@ -6556,7 +6556,7 @@ const cardiothoracicVascularSurgery: PatientCase[] = [
   },
   {
     id: 'ctv-005',
-    name: 'Patricia Hayes',
+    name: 'Fatima Sana',
     age: 64,
     gender: 'F',
     severity: 'stable',
@@ -6583,7 +6583,7 @@ const cardiothoracicVascularSurgery: PatientCase[] = [
   },
   {
     id: 'ctv-006',
-    name: 'Lisa Brennan',
+    name: 'Sobhita Dhulipala',
     age: 48,
     gender: 'F',
     severity: 'urgent',
@@ -6611,7 +6611,7 @@ const cardiothoracicVascularSurgery: PatientCase[] = [
   },
   {
     id: 'ctv-007',
-    name: 'Robert McAllister',
+    name: 'Bobby Deol',
     age: 78,
     gender: 'M',
     severity: 'stable',
@@ -6639,7 +6639,7 @@ const cardiothoracicVascularSurgery: PatientCase[] = [
   },
   {
     id: 'ctv-008',
-    name: 'Howard Pritchard',
+    name: 'Anil Kapoor',
     age: 73,
     gender: 'M',
     severity: 'urgent',
@@ -6667,7 +6667,7 @@ const cardiothoracicVascularSurgery: PatientCase[] = [
   },
   {
     id: 'ctv-009',
-    name: 'Walter Greenfield',
+    name: 'Jackie Shroff',
     age: 69,
     gender: 'M',
     severity: 'stable',
@@ -6694,7 +6694,7 @@ const cardiothoracicVascularSurgery: PatientCase[] = [
   },
   {
     id: 'ctv-010',
-    name: 'Eleanor Whitlock',
+    name: 'Aditi Rao',
     age: 74,
     gender: 'F',
     severity: 'urgent',

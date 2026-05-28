@@ -48,6 +48,75 @@ function CaseCard({ c, delay = 0, avatarStyle }: CaseCardProps) {
       onClick={() => store.selectCase(c.id)}
       style={{ animationDelay: `${delay}s`, position: 'relative' }}
     >
+      {/* Condition badge */}
+      <div
+        style={{
+          position: 'absolute',
+          top: -10,
+          left: 14,
+          zIndex: 10,
+          background: 'white',
+          border: `2px solid ${accentColor}`,
+          borderRadius: 'var(--r-pill)',
+          padding: '3px 10px',
+          fontSize: 9,
+          fontWeight: 900,
+          color: 'var(--ink)',
+          fontFamily: "'Nunito', sans-serif",
+          letterSpacing: '0.06em',
+          textTransform: 'uppercase',
+          boxShadow: 'var(--shadow-xs)',
+        }}
+      >
+        {c.cond}
+      </div>
+
+      {/* Attempted score */}
+      {c.attempted && c.score && (
+        <div
+          style={{
+            position: 'absolute',
+            top: -10,
+            right: 14,
+            zIndex: 10,
+            background: 'var(--mint-lt)',
+            border: '1.5px solid var(--mint)',
+            borderRadius: 'var(--r-pill)',
+            padding: '3px 10px',
+            fontSize: 9,
+            fontWeight: 900,
+            color: 'var(--mint-deep)',
+            fontFamily: "'Nunito', sans-serif",
+            boxShadow: 'var(--shadow-xs)',
+          }}
+        >
+          ✓ {c.score}
+        </div>
+      )}
+
+      {/* Red flag marker */}
+      {isRedFlag && (
+        <div
+          style={{
+            position: 'absolute',
+            top: -10,
+            right: c.attempted && c.score ? 66 : 14,
+            zIndex: 10,
+            background: 'var(--coral-lt)',
+            border: '1.5px solid var(--coral)',
+            borderRadius: 'var(--r-pill)',
+            padding: '3px 10px',
+            fontSize: 9,
+            fontWeight: 900,
+            color: 'var(--coral-deep)',
+            fontFamily: "'Nunito', sans-serif",
+            boxShadow: 'var(--shadow-xs)',
+          }}
+        >
+          🚩
+        </div>
+      )}
+
       <div
         style={{
           background: 'white',
@@ -72,69 +141,6 @@ function CaseCard({ c, delay = 0, avatarStyle }: CaseCardProps) {
             overflow: 'hidden',
           }}
         >
-          {/* Condition badge */}
-          <div
-            style={{
-              position: 'absolute',
-              top: 12,
-              left: 12,
-              background: 'white',
-              border: `2px solid ${accentColor}`,
-              borderRadius: 'var(--r-pill)',
-              padding: '3px 10px',
-              fontSize: 9,
-              fontWeight: 900,
-              color: 'var(--ink)',
-              fontFamily: "'Nunito', sans-serif",
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-            }}
-          >
-            {c.cond}
-          </div>
-
-          {/* Attempted score */}
-          {c.attempted && c.score && (
-            <div
-              style={{
-                position: 'absolute',
-                top: 12,
-                right: 12,
-                background: 'var(--mint-lt)',
-                border: '1.5px solid var(--mint)',
-                borderRadius: 'var(--r-pill)',
-                padding: '3px 10px',
-                fontSize: 9,
-                fontWeight: 900,
-                color: 'var(--mint-deep)',
-                fontFamily: "'Nunito', sans-serif",
-              }}
-            >
-              ✓ {c.score}
-            </div>
-          )}
-
-          {/* Red flag marker */}
-          {isRedFlag && (
-            <div
-              style={{
-                position: 'absolute',
-                top: 12,
-                right: c.attempted && c.score ? 64 : 12,
-                background: 'var(--coral-lt)',
-                border: '1.5px solid var(--coral)',
-                borderRadius: 'var(--r-pill)',
-                padding: '3px 10px',
-                fontSize: 9,
-                fontWeight: 900,
-                color: 'var(--coral-deep)',
-                fontFamily: "'Nunito', sans-serif",
-              }}
-            >
-              🚩
-            </div>
-          )}
-
           <div className="floaty" style={{ marginBottom: -6 }}>
             <PatientFace
               name={c.name}
