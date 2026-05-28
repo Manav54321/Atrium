@@ -5,7 +5,7 @@ The backend is an intentionally small FastAPI server. Its only jobs are:
 1. **Keep secrets server-side** — the `OPENAI_API_KEY` never touches the browser.
 2. **Mint OpenAI Realtime client secrets** — short-lived tokens (600 s TTL) the browser uses to open a WebRTC session directly with OpenAI.
 3. **Proxy the attending grader** — SSE-streamed OpenAI Assistants runs for the post-encounter debrief.
-4. **Classify triage severity** — one-shot `gpt-4o-mini` ESI classification for ER arrivals.
+4. **Classify triage severity** — one-shot `gpt-5.5-instant` ESI classification for ER arrivals.
 
 ---
 
@@ -44,7 +44,7 @@ ATRIUM_AGENT_ID=                        # leave blank on first run
 **Realtime voice (strongly recommended):**
 
 ```env
-OPENAI_REALTIME_MODEL=gpt-4o-mini-realtime-preview
+OPENAI_REALTIME_MODEL=gpt-realtime-2
 OPENAI_REALTIME_MALE_VOICE=ballad
 OPENAI_REALTIME_FEMALE_VOICE=shimmer
 ```
@@ -78,7 +78,7 @@ The server listens at `http://127.0.0.1:8787`. The Vite dev proxy forwards `/age
 | `GET` | `/agent/sessions/{id}/events` | Lists all events in a session |
 | `GET` | `/agent/sessions/{id}/stream` | SSE — runs the attending agent and streams grading events back to the browser |
 | `POST` | `/agent/vault/ehr/lookup` | EHR credential vault lookup. Requires `EHR_API_TOKEN` env var. |
-| `POST` | `/agent/triage/classify` | One-shot ESI triage classification (`gpt-4o-mini`) |
+| `POST` | `/agent/triage/classify` | One-shot ESI triage classification (`gpt-5.5-instant`) |
 | `POST` | `/voice/realtime-secret` | Mints an ephemeral OpenAI Realtime client secret (600 s TTL) |
 | `POST` | `/log/frontend` | Receives structured frontend log events |
 

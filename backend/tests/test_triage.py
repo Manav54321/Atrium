@@ -3,7 +3,7 @@
 These tests mock the OpenAI SDK so we can validate the code path
 without hitting the API (and without needing a real key). Assertions:
 
-    1. The OpenAI client is called with model=gpt-4o-mini.
+    1. The OpenAI client is called with model=gpt-5.5-instant.
     2. The ESI-rules system prompt is passed in the 'system' field.
     3. Well-formed JSON responses parse into a TriageClassifyResponse.
     4. Malformed / fenced JSON is parsed when possible, otherwise 502.

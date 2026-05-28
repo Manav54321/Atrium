@@ -184,7 +184,7 @@ def health():
 #   GET  /agent/sessions/{sid}/events          — list thread messages (history).
 #   POST /agent/sessions/{sid}/events          — add a user message.
 #   POST /agent/vault/ehr/lookup               — credential-vault demo.
-#   POST /agent/triage/classify                — one-shot gpt-4o-mini ESI
+#   POST /agent/triage/classify                — one-shot gpt-5.5-instant ESI
 #                                                classifier for ER arrivals.
 
 import asyncio
@@ -214,12 +214,12 @@ _bootstrap_lock = threading.Lock()
 # SSE keepalive interval (seconds).
 SSE_KEEPALIVE_SEC = 15.0
 
-PRIMARY_MODEL = os.environ.get("OPENAI_AGENT_MODEL", "gpt-4o")
+PRIMARY_MODEL = os.environ.get("OPENAI_AGENT_MODEL", "gpt-5.5")
 AGENT_MODEL = PRIMARY_MODEL          # attending grader
 AGENT_NAME = "atrium-attending"
 
 # Direct-inference model for the triage-reasoning endpoint.
-TRIAGE_MODEL = os.environ.get("OPENAI_TRIAGE_MODEL", "gpt-4o-mini")
+TRIAGE_MODEL = os.environ.get("OPENAI_TRIAGE_MODEL", "gpt-5.5-instant")
 TRIAGE_MAX_TOKENS = 512
 
 ATRIUM_ATTENDING_SYSTEM_PROMPT = (
@@ -590,8 +590,7 @@ def get_best_realtime_model() -> str:
             return env_model
         
         candidates = [
-            "gpt-4o-mini-realtime-preview",
-            "gpt-4o-realtime-preview",
+            "gpt-realtime-2",
         ]
         for candidate in candidates:
             if candidate in supported:
@@ -602,7 +601,7 @@ def get_best_realtime_model() -> str:
         _agent_log.warning("[Realtime] Failed to list available models: %s", e)
 
     # Fallback to env override or default
-    fallback = env_model or "gpt-4o-mini-realtime-preview"
+    fallback = env_model or "gpt-realtime-2"
     _cached_realtime_model = fallback
     return fallback
 
@@ -618,7 +617,7 @@ def get_best_transcribe_model() -> str:
         supported = {m.id for m in models.data}
         
         candidates = [
-            "gpt-4o-mini-transcribe",
+            "gpt-realtime-whisper",
             "whisper-1",
         ]
         for candidate in candidates:
@@ -629,7 +628,7 @@ def get_best_transcribe_model() -> str:
     except Exception as e:
         _agent_log.warning("[Realtime] Failed to list available transcribe models: %s", e)
 
-    fallback = "gpt-4o-mini-transcribe"
+    fallback = "gpt-realtime-whisper"
     _cached_transcribe_model = fallback
     return fallback
 
@@ -1016,7 +1015,7 @@ def vault_ehr_lookup(req: EhrLookupRequest):
 
 
 # ───────────────────────────────────────────────────────────────────────────
-# Triage-reasoning endpoint (direct gpt-4o-mini inference)
+# Triage-reasoning endpoint (direct gpt-5.5-instant inference)
 # ───────────────────────────────────────────────────────────────────────────
 #
 # One-shot ESI classification called at ER arrival. Separate from the
@@ -1107,7 +1106,7 @@ def run_triage_reasoning(
     client: "OpenAI",
     req: TriageClassifyRequest,
 ) -> TriageClassifyResponse:
-    """Invoke gpt-4o-mini to classify an ER arrival. Pure function modulo
+    """Invoke gpt-5.5-instant to classify an ER arrival. Pure function modulo
     the client handle — unit tests pass a mock client."""
     response = client.chat.completions.create(
         model=TRIAGE_MODEL,
@@ -1225,12 +1224,10 @@ async def realtime_secret(req: RealtimeSecretRequest):
 
     session_instructions = (
         req.systemPrompt
-        + "\n\nREALTIME VOICE DELIVERY:\n"
-        + "- Use natural spoken pacing with small pauses.\n"
-        + "- Stay emotionally consistent with the patient's pain, fear, or relief.\n"
-        + "- Let the doctor interrupt you naturally; stop talking when interrupted.\n"
-        + "- Do not reveal hidden diagnosis or lab/imaging results unless the doctor tells you.\n"
-        + "- Keep every response short and human: usually 1-2 sentences.\n"
+        + "\n\nDELIVERY GUIDELINES:\n"
+        + "- Speak naturally in first person. Stop speaking immediately if the doctor interrupts.\n"
+        + "- Keep responses short (1-2 sentences) and conversational. Never use lists, bullet points, or stage directions.\n"
+        + "- Stay fully in-character, matching the patient's emotional state, concerns, and background."
     )
     payload = {
         "expires_after": {"anchor": "created_at", "seconds": 600},

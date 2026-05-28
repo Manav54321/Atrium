@@ -35,8 +35,8 @@ Key features include:
 | Styling | Vanilla CSS + HSL design tokens |
 | 3D scene | Three.js via `@react-three/fiber` and `@react-three/drei` |
 | Realtime voice | OpenAI Realtime API over WebRTC (browser-direct) |
-| Attending grader | OpenAI Assistants API (`gpt-4o`) |
-| Triage classifier | OpenAI Chat Completions (`gpt-4o-mini`) |
+| Attending grader | OpenAI Assistants API (`gpt-5.5`) |
+| Triage classifier | OpenAI Chat Completions (`gpt-5.5-instant`) |
 | Backend server | FastAPI (Python 3.11+), Uvicorn |
 | Backend-to-OpenAI | `openai >= 1.78.0`, `httpx` |
 
@@ -135,7 +135,7 @@ Atrium/
 
 - **Node.js 22+**
 - **Python 3.11+**
-- An **OpenAI API key** with access to `gpt-4o`, `gpt-4o-mini`, and `gpt-4o-mini-realtime-preview`
+- An **OpenAI API key** with access to `gpt-5.5`, `gpt-5.5-instant`, and `gpt-realtime-2`
 - A microphone and a WebRTC-capable browser (Chrome, Edge, or Safari 17+)
 
 ---
@@ -173,7 +173,7 @@ OPENAI_API_KEY=sk-proj-YOUR_KEY_HERE
 ATRIUM_AGENT_ID=              # leave blank on first run; set automatically by /agent/bootstrap
 
 # Realtime voice — gender-specific voices
-OPENAI_REALTIME_MODEL=gpt-4o-mini-realtime-preview
+OPENAI_REALTIME_MODEL=gpt-realtime-2
 OPENAI_REALTIME_MALE_VOICE=ballad
 OPENAI_REALTIME_FEMALE_VOICE=shimmer
 ```
@@ -230,7 +230,7 @@ All routes are proxied through Vite in development (`/agent/*`, `/voice/*`) and 
 | `GET` | `/agent/sessions/{id}/events` | Lists all events in a session thread |
 | `GET` | `/agent/sessions/{id}/stream` | SSE stream — runs the attending agent and streams grading events |
 | `POST` | `/agent/vault/ehr/lookup` | EHR credential vault lookup (requires `EHR_API_TOKEN`) |
-| `POST` | `/agent/triage/classify` | One-shot ESI triage classification via `gpt-4o-mini` |
+| `POST` | `/agent/triage/classify` | One-shot ESI triage classification via `gpt-5.5-instant` |
 | `POST` | `/voice/realtime-secret` | Mints a short-lived OpenAI Realtime client secret (600s TTL) |
 | `POST` | `/log/frontend` | Receives structured frontend log events |
 
@@ -244,11 +244,11 @@ All variables are read from `backend/.env.local`. See `backend/.env.example` for
 |---|---|---|---|
 | `OPENAI_API_KEY` | **Yes** | — | Master OpenAI API key (never exposed to browser) |
 | `ATRIUM_AGENT_ID` | **Yes** (after bootstrap) | — | Attending grader assistant ID; set by `/agent/bootstrap` |
-| `OPENAI_REALTIME_MODEL` | No | `gpt-4o-mini-realtime-preview` | Realtime model; server probes live model list |
+| `OPENAI_REALTIME_MODEL` | No | `gpt-realtime-2` | Realtime model; server probes live model list |
 | `OPENAI_REALTIME_MALE_VOICE` | No | `ballad` | Voice for male patients and pediatric fathers |
 | `OPENAI_REALTIME_FEMALE_VOICE` | No | `shimmer` | Voice for female patients and pediatric mothers |
-| `OPENAI_AGENT_MODEL` | No | `gpt-4o` | Model for the attending grader |
-| `OPENAI_TRIAGE_MODEL` | No | `gpt-4o-mini` | Model for the triage ESI classifier |
+| `OPENAI_AGENT_MODEL` | No | `gpt-5.5` | Model for the attending grader |
+| `OPENAI_TRIAGE_MODEL` | No | `gpt-5.5-instant` | Model for the triage ESI classifier |
 | `BACKEND_SHARED_SECRET` | Production only | — | Auth header checked by the Vercel edge middleware |
 | `EHR_API_TOKEN` | No | — | Enables the `/agent/vault/ehr/lookup` endpoint |
 
