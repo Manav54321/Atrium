@@ -104,6 +104,7 @@ export function FloatingVoicePanel({
 
   // Simplified status — no more MUTED/OFFLINE states since voice is always on
   const statusLabel =
+    status === 'recovering' ? 'RECONNECTING…' :
     status === 'listening' ? 'LISTENING…' :
     status === 'thinking' ? 'THINKING…' :
     status === 'speaking' ? `${firstName.toUpperCase()} SPEAKING` :
@@ -113,6 +114,7 @@ export function FloatingVoicePanel({
 
   // Natural idle hints — no more "Press S to start"
   const idleHint =
+    status === 'recovering' ? 'Connection lost. Retrying...' :
     status === 'speaking' ? `${firstName} is speaking…` :
     status === 'thinking' ? `${firstName} is thinking…` :
     status === 'listening' ? 'Listening — go ahead.' :
@@ -123,6 +125,7 @@ export function FloatingVoicePanel({
 
   const live = voiceActive && voiceReady && (status === 'listening' || status === 'speaking' || status === 'thinking' || status === 'ready');
   const statusColor =
+    status === 'recovering' ? '#f59e0b' : // Amber/orange for reconnecting
     status === 'speaking' ? 'var(--peach-deep)' :
     status === 'listening' ? 'var(--mint-deep)' :
     status === 'thinking' ? 'var(--butter-deep)' :

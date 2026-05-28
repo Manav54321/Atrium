@@ -93,6 +93,7 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
 
   const firstName   = patientName.split(' ')[0];
   const statusLabel =
+    status === 'recovering' ? 'RECONNECTING…' :
     status === 'listening' ? 'LISTENING…' :
     status === 'thinking'  ? 'THINKING…'  :
     status === 'speaking'  ? `${firstName.toUpperCase()} SPEAKING` :
@@ -100,8 +101,9 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
     status === 'ready'     ? 'LIVE'        :
     'OFFLINE';
 
-  const live = status === 'listening' || status === 'speaking' || status === 'thinking' || status === 'ready';
+  const live = status === 'listening' || status === 'speaking' || status === 'thinking' || status === 'ready' || status === 'recovering';
   const statusColor =
+    status === 'recovering' ? '#f59e0b' : // Amber/orange
     status === 'speaking'  ? 'var(--peach)' :
     status === 'listening' ? '#2d9e6b' :
     status === 'thinking'  ? '#d99a06' :

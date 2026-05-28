@@ -20,6 +20,7 @@ import {
   clearAllPatientConversations,
   clearAllConversationStorage,
   getExistingConversation,
+  getOrCreatePatientConversation,
 } from '../voice/conversationStore';
 
 const ONBOARDED_KEY = 'atrium:onboarded';
@@ -283,8 +284,12 @@ class Store {
     const clinic = getCaseClinic(targetId);
     try {
       ensureAudioContext();
-    } catch {
-      /* SSR / no Web Audio support — let the panel surface the error */
+      const patientCase = getPatientCase(targetId);
+      if (patientCase) {
+        getOrCreatePatientConversation(POLYCLINIC_BED_INDEX, patientCase, {});
+      }
+    } catch (err) {
+      console.warn('[Store] Failed to initialize audio context or pre-create conversation:', err);
     }
     this.markAttempted(targetId);
     this.set({

@@ -119,7 +119,7 @@ function derivePersonaTraits(c: PatientCase): PersonaTraits {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Opening Line Instruction (for voice_agent.py)
+// Opening Line Instruction (injected into the OpenAI Realtime session prompt)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**

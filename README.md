@@ -1,237 +1,374 @@
-# Atrium // Immersive Clinical Intelligence Platform
+# Atrium — Immersive Clinical Intelligence Platform
 
-Atrium is a cinematic, AI-native medical simulation workspace designed for advanced clinical training and PLAB2 / OSCE preparation. It places the user in the role of a lead clinician in an immersive 3D command center, conducting real-time diagnostic voice interviews, ordering tests, making diagnoses, prescribing treatments, and receiving attending evaluations cited to real-world medical guidelines.
-
----
-
-## 🌟 Key Capabilities
-
-*   **Cinematic 3D Consult Room**: A stylized clinical room rendered in real-time with Three.js (`@react-three/fiber` and `@react-three/drei`).
-*   **Low-Latency OpenAI Realtime Voice**: Direct browser WebRTC sessions with OpenAI Realtime API for speech-to-speech patient encounters.
-*   **Single-Provider Speech Pipeline**: Speech-to-text (STT), turn-taking, reasoning, interruptions, and text-to-speech (TTS) are handled by a single OpenAI Realtime connection.
-*   **Autonomous Patient Personas**: Deterministic clinical personas that stay in-character, reveal history gradually, express realistic emotions, and adapt dynamically to English or Hindi input.
-*   **Automated Attending Debrief**: A structured clinical scoring engine (using a Managed Agent) that grades performance across OSCE domains, identifies gaps, and cites medical guidelines.
+Atrium is an AI-native medical simulation workspace for advanced clinical training and PLAB2 / OSCE preparation. It places the user in the role of a consulting clinician inside an immersive 3D room, conducting real-time voice interviews with patients, ordering tests, forming diagnoses, prescribing treatments, and receiving an automated attending evaluation cited to real-world clinical guidelines.
 
 ---
 
-## 🛠️ Technical Stack
+## Key Capabilities
 
-*   **Frontend**: React 18, TypeScript, Vite, Vanilla CSS, Tailwind CSS, Three.js (via React Three Fiber & Drei)
-*   **Realtime Voice**: WebRTC media stream direct to OpenAI Realtime API
-*   **Inference & Grading**: OpenAI API (FastAPI backend proxies and grading agents)
-*   **Backend Server**: FastAPI (Python 3.11+)
+- **Cinematic 3D Consult Room** — A stylized polyclinic room rendered in real-time with Three.js (`@react-three/fiber` / `@react-three/drei`). Patients walk in, sit down, and react dynamically.
+- **OpenAI Realtime Voice** — Direct browser WebRTC sessions with the OpenAI Realtime API. Speech-to-text, reasoning, interruption handling, and text-to-speech all flow through a single OpenAI connection — zero third-party STT or TTS services.
+- **Gender-Aware Voice Selection** — Male patients speak with a male voice (`ballad`); female patients and pediatric case parents speak with a female voice (`shimmer`). Fully deterministic and configurable via env vars.
+- **Autonomous Patient Personas** — Deterministic clinical personas stay in-character, reveal history gradually, express realistic emotions, and adapt to English or Hindi input.
+- **Automated Attending Debrief** — A structured OSCE scoring engine (OpenAI Assistants) grades performance across data-gathering, clinical management, and interpersonal domains — with every criterion cited to a real guideline.
+- **Multi-Specialty Case Library** — Cases spanning Internal Medicine, Pediatrics, Cardiology, Respiratory, Neurology, Emergency Medicine, and more.
 
 ---
 
-## 📂 Codebase Directory & File Guide
+## Technical Stack
 
-Below is a detailed map of the repository to help developers and AI agents navigate the codebase:
+| Layer | Technology |
+|---|---|
+| Frontend framework | React 18, TypeScript, Vite |
+| Styling | Vanilla CSS + HSL design tokens |
+| 3D scene | Three.js via `@react-three/fiber` and `@react-three/drei` |
+| Realtime voice | OpenAI Realtime API over WebRTC (browser-direct) |
+| Attending grader | OpenAI Assistants API (`gpt-4o`) |
+| Triage classifier | OpenAI Chat Completions (`gpt-4o-mini`) |
+| Backend server | FastAPI (Python 3.11+), Uvicorn |
+| Backend-to-OpenAI | `openai >= 1.78.0`, `httpx` |
+
+---
+
+## Repository Structure
 
 ```
 Atrium/
-├── backend/                        # FastAPI Backend Services
-│   ├── server.py                   # Main FastAPI server (proxies OpenAI APIs, generates WebRTC secrets)
-│   ├── requirements.txt            # Python dependencies
-│   ├── .env.example                # Example environment variables template
-│   └── README.md                   # Backend detailed setup and API reference
-├── src/                            # React Frontend Source
-│   ├── main.tsx                    # Application entry point
-│   ├── App.tsx                     # Screen router (splash, onboarding, home, library, encounter, debrief, etc.)
-│   ├── styles/                     # Global stylesheet definitions & HSL color palettes
-│   ├── game/                       # Core State Engine
-│   │   ├── store.ts                # Consultation state manager (SyncExternalStore pattern)
-│   │   ├── types.ts                # Core types for active patients, cases, rubrics, and game state
-│   │   └── clinic.ts               # Specialty clinic enum mapping (GP, Cardiology, Respiratory, etc.)
-│   ├── voice/                      # Realtime Voice Engine
-│   │   ├── conversation.ts         # WebRTC session negotiation, RTC data channel event handler, FSM state, emotion/language heuristics
-│   │   ├── conversationStore.ts    # AudioContext & lifecycle hooks for patient speech threads
-│   │   └── patientPersona.ts       # Algorithmic system prompt builder for patient traits (age, gender, severity, anxiety, ICE)
-│   ├── data/                       # Static Medical Knowledge & Case Database
-│   │   ├── polyclinicPatients.ts   # Main database of clinical cases, patient histories, vitals, and test results
-│   │   ├── guidelines.ts           # Clinical guideline citations registry for attending markings
-│   │   ├── tests.ts                # Laboratory, imaging, and bedside test index
-│   │   ├── medications.ts          # Pharmacological catalog (names, doses, frequencies)
-│   │   └── cases.ts                # Cartoon library deterministic case compiler
-│   ├── agents/                     # Attending Grading Agents
-│   │   ├── managedAgent.ts         # Managed Agent SDK client
-│   │   ├── debriefRequest.ts       # OSCE rubric parsing and prompt payload builders
-│   │   └── useAttendingDebrief.ts  # React hook orchestrating debrief results fetching
-│   └── components/                 # UI Screen Components
-│       ├── EncounterScreen.tsx     # Canvas wrapper, adaptive camera FOV, pointer lock, and global hotkeys
-│       ├── ExamineOverlay.tsx      # 2D Examine workspace modal (History, Chat, Order tests, Diagnose, Rx tabs)
-│       ├── DockedVoicePanel.tsx    # Compact floating HUD showing voice transcripts & emotion while Examine modal is open
-│       ├── DebriefScreen.tsx       # Grading debrief sheet displaying scored domains (Data Gathering, management, etc.)
-│       └── three/                  # 3D Scene Components
-│           ├── Polyclinic.tsx      # Main 3D meshes (desk, desk items, furniture, lights, walls, walk-in/out animations)
-│           ├── Player.tsx          # Camera placement, pointer-lock camera-look, bounding collision boxes
-│           ├── StylizedCharacter.tsx # 3D Avatar mesh generator (derives skin, hair, parent companion deterministically)
-│           └── FloatingVoicePanel.tsx # 3D HTML speech bubble hovering above the seated patient's head
-├── scripts/                        # Automation & Testing Tools
-│   ├── verify/                     # Data integrity checks (run-all.ts, data-integrity.ts, triage-priority.ts, etc.)
-│   └── test/                       # Node integration tests (run-all.ts, custom-tools.test.ts, etc.)
-├── patients.md                     # Step-by-step crib sheets for perfect/low-scoring runs
-└── README.md                       # Main master documentation (this file)
+├── backend/                         FastAPI backend
+│   ├── server.py                    Main server — OpenAI secret minting, grader proxy, triage
+│   ├── smoke_test.py                End-to-end smoke test script (run before demos)
+│   ├── requirements.txt             Python dependencies (fastapi, openai, httpx, uvicorn…)
+│   ├── Procfile                     Render/Heroku deploy descriptor (web process only)
+│   ├── .env.example                 Environment variable template — copy to .env.local
+│   ├── .env.local                   Local secrets (gitignored — never commit this file)
+│   ├── README.md                    Backend setup reference
+│   └── tests/
+│       ├── test_triage.py           Unit tests for the triage ESI classifier
+│       └── test_vault.py            Unit tests for the EHR vault endpoint
+│
+├── src/                             React frontend source
+│   ├── main.tsx                     Application entry point
+│   ├── App.tsx                      Screen router (splash → mode → encounter → debrief…)
+│   │
+│   ├── game/                        Core state engine
+│   │   ├── store.ts                 Global consultation state (useSyncExternalStore)
+│   │   ├── types.ts                 Types: PatientCase, ActivePatient, CaseRubric, GameState…
+│   │   └── clinic.ts                Specialty clinic enum (GP, Cardiology, Paediatrics…)
+│   │
+│   ├── voice/                       Realtime voice engine
+│   │   ├── conversation.ts          WebRTC session lifecycle, FSM state, emotion/language heuristics
+│   │   ├── conversationStore.ts     AudioContext management and patient conversation cache
+│   │   └── patientPersona.ts        Algorithmic system-prompt builder (traits, anxiety, ICE, opening line)
+│   │
+│   ├── data/                        Static medical knowledge base
+│   │   ├── polyclinicPatients.ts    Full case database (histories, vitals, tests, rubrics)
+│   │   ├── guidelines.ts            Clinical guideline citation registry (NICE, BNF, SIGN…)
+│   │   ├── cases.ts                 Case catalogue compiler
+│   │   ├── tests.ts                 Lab, imaging, and bedside test index
+│   │   ├── treatments.ts            Treatment catalogue
+│   │   ├── medications.ts           Pharmacological catalogue (names, doses, frequencies)
+│   │   ├── evalHistory.ts           Local evaluation history storage
+│   │   └── patients.ts / defaultTestResults.ts / radiologyImages.ts / avatarModels.ts
+│   │
+│   ├── agents/                      Attending grading agent
+│   │   ├── managedAgent.ts          OpenAI Assistants SDK client
+│   │   ├── debriefRequest.ts        OSCE rubric parsing and prompt payload builders
+│   │   ├── customTools.ts           Custom tool definitions (render_case_evaluation…)
+│   │   ├── autoRubric.ts            Auto-rubric generator for cases without explicit rubric
+│   │   └── useAttendingDebrief.ts   React hook — orchestrates debrief streaming results
+│   │
+│   ├── styles/                      Global CSS + HSL color palettes
+│   │
+│   └── components/                  Screen and UI components
+│       ├── SplashScreen.tsx         Loading / splash
+│       ├── OnboardingScreen.tsx     First-run tutorial (3 steps)
+│       ├── ModeSelectScreen.tsx     Polyclinic vs library mode picker
+│       ├── HomeScreen.tsx           Dashboard
+│       ├── CaseLibraryScreen.tsx    Browsable case catalogue
+│       ├── BriefScreen.tsx          Pre-encounter patient brief card
+│       ├── EncounterScreen.tsx      3D canvas wrapper + hotkeys + mute control
+│       ├── ExamineOverlay.tsx       2D examine modal (History, Chat, Tests, Diagnose, Rx tabs)
+│       ├── DockedVoicePanel.tsx     Floating voice HUD (transcripts, emotion, language chip)
+│       ├── EndConfirmScreen.tsx     End-consultation confirmation checklist
+│       ├── DebriefScreen.tsx        Attending evaluation sheet (domain scores, guideline citations)
+│       ├── HistoryScreen.tsx        Past evaluations history viewer
+│       ├── GPRoomScreen.tsx         GP room screen
+│       ├── BackgroundMusic.tsx      Ambient audio controller
+│       └── three/                   3D scene components
+│           ├── Polyclinic.tsx       Room mesh (furniture, walls, lights, walk-in/out animations)
+│           ├── Player.tsx           First-person camera and pointer-lock
+│           ├── StylizedCharacter.tsx 3D avatar mesh (skin, hair, companion determinism)
+│           ├── FloatingVoicePanel.tsx 3D HTML speech bubble over seated patient
+│           ├── createStore.ts       Three.js state store
+│           └── interactions.ts      Pointer interaction helpers
+│
+└── scripts/                         Developer utilities
+    ├── verify/                      Data integrity validators
+    │   ├── run-all.ts               Runs all verify scripts
+    │   ├── data-integrity.ts        Case + guideline cross-reference check
+    │   ├── rubric-smoke.ts          Rubric citation resolution check
+    │   ├── three-scene.ts           3D asset path validator
+    │   └── triage-priority.ts       Triage severity ordering check
+    └── test/                        Integration test suite
+        ├── run-all.ts               Runs all tests
+        ├── custom-tools.test.ts     Custom tool schema validation
+        └── loop-commands.test.ts    Agent loop command tests
 ```
 
 ---
 
-## ⚡ Setup & Installation
+## Setup & Installation
 
-### 1. Prerequisites
-*   **Node.js 22+**
-*   **Python 3.11+**
-*   A microphone and a WebRTC-compliant web browser.
+### Prerequisites
 
----
-
-### 2. Backend Setup
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Create a Python virtual environment:
-   ```bash
-   python -m venv .venv
-   ```
-3. Activate the virtual environment:
-   * **macOS / Linux**:
-     ```bash
-     source .venv/bin/activate
-     ```
-   * **Windows (Command Prompt)**:
-     ```cmd
-     .venv\Scripts\activate.bat
-     ```
-   * **Windows (PowerShell)**:
-     ```powershell
-     .venv\Scripts\Activate.ps1
-     ```
-4. Install Python dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-5. Create local environment configuration:
-   ```bash
-   cp .env.example .env.local
-   ```
-6. Open `.env.local` and add your OpenAI API credentials:
-   ```env
-   OPENAI_API_KEY=sk-proj-YOUR_REAL_API_KEY
-   # Optional overrides:
-   OPENAI_REALTIME_MODEL=gpt-4o-realtime-preview-2024-12-17
-   OPENAI_REALTIME_VOICE=shimmer
-   ```
+- **Node.js 22+**
+- **Python 3.11+**
+- An **OpenAI API key** with access to `gpt-4o`, `gpt-4o-mini`, and `gpt-4o-mini-realtime-preview`
+- A microphone and a WebRTC-capable browser (Chrome, Edge, or Safari 17+)
 
 ---
 
-### 3. Frontend Setup
-1. Return to the root directory and install dependencies:
-   ```bash
-   npm install
-   ```
+### 1. Backend Setup
 
----
-
-## 🚀 Running the Platform
-
-To run the Atrium simulation, launch the FastAPI server and the Vite development server in parallel:
-
-### 1. Start the FastAPI Server
-Ensure your Python virtual environment is activated, then run:
 ```bash
 cd backend
+python -m venv .venv
+
+# macOS / Linux
+source .venv/bin/activate
+
+# Windows (PowerShell)
+.venv\Scripts\Activate.ps1
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Create your local environment file:
+
+```bash
+cp .env.example .env.local
+```
+
+Open `backend/.env.local` and fill in your credentials:
+
+```env
+# Required
+OPENAI_API_KEY=sk-proj-YOUR_KEY_HERE
+ATRIUM_AGENT_ID=              # leave blank on first run; set automatically by /agent/bootstrap
+
+# Realtime voice — gender-specific voices
+OPENAI_REALTIME_MODEL=gpt-4o-mini-realtime-preview
+OPENAI_REALTIME_MALE_VOICE=ballad
+OPENAI_REALTIME_FEMALE_VOICE=shimmer
+```
+
+See `backend/.env.example` for all optional override variables.
+
+---
+
+### 2. Frontend Setup
+
+From the repository root:
+
+```bash
+npm install
+```
+
+---
+
+## Running the Platform
+
+Launch the backend and frontend in two separate terminals.
+
+**Terminal 1 — FastAPI backend:**
+
+```bash
+cd backend
+source .venv/bin/activate      # or .venv\Scripts\Activate.ps1 on Windows
 python server.py
 ```
-This starts the backend gateway at `http://127.0.0.1:8787`.
 
-### 2. Start the Vite Frontend Workspace
-In a separate terminal window, run:
+Starts the backend at `http://127.0.0.1:8787`.
+
+**Terminal 2 — Vite frontend:**
+
 ```bash
 npm run dev
 ```
-This starts the local web client server at `http://localhost:5173`. Open this URL in a browser to begin.
+
+Opens the app at `http://localhost:5173`.
 
 ---
 
-## 🎹 Keyboard Controls & HUD Interactions
+## Backend API Reference
 
-While inside the **Consultation Room (3D Canvas)**:
-*   **Mouse Click inside Room**: Activates first-person mode (pointer lock) to look around using mouse movement.
-*   **Esc**: Releases pointer lock, allowing you to use your mouse cursor to click buttons.
-*   **`Z` Key / Mouse Scroll**: Leans in / zooms the camera view.
-*   **`E` Key**: Opens the **Examine** dashboard overlay (unlocks cursor automatically).
-*   **`M` Key**: Toggles microphone mute.
-*   **Mic Indicator Pill (Bottom-left)**: Displays the microphone status (`VOICE LIVE` / `MIC MUTED`). Can be clicked directly to mute/unmute.
-*   **Floating Speech Bubble (`FloatingVoicePanel`)**: Shows patient speech, status (`LISTENING`, `THINKING`, `SPEAKING`), and real-time subtitles. Unmounts automatically when the Examine dashboard is open.
-*   **Docked Voice Panel (Top-right during Examine)**: Tracks patient voice transcripts, language (English/Hindi), and emotion (neutral 😐, pain 😣, fear 😨, relief 😮‍💨, confused 😕) while you work in the 2D Examine tab.
+All routes are proxied through Vite in development (`/agent/*`, `/voice/*`) and through the Vercel edge middleware in production.
 
----
-
-## 🧪 Testing Cheat Sheet (PLAB2 / OSCE Preparation)
-
-To verify the end-to-end integration (Voice interaction -> Lab orders -> Diagnosis -> Prescription -> Disposition -> Attending scoring), follow these instructions for a high-scoring run:
-
-### Patient Encounter Walkthrough: Mary Smith (Iron Deficiency Anemia)
-*   **Goal**: Score **10/10 (OSCE Grade A)**
-
-#### 1. Verbal Inquiry (Talk with Patient via Microphone)
-Ask the patient the following questions to satisfy the **Data Gathering** rubric criteria:
-1.  **Onset**: *"How long have you been feeling this exhausted?"*
-    *   *Patient response*: Around 4 months, getting worse.
-2.  **Menstruation**: *"How are your periods? Are they particularly heavy?"*
-    *   *Patient response*: Yes, heavy, lasting 7-8 days.
-3.  **Diet**: *"How is your typical diet? Do you eat red meat?"*
-    *   *Patient response*: Vegetarian, eats very little red meat.
-4.  **Cravings (Pica)**: *"Have you noticed any unusual cravings, like wanting to chew on ice?"*
-    *   *Patient response*: Yes, constantly craves ice.
-5.  **Bleeding**: *"Have you noticed any blood in your stool or changes in bowel movements?"*
-    *   *Patient response*: No bowel changes or bleeding.
-
-#### 2. Clinical Management (Examine overlay - `E` key)
-1.  Navigate to **Order tests** tab:
-    *   Expand **🧬 Laboratory**.
-    *   Select **CBC w/ differential** (`cbc`) -> *Wait for turnaround. Results show Low Hemoglobin (9.2 g/dL) and Low MCV (72 fL).*
-    *   Select **Iron Studies (Fe/TIBC/ferritin)** (`iron`) -> *Results show Low Serum Iron (28 mcg/dL) and High TIBC (462 mcg/dL).*
-    *   Select **Ferritin** (`ferritin`) -> *Results show Low Ferritin (6 ng/mL).*
-2.  Navigate to **Diagnose** tab:
-    *   Select **Iron Deficiency Anemia** (`iron-deficiency-anemia`) as the primary diagnosis.
-    *   Select **Discharge** (`discharge`) as the disposition.
-3.  Navigate to **Rx** (Prescriptions) tab:
-    *   Select **Ferrous Sulfate 325mg** (`ferrous-sulfate-325`).
-    *   Set Dose to: `1 tab` (frequency: `1x1, PO (with vitamin C)`).
-    *   Set Duration to: `90 days`.
-    *   Click **Add to prescription**, then click **Submit/Prescribe**.
-
-#### 3. Interpersonal Skills (Verbal Dialogue)
-*   **Agenda & ICE**: Explain the plan clearly. Speak in plain English without complex abbreviations. Elicit expectations and concerns.
-*   **Empathize**: Validate how challenging exhaustion is.
-*   **Teach-Back**: Summarize the plan at the end and invite questions (*"To make sure we're on the same page, could you repeat back how you will take these tablets?"*).
-
-#### 4. End Consultation
-*   Click **End Consultation** (or Dispatch).
-*   Verify the checkboxes on the confirmation popup, then click **Finish**.
-*   The **Debrief Screen** will load. Verify that the Attending grades you Grade A/10 out of 10, citing actual guidelines for CBC, Ferritin, and Iron Studies.
+| Method | Route | Description |
+|---|---|---|
+| `GET` | `/health` | Health check — confirms OpenAI SDK, API key, and agent bootstrap status |
+| `POST` | `/agent/bootstrap` | Creates (or retrieves cached) the attending grader Assistants agent |
+| `POST` | `/agent/refresh` | Pushes an updated system prompt to the existing agent |
+| `POST` | `/agent/sessions` | Creates a new grading session thread |
+| `POST` | `/agent/sessions/{id}/events` | Appends encounter events (user message, action log) to the thread |
+| `GET` | `/agent/sessions/{id}/events` | Lists all events in a session thread |
+| `GET` | `/agent/sessions/{id}/stream` | SSE stream — runs the attending agent and streams grading events |
+| `POST` | `/agent/vault/ehr/lookup` | EHR credential vault lookup (requires `EHR_API_TOKEN`) |
+| `POST` | `/agent/triage/classify` | One-shot ESI triage classification via `gpt-4o-mini` |
+| `POST` | `/voice/realtime-secret` | Mints a short-lived OpenAI Realtime client secret (600s TTL) |
+| `POST` | `/log/frontend` | Receives structured frontend log events |
 
 ---
 
-## 🛠️ Utility Scripts
+## Environment Variables
 
-Run these scripts from the repository root to validate local codebase adjustments:
+All variables are read from `backend/.env.local`. See `backend/.env.example` for full documentation.
 
-*   **Production Build**:
-    ```bash
-    npm run build
-    ```
-    Compiles TypeScript and packages Vite production distribution bundles in `/dist`.
-*   **Data Integrity Verification**:
-    ```bash
-    npm run verify
-    ```
-    Runs all scripts inside `scripts/verify/` to check case configurations, guideline registries, Three.js asset paths, and rubric citation matches.
-*   **Integration Tests**:
-    ```bash
-    npm run test
-    ```
-    Executes automated tests in `scripts/test/` validating custom tools and model loops.
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `OPENAI_API_KEY` | **Yes** | — | Master OpenAI API key (never exposed to browser) |
+| `ATRIUM_AGENT_ID` | **Yes** (after bootstrap) | — | Attending grader assistant ID; set by `/agent/bootstrap` |
+| `OPENAI_REALTIME_MODEL` | No | `gpt-4o-mini-realtime-preview` | Realtime model; server probes live model list |
+| `OPENAI_REALTIME_MALE_VOICE` | No | `ballad` | Voice for male patients and pediatric fathers |
+| `OPENAI_REALTIME_FEMALE_VOICE` | No | `shimmer` | Voice for female patients and pediatric mothers |
+| `OPENAI_AGENT_MODEL` | No | `gpt-4o` | Model for the attending grader |
+| `OPENAI_TRIAGE_MODEL` | No | `gpt-4o-mini` | Model for the triage ESI classifier |
+| `BACKEND_SHARED_SECRET` | Production only | — | Auth header checked by the Vercel edge middleware |
+| `EHR_API_TOKEN` | No | — | Enables the `/agent/vault/ehr/lookup` endpoint |
 
-Happy coding!
+---
+
+## Voice Pipeline
+
+Patient voice runs entirely through OpenAI:
+
+```
+Microphone → RTCPeerConnection → OpenAI Realtime API
+                                        ↕  (speech-to-speech)
+Speaker    ← Audio track        ← OpenAI Realtime API
+```
+
+1. The browser calls `POST /voice/realtime-secret` to get a short-lived client secret.
+2. The browser opens a `RTCPeerConnection`, adds the microphone track, and sends an SDP offer to `https://api.openai.com/v1/realtime/calls` using the secret as a Bearer token.
+3. OpenAI streams audio back. The patient persona (system prompt + opening line) is injected at session creation time.
+4. Gender-appropriate voice (`ballad` / `shimmer`) is selected server-side by `_realtime_voice_for()` based on `gender` in the request body.
+
+---
+
+## Keyboard Controls
+
+Inside the **3D Consultation Room**:
+
+| Input | Action |
+|---|---|
+| Mouse click (in room) | Activates first-person pointer-lock |
+| `Esc` | Releases pointer-lock |
+| `E` | Opens / closes the Examine dashboard overlay |
+| `M` | Toggles microphone mute |
+| `Z` / scroll | Zoom / lean camera |
+| Mic pill (bottom-left) | Click to mute / unmute |
+| Speech bubble (patient) | Live patient subtitles, emotion, and connection status |
+| Docked voice panel (top-right, Examine open) | Transcripts, language chip (EN / हिंदी), emotion icon |
+
+---
+
+## Testing Cheat Sheet — Full 10/10 Encounter
+
+**Patient**: Mary Smith — Iron Deficiency Anaemia
+
+### 1. Verbal History (speak via microphone)
+
+| Ask | Expected response |
+|---|---|
+| "How long have you been this exhausted?" | ~4 months, progressive |
+| "How are your periods — are they heavy?" | Yes, 7–8 days, heavy flow |
+| "Tell me about your diet." | Mostly vegetarian, very little red meat |
+| "Any unusual cravings — like chewing ice?" | Yes, constant craving for ice |
+| "Any blood in your stool or change in bowel habit?" | No |
+
+### 2. Clinical Management (`E` key → Examine overlay)
+
+**Order Tests tab:**
+- `CBC w/ differential` → Hb 9.2 g/dL, MCV 72 fL
+- `Iron Studies (Fe/TIBC/ferritin)` → Fe ↓, TIBC ↑
+- `Ferritin` → 6 ng/mL (critically low)
+
+**Diagnose tab:**
+- Diagnosis: **Iron Deficiency Anaemia**
+- Disposition: **Discharge**
+
+**Rx tab:**
+- Medication: **Ferrous Sulfate 325 mg**
+- Dose: `1 tab`, Frequency: `1×1 PO (with vitamin C)`
+- Duration: `90 days` → Add → Submit
+
+### 3. Interpersonal Skills (verbal)
+
+- Explain the plan in plain language (no jargon)
+- Elicit patient's concerns and expectations (ICE)
+- Teach-back: *"To make sure we're on the same page — can you tell me how you'll take the tablets?"*
+
+### 4. End Consultation
+
+Click **End Consultation** → check all three confirmation boxes → **Finish**.
+
+The Debrief screen should load and grade you **10/10 (Grade A)** with guideline citations for CBC, ferritin, and iron studies.
+
+---
+
+## Utility Scripts
+
+Run from the repository root:
+
+```bash
+# Start development server
+npm run dev
+
+# Production build (TypeScript + Vite bundle into /dist)
+npm run build
+
+# Data integrity check (cases, rubric citations, guideline registry, 3D asset paths)
+npm run verify
+
+# Integration test suite (custom tools, agent loop commands)
+npm run test
+```
+
+Backend tests (from the `backend/` directory with venv active):
+
+```bash
+python -m unittest tests.test_triage tests.test_vault -v
+```
+
+End-to-end smoke test (with the backend running on port 8787):
+
+```bash
+python smoke_test.py
+```
+
+---
+
+## Production Deployment
+
+The app deploys as two separate services:
+
+| Service | Platform | Entry point |
+|---|---|---|
+| Frontend | Vercel (static + edge functions) | `npm run build` → `/dist` |
+| Backend | Render (or any WSGI host) | `uvicorn server:app --host 0.0.0.0 --port $PORT` |
+
+The Vercel edge middleware (`middleware.ts`) proxies `/agent/*` and `/voice/*` to the Render backend, injecting `BACKEND_SHARED_SECRET` as an `x-atrium-auth` header. The backend verifies this header and rejects requests that lack it (except from localhost).
+
+For production, set in **Vercel environment**:
+- `BACKEND_SHARED_SECRET` — any strong random string
+
+Set in **Render environment** (in addition to all `backend/.env.local` vars):
+- `BACKEND_SHARED_SECRET` — same value as Vercel
+- `OPENAI_API_KEY`
+- `ATRIUM_AGENT_ID` (after running `/agent/bootstrap` once)
+- `OPENAI_REALTIME_MALE_VOICE=ballad`
+- `OPENAI_REALTIME_FEMALE_VOICE=shimmer`

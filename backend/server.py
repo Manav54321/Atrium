@@ -148,7 +148,7 @@ def health():
         "ok": True,
         "voice": {
             "transport": "openai-realtime-webrtc",
-            "model": os.environ.get("OPENAI_REALTIME_MODEL", "gpt-realtime"),
+            "model": get_best_realtime_model(),
             "api_key_configured": has_key,
         },
         "agent": {
@@ -184,7 +184,7 @@ def health():
 #   GET  /agent/sessions/{sid}/events          — list thread messages (history).
 #   POST /agent/sessions/{sid}/events          — add a user message.
 #   POST /agent/vault/ehr/lookup               — credential-vault demo.
-#   POST /agent/triage/classify                — one-shot gpt-4.1-mini ESI
+#   POST /agent/triage/classify                — one-shot gpt-4o-mini ESI
 #                                                classifier for ER arrivals.
 
 import asyncio
@@ -214,12 +214,12 @@ _bootstrap_lock = threading.Lock()
 # SSE keepalive interval (seconds).
 SSE_KEEPALIVE_SEC = 15.0
 
-PRIMARY_MODEL = os.environ.get("OPENAI_AGENT_MODEL", "gpt-4.1")
+PRIMARY_MODEL = os.environ.get("OPENAI_AGENT_MODEL", "gpt-4o")
 AGENT_MODEL = PRIMARY_MODEL          # attending grader
 AGENT_NAME = "atrium-attending"
 
 # Direct-inference model for the triage-reasoning endpoint.
-TRIAGE_MODEL = PRIMARY_MODEL
+TRIAGE_MODEL = os.environ.get("OPENAI_TRIAGE_MODEL", "gpt-4o-mini")
 TRIAGE_MAX_TOKENS = 512
 
 ATRIUM_ATTENDING_SYSTEM_PROMPT = (
@@ -566,6 +566,72 @@ def get_async_openai_client() -> "AsyncOpenAI":
     if _async_openai_client is None:
         _async_openai_client = AsyncOpenAI(api_key=_require_openai_api_key())
     return _async_openai_client
+
+
+_cached_realtime_model: Optional[str] = None
+_cached_transcribe_model: Optional[str] = None
+
+def get_best_realtime_model() -> str:
+    global _cached_realtime_model
+    if _cached_realtime_model is not None:
+        return _cached_realtime_model
+
+    env_model = os.environ.get("OPENAI_REALTIME_MODEL")
+
+    # Try listing models to see what is supported
+    try:
+        client = get_openai_client()
+        models = client.models.list()
+        supported = {m.id for m in models.data}
+        
+        # Only use the env override if it is supported
+        if env_model and env_model in supported:
+            _cached_realtime_model = env_model
+            return env_model
+        
+        candidates = [
+            "gpt-4o-mini-realtime-preview",
+            "gpt-4o-realtime-preview",
+        ]
+        for candidate in candidates:
+            if candidate in supported:
+                _cached_realtime_model = candidate
+                _agent_log.info("[Realtime] Detected available realtime model: %s", candidate)
+                return candidate
+    except Exception as e:
+        _agent_log.warning("[Realtime] Failed to list available models: %s", e)
+
+    # Fallback to env override or default
+    fallback = env_model or "gpt-4o-mini-realtime-preview"
+    _cached_realtime_model = fallback
+    return fallback
+
+
+def get_best_transcribe_model() -> str:
+    global _cached_transcribe_model
+    if _cached_transcribe_model is not None:
+        return _cached_transcribe_model
+
+    try:
+        client = get_openai_client()
+        models = client.models.list()
+        supported = {m.id for m in models.data}
+        
+        candidates = [
+            "gpt-4o-mini-transcribe",
+            "whisper-1",
+        ]
+        for candidate in candidates:
+            if candidate in supported:
+                _cached_transcribe_model = candidate
+                _agent_log.info("[Realtime] Detected available transcribe model: %s", candidate)
+                return candidate
+    except Exception as e:
+        _agent_log.warning("[Realtime] Failed to list available transcribe models: %s", e)
+
+    fallback = "gpt-4o-mini-transcribe"
+    _cached_transcribe_model = fallback
+    return fallback
 
 
 def get_session_messages(session_id: str) -> list[dict]:
@@ -950,7 +1016,7 @@ def vault_ehr_lookup(req: EhrLookupRequest):
 
 
 # ───────────────────────────────────────────────────────────────────────────
-# Triage-reasoning endpoint (direct gpt-4.1-mini inference)
+# Triage-reasoning endpoint (direct gpt-4o-mini inference)
 # ───────────────────────────────────────────────────────────────────────────
 #
 # One-shot ESI classification called at ER arrival. Separate from the
@@ -1041,7 +1107,7 @@ def run_triage_reasoning(
     client: "OpenAI",
     req: TriageClassifyRequest,
 ) -> TriageClassifyResponse:
-    """Invoke gpt-4.1-mini to classify an ER arrival. Pure function modulo
+    """Invoke gpt-4o-mini to classify an ER arrival. Pure function modulo
     the client handle — unit tests pass a mock client."""
     response = client.chat.completions.create(
         model=TRIAGE_MODEL,
@@ -1109,8 +1175,9 @@ def triage_classify(req: TriageClassifyRequest):
 import httpx
 
 
-OPENAI_REALTIME_MODEL = os.environ.get("OPENAI_REALTIME_MODEL", "gpt-realtime")
-OPENAI_REALTIME_DEFAULT_VOICE = os.environ.get("OPENAI_REALTIME_VOICE", "marin")
+# Note: realtime model is resolved dynamically by get_best_realtime_model().
+# Voice is resolved per-request by _realtime_voice_for() using
+# OPENAI_REALTIME_MALE_VOICE / OPENAI_REALTIME_FEMALE_VOICE env vars.
 
 
 class RealtimeSecretRequest(BaseModel):
@@ -1136,19 +1203,22 @@ def _realtime_voice_for(req: RealtimeSecretRequest) -> str:
     
     gender = (req.gender or "F").upper()
     if gender == "M":
-        return os.environ.get("OPENAI_REALTIME_MALE_VOICE") or os.environ.get("OPENAI_REALTIME_VOICE") or "ballad"
+        return os.environ.get("OPENAI_REALTIME_MALE_VOICE") or "ballad"
     else:
-        return os.environ.get("OPENAI_REALTIME_FEMALE_VOICE") or os.environ.get("OPENAI_REALTIME_VOICE") or "shimmer"
+        return os.environ.get("OPENAI_REALTIME_FEMALE_VOICE") or "shimmer"
 
 
 @app.post("/voice/realtime-secret", response_model=RealtimeSecretResponse)
 async def realtime_secret(req: RealtimeSecretRequest):
     api_key = _require_openai_api_key()
     voice = _realtime_voice_for(req)
+    selected_model = get_best_realtime_model()
+    selected_transcribe_model = get_best_transcribe_model()
+    
     _agent_log.info(
         "[Realtime] minting client secret caseId=%s model=%s voice=%s severity=%s",
         req.caseId,
-        OPENAI_REALTIME_MODEL,
+        selected_model,
         voice,
         req.severity,
     )
@@ -1166,7 +1236,7 @@ async def realtime_secret(req: RealtimeSecretRequest):
         "expires_after": {"anchor": "created_at", "seconds": 600},
         "session": {
             "type": "realtime",
-            "model": OPENAI_REALTIME_MODEL,
+            "model": selected_model,
             "instructions": session_instructions,
             "output_modalities": ["audio"],
             "audio": {
@@ -1178,7 +1248,7 @@ async def realtime_secret(req: RealtimeSecretRequest):
                         "create_response": True,
                     },
                     "transcription": {
-                        "model": "gpt-4o-mini-transcribe",
+                        "model": selected_transcribe_model,
                         "language": "en",
                     },
                 },
@@ -1209,7 +1279,7 @@ async def realtime_secret(req: RealtimeSecretRequest):
         raise HTTPException(status_code=502, detail="OpenAI Realtime secret response did not include a value.")
     return RealtimeSecretResponse(
         value=value,
-        model=data.get("session", {}).get("model") or OPENAI_REALTIME_MODEL,
+        model=data.get("session", {}).get("model") or selected_model,
         voice=voice,
         expires_at=data.get("expires_at"),
     )

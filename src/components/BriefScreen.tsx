@@ -354,7 +354,7 @@ export function BriefScreen() {
               fontFamily: "'Nunito', sans-serif",
               width: '100%',
             }}
-            onClick={() => store.setScreen('encounter')}
+            onClick={() => store.acceptNextPatient(caseId)}
           >
             🚪 Knock & Enter Room →
           </button>

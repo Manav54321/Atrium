@@ -136,6 +136,7 @@ function isOpenState(state: RTCDataChannelState | undefined): boolean {
 }
 
 export class Conversation {
+  private audioCtx: AudioContext;
   private messages: ChatMessage[] = [];
   private listeners: ConversationListeners = {};
   private state: ConversationState = 'disposed';
@@ -173,6 +174,7 @@ export class Conversation {
     listeners: ConversationListeners = {},
     options: ConversationOptions = {},
   ) {
+    this.audioCtx = _audioCtx;
     this.listeners = listeners;
     this.systemPrompt = options.systemPrompt ?? 'Stay in character as a patient. Reply briefly in natural spoken language.';
     this.initialMessage = options.initialMessage ?? { role: 'assistant', content: 'Hi doctor.' };
@@ -181,6 +183,14 @@ export class Conversation {
     this.age = options.age ?? 35;
     this.severity = options.severity ?? 'stable';
     this.preferredVoice = options.voice;
+
+    if (typeof document !== 'undefined') {
+      this.audioEl = document.createElement('audio');
+      this.audioEl.autoplay = true;
+      this.audioEl.setAttribute('playsinline', 'true');
+      this.audioEl.style.display = 'none';
+      document.body.appendChild(this.audioEl);
+    }
   }
 
   async init(): Promise<void> {
@@ -208,14 +218,25 @@ export class Conversation {
       const pc = new RTCPeerConnection();
       this.pc = pc;
 
-      this.audioEl = document.createElement('audio');
-      this.audioEl.autoplay = true;
-      this.audioEl.setAttribute('playsinline', 'true');
-      this.audioEl.style.display = 'none';
-      document.body.appendChild(this.audioEl);
+      if (!this.audioEl && typeof document !== 'undefined') {
+        this.audioEl = document.createElement('audio');
+        this.audioEl.autoplay = true;
+        this.audioEl.setAttribute('playsinline', 'true');
+        this.audioEl.style.display = 'none';
+        document.body.appendChild(this.audioEl);
+      }
 
       pc.ontrack = (event) => {
         if (this.audioEl) this.audioEl.srcObject = event.streams[0];
+        
+        try {
+          const streamSource = this.audioCtx.createMediaStreamSource(event.streams[0]);
+          streamSource.connect(this.audioCtx.destination);
+          this.logEvent({ type: 'lifecycle', detail: 'remote_audio_track_attached_web_audio' });
+        } catch (err) {
+          console.warn('[Conversation] Failed to route WebRTC track to AudioContext:', err);
+        }
+
         this.logEvent({ type: 'lifecycle', detail: 'remote_audio_track_attached' });
       };
 
@@ -225,13 +246,25 @@ export class Conversation {
         if (s === 'failed' || s === 'disconnected') this.handleConnectionLoss(s);
       };
 
-      this.localStream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
-      });
+      let activeStream = this.localStream;
+      if (activeStream) {
+        // Verify tracks are not ended
+        const allActive = activeStream.getAudioTracks().every(track => track.readyState === 'live');
+        if (!allActive) {
+          activeStream = null;
+        }
+      }
+
+      if (!activeStream) {
+        activeStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          },
+        });
+      }
+      this.localStream = activeStream;
       this.localStream.getAudioTracks().forEach((track) => pc.addTrack(track, this.localStream!));
 
       const dc = pc.createDataChannel('oai-events', { ordered: true });
@@ -260,7 +293,13 @@ export class Conversation {
       }
       await pc.setRemoteDescription({ type: 'answer', sdp: await sdpResponse.text() });
     } catch (err) {
-      this.handleError(err instanceof Error ? err.message : String(err));
+      const errMsg = err instanceof Error ? err.message : String(err);
+      if (this.reconnectAttempts === 0 || this.reconnectAttempts >= 3) {
+        this.handleError(errMsg);
+      } else {
+        this.logEvent({ type: 'error', detail: `interim_connect_error: ${errMsg}` });
+        this.listeners.onError?.(errMsg);
+      }
       throw err;
     }
   }
@@ -580,14 +619,48 @@ export class Conversation {
 
   private handleConnectionLoss(reason: string) {
     if (this.disposed || this.state === 'disposed') return;
-    this.logEvent({ type: 'reconnect', detail: `connection_loss ${reason}` });
-    if (this.reconnectAttempts >= 1) {
-      this.handleError(`Realtime connection ${reason}`);
+    this.logEvent({ type: 'reconnect', detail: `connection_loss reason=${reason} attempt=${this.reconnectAttempts}` });
+    this.attemptReconnect();
+  }
+
+  private attemptReconnect() {
+    if (this.disposed || this.state === 'disposed') return;
+    if (this.reconnectAttempts >= 3) {
+      this.handleError('Realtime connection lost. Max reconnection attempts reached.');
       return;
     }
+
     this.reconnectAttempts += 1;
-    this.transition('recovering', 'reconnecting realtime session');
-    this.dispose();
+    this.transition('recovering', `Reconnecting realtime session (attempt ${this.reconnectAttempts}/3)...`);
+
+    // Clean up peer connection resources without destroying localStream
+    try { this.dc?.close(); } catch { /* noop */ }
+    try { this.pc?.close(); } catch { /* noop */ }
+    if (this.audioEl) {
+      try { this.audioEl.srcObject = null; this.audioEl.remove(); } catch { /* noop */ }
+    }
+    this.dc = null;
+    this.pc = null;
+    this.audioEl = null;
+
+    setTimeout(async () => {
+      if (this.disposed || this.state === 'disposed') return;
+      try {
+        this.initLock = this.connect();
+        await this.initLock;
+        this.reconnectAttempts = 0; // Success!
+      } catch (err) {
+        this.logEvent({ type: 'reconnect', detail: `reconnect_failed attempt=${this.reconnectAttempts} err=${err instanceof Error ? err.message : String(err)}` });
+        // If we still have attempts left, retry again
+        if (this.reconnectAttempts < 3) {
+          this.attemptReconnect();
+        } else {
+          this.handleError(`Realtime connection failed: ${err instanceof Error ? err.message : String(err)}`);
+        }
+      } finally {
+        this.initLock = null;
+      }
+    }, 1500);
   }
 
   private handleError(message: string) {

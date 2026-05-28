@@ -125,6 +125,7 @@ function CaseCard({ c, delay = 0, avatarStyle }: CaseCardProps) {
           boxShadow: '0 4px 20px rgba(26,26,46,0.06)',
           overflow: 'hidden',
           position: 'relative',
+          zIndex: 1,
           transition: 'all 300ms cubic-bezier(0.34, 1.56, 0.64, 1)',
         }}
       >
@@ -147,7 +148,7 @@ function CaseCard({ c, delay = 0, avatarStyle }: CaseCardProps) {
               style={avatarStyle}
               skin={c.skin}
               hair={c.hair}
-              size={118}
+              size={100}
               mood={c.mood}
               accessory={c.accessory}
               gender={c.sex}

@@ -852,7 +852,12 @@ function makeDiplomaTexture(
   // Header: institution name
   ctx.fillStyle = '#3a1d08';
   ctx.textAlign = 'center';
-  ctx.font = 'bold 26px "Times New Roman", serif';
+  let instFontSize = 26;
+  ctx.font = `bold ${instFontSize}px "Times New Roman", serif`;
+  while (ctx.measureText(institution.toUpperCase()).width > w - 80 && instFontSize > 14) {
+    instFontSize -= 1;
+    ctx.font = `bold ${instFontSize}px "Times New Roman", serif`;
+  }
   ctx.fillText(institution.toUpperCase(), w / 2, 78);
 
   // Divider
@@ -877,7 +882,12 @@ function makeDiplomaTexture(
   ctx.font = 'italic 14px "Times New Roman", serif';
   ctx.fillStyle = '#5a3010';
   ctx.fillText('the degree of', w / 2, 184);
-  ctx.font = 'bold 22px "Times New Roman", serif';
+  let degFontSize = 22;
+  ctx.font = `bold ${degFontSize}px "Times New Roman", serif`;
+  while (ctx.measureText(degree.toUpperCase()).width > w - 80 && degFontSize > 12) {
+    degFontSize -= 1;
+    ctx.font = `bold ${degFontSize}px "Times New Roman", serif`;
+  }
   ctx.fillStyle = '#6a2a10';
   ctx.fillText(degree.toUpperCase(), w / 2, 214);
 
@@ -1279,14 +1289,14 @@ function WallDiplomas() {
     <group>
       <Diploma
         position={[2.6, 2.05, ROOM_BACK_Z + 0.17]}
-        institution="Istanbul Faculty of Medicine"
+        institution="All India Institute of Medical Sciences, New Delhi"
         degree="Doctor of Medicine"
         name="Dr. Desai"
         year="2012"
       />
       <Diploma
         position={[3.9, 2.05, ROOM_BACK_Z + 0.17]}
-        institution="Hacettepe University"
+        institution="Postgraduate Institute of Medical Education & Research, Chandigarh"
         degree="Board of Internal Medicine"
         name="Dr. Desai"
         year="2016"
@@ -1296,7 +1306,7 @@ function WallDiplomas() {
         position={[3.25, 1.0, ROOM_BACK_Z + 0.17]}
         width={1.1}
         height={0.8}
-        institution="Ministry of Health"
+        institution="Medical Council of India"
         degree="Specialist Practitioner"
         name="Dr. Desai"
         year="2019"

@@ -148,15 +148,22 @@ async function consumeStream(
     if (signal.aborted) return { kind: 'aborted' };
 
     if (ev.type === 'agent.message') {
-      const content = (ev as { content?: unknown }).content;
-      if (Array.isArray(content)) {
-        for (const block of content) {
-          if (
-            block && typeof block === 'object' &&
-            (block as { type?: unknown }).type === 'text'
-          ) {
-            const text = (block as { text?: unknown }).text;
-            if (typeof text === 'string') onPartialDelta(text);
+      const delta = (ev as { delta?: unknown }).delta;
+      if (typeof delta === 'string') {
+        onPartialDelta(delta);
+      } else {
+        const content = (ev as { content?: unknown }).content;
+        if (typeof content === 'string') {
+          onPartialDelta(content);
+        } else if (Array.isArray(content)) {
+          for (const block of content) {
+            if (
+              block && typeof block === 'object' &&
+              (block as { type?: unknown }).type === 'text'
+            ) {
+              const text = (block as { text?: unknown }).text;
+              if (typeof text === 'string') onPartialDelta(text);
+            }
           }
         }
       }
