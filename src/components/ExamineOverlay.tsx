@@ -59,8 +59,8 @@ export function ExamineOverlay({ onClose, onDispatch }: Props) {
         position: 'fixed',
         inset: 0,
         zIndex: 50,
-        background: 'rgba(43,30,22,0.40)',
-        backdropFilter: 'blur(2px)',
+        background: 'rgba(45, 39, 39, 0.4)',
+        backdropFilter: 'blur(8px)',
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
@@ -81,6 +81,7 @@ export function ExamineOverlay({ onClose, onDispatch }: Props) {
           display: 'flex',
           flexDirection: 'column',
           maxHeight: 'calc(100vh - 60px)',
+          boxShadow: 'var(--plush)',
         }}
       >
         {/* Header strip */}
@@ -90,34 +91,34 @@ export function ExamineOverlay({ onClose, onDispatch }: Props) {
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: 12,
-            padding: '14px 22px',
+            padding: '16px 24px',
             background: 'var(--cream-2)',
-            borderBottom: '3px solid var(--line)',
+            borderBottom: 'var(--stroke-thick) solid var(--line)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
-            <span className="chip butter" style={{ fontSize: 11 }}>
-              EXAMINE
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+            <span className="chip peach" style={{ fontSize: 10 }}>
+              EXAMINATION DECK
             </span>
-            <h2 style={{ margin: 0, fontSize: 22, lineHeight: 1.1 }}>{c.name}</h2>
-            <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--ink-2)' }}>
-              {c.age} · {c.gender === 'F' ? 'Female' : 'Male'}
+            <h2 style={{ margin: 0, fontSize: 24, lineHeight: 1.1, fontWeight: 900 }}>{c.name}</h2>
+            <span style={{ fontWeight: 600, fontSize: 13, color: 'var(--ink-2)', fontFamily: 'Outfit, sans-serif' }}>
+              {c.age}Y · {c.gender === 'F' ? 'Female' : 'Male'}
             </span>
             <span
               className={`chip ${c.severity === 'critical' ? 'rose' : c.severity === 'urgent' ? 'peach' : 'mint'}`}
-              style={{ fontSize: 11 }}
+              style={{ fontSize: 10 }}
             >
-              {c.severity}
+              {c.severity.toUpperCase()}
             </span>
           </div>
           <button
             type="button"
             className="btn-plush ghost"
             onClick={onClose}
-            style={{ fontSize: 13, padding: '8px 16px' }}
+            style={{ fontSize: 12, padding: '8px 14px' }}
             title="Close (Esc)"
           >
-            ✕ Close
+            ✕ CLOSE
           </button>
         </div>
 
@@ -127,9 +128,9 @@ export function ExamineOverlay({ onClose, onDispatch }: Props) {
             display: 'grid',
             gridTemplateColumns: 'repeat(5, 1fr)',
             gap: 8,
-            padding: '12px 22px',
+            padding: '16px 24px',
             background: 'var(--cream)',
-            borderBottom: '3px solid var(--line)',
+            borderBottom: 'var(--stroke) solid var(--line)',
           }}
         >
           <Vital icon="❤" label="HR" value={String(c.vitals.hr)} unit="bpm" tone="var(--rose)" />
@@ -143,10 +144,10 @@ export function ExamineOverlay({ onClose, onDispatch }: Props) {
         <div
           style={{
             display: 'flex',
-            gap: 8,
-            padding: '12px 22px 0',
-            borderBottom: '3px solid var(--line)',
-            background: 'white',
+            gap: 6,
+            padding: '12px 24px 0',
+            borderBottom: 'var(--stroke) solid var(--line)',
+            background: 'var(--cream-2)',
           }}
         >
           {tabs.map((t) => {
@@ -161,28 +162,36 @@ export function ExamineOverlay({ onClose, onDispatch }: Props) {
                 disabled={disabled}
                 title={disabled ? 'Submit a diagnosis first' : undefined}
                 style={{
-                  background: active ? 'var(--butter)' : 'white',
-                  border: '3px solid var(--line)',
-                  borderBottom: active ? '3px solid var(--butter)' : '3px solid var(--line)',
-                  borderRadius: '14px 14px 0 0',
-                  padding: '10px 16px',
-                  fontWeight: 800,
+                  background: active ? 'var(--paper)' : 'transparent',
+                  border: 'var(--stroke) solid var(--line)',
+                  borderBottom: active ? 'var(--stroke) solid var(--paper)' : 'var(--stroke) solid var(--line)',
+                  borderRadius: '8px 8px 0 0',
+                  padding: '10px 18px',
+                  fontWeight: 700,
                   fontSize: 13,
                   cursor: disabled ? 'not-allowed' : 'pointer',
-                  marginBottom: -3,
+                  marginBottom: -1.5,
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 8,
-                  fontFamily: 'inherit',
-                  color: 'var(--ink)',
-                  opacity: disabled ? 0.45 : 1,
+                  fontFamily: 'Outfit, sans-serif',
+                  color: active ? 'var(--peach)' : 'var(--ink-soft)',
+                  opacity: disabled ? 0.4 : 1,
+                  transition: 'all 0.2s',
+                  boxShadow: active ? 'var(--plush-tiny)' : 'none',
                 }}
               >
                 {t.label}
                 {t.badge !== undefined && (
                   <span
                     className="chip"
-                    style={{ fontSize: 10, padding: '1px 7px', background: 'white' }}
+                    style={{
+                      fontSize: 10,
+                      padding: '1px 6px',
+                      background: active ? 'var(--peach)' : 'var(--cream-2)',
+                      color: active ? '#fff' : 'var(--ink)',
+                      borderColor: active ? 'var(--peach)' : 'var(--line)',
+                    }}
                   >
                     {t.badge}
                   </span>
@@ -193,17 +202,18 @@ export function ExamineOverlay({ onClose, onDispatch }: Props) {
         </div>
 
         {/* Tab body */}
-        <div style={{ padding: 22, overflowY: 'auto', flex: 1 }}>
+        <div style={{ padding: 24, overflowY: 'auto', flex: 1, background: 'var(--paper)' }}>
           <div
             style={{
-              padding: '12px 14px',
+              padding: '14px 18px',
               background: 'var(--cream-2)',
-              border: '3px solid var(--line)',
+              border: 'var(--stroke) solid var(--line)',
               borderRadius: 'var(--r-md)',
               boxShadow: 'var(--plush-tiny)',
-              marginBottom: 18,
-              fontSize: 14,
-              fontWeight: 700,
+              marginBottom: 20,
+              fontSize: 15,
+              fontWeight: 500,
+              color: 'var(--ink)',
               fontStyle: 'italic',
             }}
           >
@@ -230,18 +240,21 @@ export function ExamineOverlay({ onClose, onDispatch }: Props) {
         {/* Footer hint */}
         <div
           style={{
-            padding: '10px 22px',
-            borderTop: '3px solid var(--line)',
+            padding: '12px 24px',
+            borderTop: 'var(--stroke-thick) solid var(--line)',
             background: 'var(--cream-2)',
             fontSize: 11,
             fontWeight: 700,
-            color: 'var(--ink-2)',
+            color: 'var(--ink-soft)',
             display: 'flex',
             justifyContent: 'space-between',
+            fontFamily: 'Outfit, sans-serif',
           }}
         >
-          <span>Press Esc to close · {ordered.size} test{ordered.size === 1 ? '' : 's'} ordered</span>
-          <span>{submitted ? `Diagnosis: ${diagLabel(submitted)}` : 'Diagnosis pending'}</span>
+          <span>ESC: CLOSE PANEL · {ordered.size} DIAGNOSTICS REGISTERED</span>
+          <span style={{ color: submitted ? 'var(--peach)' : 'var(--rose)' }}>
+            {submitted ? `DIAGNOSIS: ${diagLabel(submitted).toUpperCase()}` : 'DIAGNOSIS PENDING'}
+          </span>
         </div>
       </div>
     </div>
@@ -266,18 +279,19 @@ function Vital({
   return (
     <div
       style={{
-        background: tone,
-        border: '3px solid var(--line)',
-        borderRadius: 12,
-        padding: '6px 4px',
+        background: 'var(--paper)',
+        border: `var(--stroke-thick) solid ${tone}`,
+        borderRadius: 'var(--r-sm)',
+        padding: '8px 4px',
         textAlign: 'center',
         boxShadow: 'var(--plush-tiny)',
+        transition: 'all 0.3s',
       }}
     >
-      <div style={{ fontSize: 14 }}>{icon}</div>
-      <div style={{ fontWeight: 900, fontSize: 16, lineHeight: 1 }}>{value}</div>
-      <div style={{ fontSize: 10, fontWeight: 700 }}>
-        {label} <span style={{ opacity: 0.6 }}>{unit}</span>
+      <div style={{ fontSize: 14, color: tone, marginBottom: 2 }}>{icon}</div>
+      <div style={{ fontWeight: 900, fontSize: 16, lineHeight: 1, color: 'var(--ink)', fontFamily: 'Outfit, sans-serif' }}>{value}</div>
+      <div style={{ fontSize: 9, fontWeight: 800, color: 'var(--ink-2)', textTransform: 'uppercase', marginTop: 2 }}>
+        {label} <span style={{ color: 'var(--ink-soft)' }}>{unit}</span>
       </div>
     </div>
   );
@@ -939,7 +953,7 @@ function DiagnoseTab({
           className="plush"
           style={{
             padding: 14,
-            background: isCorrect ? 'var(--mint)' : 'var(--rose)',
+            background: isCorrect ? 'var(--mint-deep)' : 'var(--rose-deep)',
             fontWeight: 800,
           }}
         >

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Doodle, DoodleScatter } from './primitives';
+import { Doodle } from './primitives';
 import { store } from '../game/store';
 
 export function SplashScreen() {
@@ -19,124 +19,145 @@ export function SplashScreen() {
     <div
       className="screen bg-peach-soft"
       onClick={() => store.beginFromSplash()}
-      style={{ position: 'relative', cursor: 'pointer' }}
+      style={{ 
+        position: 'relative', 
+        cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 24,
+        overflow: 'hidden'
+      }}
     >
-      <DoodleScatter
-        items={[
-          { kind: 'cloud', x: 60, y: 70, size: 100, color: '#fff' },
-          { kind: 'cloud', x: 720, y: 110, size: 130, color: '#fff' },
-          { kind: 'cloud', x: 920, y: 60, size: 90, color: '#fff' },
-          { kind: 'sparkle', x: 180, y: 200, size: 32, color: '#FFD86B' },
-          { kind: 'sparkle', x: 880, y: 240, size: 28, color: '#fff' },
-          { kind: 'star', x: 90, y: 480, size: 38, color: '#FFD86B', anim: 'wobble' },
-          { kind: 'pill', x: 800, y: 500, size: 70, anim: 'wobble' },
-          { kind: 'heart', x: 130, y: 600, size: 40, color: '#F47A92' },
-        ]}
-      />
-
-      {/* Sun */}
-      <div
-        style={{ position: 'absolute', top: 38, left: '50%', transform: 'translateX(-50%)' }}
-        className="floaty"
-      >
-        <svg width="120" height="120" viewBox="0 0 120 120">
-          <g>
-            {Array.from({ length: 12 }).map((_, i) => (
-              <rect
-                key={i}
-                x="58"
-                y="6"
-                width="4"
-                height="14"
-                rx="2"
-                fill="#F5B73D"
-                stroke="var(--line)"
-                strokeWidth="2.5"
-                transform={`rotate(${i * 30} 60 60)`}
-              />
-            ))}
-          </g>
-          <circle cx="60" cy="60" r="32" fill="#FFD86B" stroke="var(--line)" strokeWidth="4" />
-          <circle cx="50" cy="58" r="2.5" fill="var(--line)" />
-          <circle cx="70" cy="58" r="2.5" fill="var(--line)" />
-          <path d="M 50 68 Q 60 76 70 68" stroke="var(--line)" strokeWidth="3" fill="none" strokeLinecap="round" />
-        </svg>
-      </div>
-
-      {/* Center stage */}
+      {/* Soft floating doodles instead of radar */}
       <div
         style={{
           position: 'absolute',
-          inset: 0,
+          width: 600,
+          height: 600,
+          opacity: 0.15,
+          pointerEvents: 'none',
+          zIndex: 1,
+          animation: 'spin-teleporter 60s linear infinite',
+        }}
+      >
+        <svg viewBox="0 0 200 200" width="100%" height="100%">
+          <circle cx="100" cy="100" r="80" fill="none" stroke="var(--line)" strokeWidth="2" strokeDasharray="6 12" />
+          <circle cx="100" cy="100" r="50" fill="none" stroke="var(--line)" strokeWidth="1.5" strokeDasharray="4 8" />
+        </svg>
+      </div>
+
+      {/* Center content container */}
+      <div
+        style={{
+          zIndex: 5,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 32,
+          gap: 20,
+          maxWidth: 820,
+          textAlign: 'center',
         }}
       >
+        {/* System eyebrow */}
+        <div 
+          className="chip peach"
+          style={{
+            fontSize: 12,
+            padding: '6px 16px',
+            marginBottom: -10,
+          }}
+        >
+          ★ CLINICAL OUTPATIENT SIMULATION
+        </div>
+
+        {/* Brand Title */}
         <div className="popin" style={{ animationDelay: '.05s' }}>
           <div
             style={{
-              fontFamily: 'Nunito',
+              fontFamily: "'Outfit', sans-serif",
               fontWeight: 900,
-              fontSize: 168,
-              lineHeight: 1,
+              fontSize: 100,
+              lineHeight: 0.95,
               letterSpacing: '-0.04em',
-              color: 'var(--cream)',
-              WebkitTextStroke: '5px var(--line)',
-              paintOrder: 'stroke fill',
-              textShadow: '0 8px 0 var(--line)',
+              color: 'var(--ink)',
               display: 'flex',
               alignItems: 'center',
-              gap: 14,
+              justifyContent: 'center',
+              gap: 16,
             }}
           >
             atri
             <span style={{ color: 'var(--peach)' }}>um</span>
-            <span className="wobble" style={{ display: 'inline-block', marginLeft: 8, marginBottom: 30 }}>
-              <Doodle kind="cross" size={86} color="#F47A92" />
+            <span className="wobble" style={{ display: 'inline-block', marginLeft: 8 }}>
+              <Doodle kind="cross" size={54} color="var(--rose)" />
             </span>
           </div>
         </div>
 
+        {/* Subtitle */}
+        <div
+          className="popin plush-lg"
+          style={{
+            animationDelay: '.15s',
+            fontSize: 18,
+            fontWeight: 700,
+            color: 'var(--ink-2)',
+            background: '#ffffff',
+            padding: '20px 32px',
+            maxWidth: 600,
+            lineHeight: 1.5,
+          }}
+        >
+          The clinical training deck that lets you make every mistake <span style={{ color: 'var(--peach)', fontWeight: 800 }}>before they count</span>.
+        </div>
+
+        {/* Telemetry panel */}
         <div
           className="popin"
           style={{
-            animationDelay: '.15s',
-            fontSize: 24,
+            animationDelay: '.25s',
+            display: 'flex',
+            gap: 20,
+            marginTop: 10,
+            fontSize: 13,
             fontWeight: 700,
-            color: 'var(--ink)',
-            background: 'white',
-            padding: '10px 22px',
-            border: '3px solid var(--line)',
-            borderRadius: 'var(--r-pill)',
-            boxShadow: 'var(--plush-tiny)',
+            color: 'var(--ink-soft)',
           }}
         >
-          The clinic that lets you make every mistake before they count.
+          <span>✦ CLINIC ROOM CONNECTED</span>
+          <span style={{ color: 'var(--peach)' }}>● VOICE RECOGNITION LIVE</span>
+          <span>✦ READY FOR DUTY</span>
         </div>
 
-        <div className="popin breathe" style={{ animationDelay: '.3s', marginTop: 24 }}>
+        {/* Action Button */}
+        <div className="popin breathe" style={{ animationDelay: '.35s', marginTop: 16 }}>
           <button
             type="button"
             className="btn-plush primary"
-            style={{ fontSize: 22, padding: '18px 38px' }}
+            style={{ 
+              fontSize: 20, 
+              padding: '16px 40px',
+              fontWeight: 800,
+            }}
             onClick={(e) => {
               e.stopPropagation();
               store.beginFromSplash();
             }}
           >
-            ▸ Tap to begin
+            Enter Simulation
           </button>
         </div>
 
+        {/* Hotkey hint */}
         <div
           className="popin"
           style={{
             animationDelay: '.45s',
-            fontSize: 13,
-            color: 'var(--ink-2)',
+            fontSize: 12,
+            color: 'var(--ink-soft)',
             fontWeight: 700,
             marginTop: 8,
           }}
@@ -144,32 +165,26 @@ export function SplashScreen() {
           press{' '}
           <span
             style={{
-              background: 'white',
-              padding: '2px 10px',
-              border: '2.5px solid var(--line)',
+              background: '#ffffff',
+              padding: '4px 12px',
+              border: 'var(--stroke) solid var(--line)',
               borderRadius: 8,
               boxShadow: '0 2px 0 var(--line)',
+              color: 'var(--ink)',
             }}
           >
             space
           </span>{' '}
-          to continue
+          to enter
         </div>
       </div>
 
-      {/* Foreground hill */}
-      <svg
-        style={{ position: 'absolute', bottom: -2, left: 0, width: '100%' }}
-        viewBox="0 0 1200 120"
-        preserveAspectRatio="none"
-      >
-        <path
-          d="M 0 60 Q 300 0 600 50 T 1200 50 V 120 H 0 Z"
-          fill="#A8E5C8"
-          stroke="var(--line)"
-          strokeWidth="4"
-        />
-      </svg>
+      <style>{`
+        @keyframes spin-teleporter {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }

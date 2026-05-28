@@ -120,17 +120,18 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
 
   return (
     <div
+      className="plush"
       style={{
         position: 'fixed',
         top: 18,
         right: 18,
         zIndex: 60,
-        width: 270,
-        background: 'white',
-        border: '3px solid var(--line)',
+        width: 280,
+        background: 'rgba(255, 255, 255, 0.95)',
+        border: 'var(--stroke-thick) solid var(--line)',
         borderRadius: 'var(--r-md)',
-        boxShadow: '0 6px 0 var(--line), 0 14px 28px rgba(43,30,22,0.18)',
-        fontFamily: 'Nunito, system-ui, sans-serif',
+        boxShadow: 'var(--plush)',
+        fontFamily: 'Outfit, system-ui, sans-serif',
         color: 'var(--ink)',
         overflow: 'hidden',
       }}
@@ -142,13 +143,21 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: 8,
-          padding: '10px 14px 8px',
-          borderBottom: '2px solid var(--line)',
+          padding: '12px 16px',
+          borderBottom: 'var(--stroke) solid var(--line)',
+          background: 'var(--cream-2)',
         }}
       >
-        <div style={{ fontSize: 13, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 6 }}>
-          {patientName}
-          <span style={{ fontSize: 10, color: 'var(--ink-soft)', fontWeight: 700 }}>
+        <div style={{ fontSize: 14, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ color: 'var(--ink)' }}>{patientName}</span>
+          <span
+            style={{
+              fontSize: 10,
+              color: 'var(--ink-soft)',
+              fontWeight: 600,
+              fontFamily: 'Outfit, sans-serif',
+            }}
+          >
             {patientLabel}
           </span>
         </div>
@@ -156,20 +165,15 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {/* Language chip */}
           <div
+            className={`chip ${langIsHindi ? 'butter' : 'sky'}`}
             style={{
-              fontSize: 9,
-              fontWeight: 800,
-              letterSpacing: '0.08em',
+              fontSize: 8,
               padding: '2px 6px',
-              borderRadius: 'var(--r-pill)',
-              background: langIsHindi ? '#fdf3e7' : '#f0f7ff',
-              border: `1.5px solid ${langIsHindi ? '#e8a54a' : '#aac6e8'}`,
-              color: langIsHindi ? '#b8620a' : '#2a62a8',
-              transition: 'background 0.3s, color 0.3s, border-color 0.3s',
-              whiteSpace: 'nowrap',
+              fontFamily: 'Outfit, sans-serif',
+              fontWeight: 800,
             }}
           >
-            {langIsHindi ? '🇮🇳 Hindi' : '🇺🇸 English'}
+            {langIsHindi ? 'HI' : 'EN'}
           </div>
 
           {/* Status badge */}
@@ -179,7 +183,7 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
               alignItems: 'center',
               gap: 5,
               fontSize: 9,
-              letterSpacing: '0.12em',
+              letterSpacing: '0.08em',
               color: statusColor,
               textTransform: 'uppercase',
               fontWeight: 900,
@@ -187,7 +191,8 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
               padding: '3px 7px',
               borderRadius: 'var(--r-pill)',
               background: 'var(--cream)',
-              border: '2px solid var(--line)',
+              border: 'var(--stroke) solid var(--line)',
+              fontFamily: 'Outfit, sans-serif',
               transition: 'color 0.25s',
             }}
           >
@@ -199,6 +204,7 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
                 borderRadius: '50%',
                 background: statusColor,
                 display: 'inline-block',
+                boxShadow: `0 0 8px ${statusColor}`,
                 transition: 'background 0.25s',
               }}
             />
@@ -208,21 +214,21 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
       </div>
 
       {/* ── Subtitle / transcript box ───────────────────────── */}
-      <div style={{ padding: '8px 14px 10px' }}>
+      <div style={{ padding: '12px 16px 14px' }}>
         <div
           ref={scrollRef}
           style={{
             fontStyle: showSubtitle ? 'italic' : 'normal',
-            fontSize: 12,
-            lineHeight: 1.45,
-            color: showSubtitle ? 'var(--ink)' : 'var(--ink-soft)',
-            fontWeight: 600,
-            maxHeight: status === 'speaking' ? 110 : 90,
+            fontSize: 13,
+            lineHeight: 1.5,
+            color: showSubtitle ? 'var(--ink)' : 'var(--ink-2)',
+            fontWeight: 500,
+            maxHeight: status === 'speaking' ? 120 : 90,
             overflowY: 'auto',
             background: 'var(--cream-2)',
-            border: '2px solid var(--line)',
-            borderRadius: 10,
-            padding: '8px 10px',
+            border: 'var(--stroke) solid var(--line)',
+            borderRadius: 8,
+            padding: '10px 12px',
             transition: 'max-height 0.2s',
           }}
         >
@@ -232,11 +238,12 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
                 style={{
                   fontSize: 9,
                   fontWeight: 800,
-                  color: subtitle.who === 'you' ? '#2a62a8' : 'var(--ink-2)',
-                  letterSpacing: '0.06em',
+                  color: subtitle.who === 'you' ? 'var(--peach)' : 'var(--rose)',
+                  letterSpacing: '0.1em',
                   textTransform: 'uppercase',
-                  marginBottom: 3,
+                  marginBottom: 4,
                   fontStyle: 'normal',
+                  fontFamily: 'Outfit, sans-serif',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 4,
@@ -244,17 +251,19 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
               >
                 {speakerLabel}
                 {subtitle.who === 'patient' && (
-                  <span style={{ fontSize: 11 }}>{EMOTION_ICONS[emotion]}</span>
+                  <span style={{ fontSize: 12 }}>{EMOTION_ICONS[emotion]}</span>
                 )}
               </div>
               "{subtitle.text}"
             </>
           ) : status === 'thinking' ? (
-            <span style={{ color: '#c8900a', fontStyle: 'normal' }}>
-              Thinking<span className="ellipsis-dots">…</span>
+            <span style={{ color: 'var(--peach)', fontStyle: 'normal', fontFamily: 'Outfit, sans-serif' }}>
+              Thinking...
             </span>
           ) : (
-            'Voice live · just talk'
+            <span style={{ fontFamily: 'Outfit, sans-serif', color: 'var(--ink-soft)', fontSize: 11 }}>
+              Ready & Listening
+            </span>
           )}
         </div>
 
@@ -264,21 +273,22 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 3,
+              gap: 4,
               justifyContent: 'center',
-              marginTop: 6,
+              marginTop: 10,
             }}
           >
-            {[1, 2, 3, 4, 5].map((i) => (
+            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
               <div
                 key={i}
                 style={{
                   width: 3,
                   borderRadius: 2,
                   background: statusColor,
-                  animation: `waveBar ${0.5 + i * 0.1}s ease-in-out infinite alternate`,
-                  height: 8 + (i % 3) * 5,
-                  opacity: 0.8,
+                  boxShadow: `0 0 6px ${statusColor}aa`,
+                  animation: `waveBar ${0.4 + i * 0.08}s ease-in-out infinite alternate`,
+                  height: 6 + (i % 4) * 6,
+                  opacity: 0.85,
                 }}
               />
             ))}
@@ -288,54 +298,54 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
 
       {/* ── Debug overlay (localStorage.debug='1') ─────────────── */}
       {debugMode.current && (
-        <div style={{ borderTop: '2px solid var(--line)' }}>
+        <div style={{ borderTop: 'var(--stroke) solid var(--line)' }}>
           <button
             type="button"
             onClick={() => setDebugOpen((o) => !o)}
             style={{
               width: '100%',
-              background: '#1a1209',
-              color: '#7cfc94',
+              background: 'var(--cream-2)',
+              color: 'var(--ink)',
               border: 'none',
-              padding: '5px 10px',
+              padding: '6px 12px',
               fontSize: 9,
-              fontFamily: 'ui-monospace, monospace',
+              fontFamily: 'Outfit, sans-serif',
               letterSpacing: '0.1em',
               cursor: 'pointer',
               textAlign: 'left',
               fontWeight: 700,
             }}
           >
-            {debugOpen ? '▾' : '▸'} DEBUG {debugOpen ? '(click to collapse)' : ''}
+            {debugOpen ? '▼' : '▶'} COGNITIVE DIAGNOSTICS {debugOpen ? '(HIDE)' : '(SHOW)'}
           </button>
 
           {debugOpen && (
             <div
               style={{
-                background: '#1a1209',
-                color: '#7cfc94',
-                fontFamily: 'ui-monospace, monospace',
+                background: 'var(--cream)',
+                color: 'var(--ink-2)',
+                fontFamily: 'Outfit, sans-serif',
                 fontSize: 10,
-                padding: '6px 10px 8px',
+                padding: '8px 12px 12px',
                 lineHeight: 1.6,
                 maxHeight: 280,
                 overflowY: 'auto',
               }}
             >
-              <div><span style={{ color: '#aaa' }}>STATUS  </span>{status}</div>
-              <div><span style={{ color: '#aaa' }}>EMOTION </span>{EMOTION_ICONS[emotion]} {emotion}</div>
-              <div><span style={{ color: '#aaa' }}>LANG    </span>{language}</div>
+              <div><span style={{ color: 'var(--ink-soft)' }}>STATUS  </span>{status}</div>
+              <div><span style={{ color: 'var(--ink-soft)' }}>EMOTION </span>{EMOTION_ICONS[emotion]} {emotion}</div>
+              <div><span style={{ color: 'var(--ink-soft)' }}>LANG    </span>{language}</div>
 
               {/* FSM Event Log */}
-              <div style={{ marginTop: 6, color: '#aaa', fontSize: 9, borderTop: '1px solid #333', paddingTop: 4 }}>
-                FSM EVENT LOG
+              <div style={{ marginTop: 8, color: 'var(--ink-soft)', fontSize: 9, borderTop: '1px dashed var(--line)', paddingTop: 6 }}>
+                EVENT LOG
               </div>
               {(() => {
                 const conv = getExistingConversation(POLYCLINIC_BED_INDEX);
                 const events = conv?.getEventLog?.() ?? [];
                 const recent = events.slice(-10);
                 if (recent.length === 0) {
-                  return <div style={{ color: '#555' }}>no events yet</div>;
+                  return <div style={{ color: 'var(--ink-soft)' }}>no events yet</div>;
                 }
                 return recent.map((ev, i) => {
                   const time = new Date(ev.timestamp).toLocaleTimeString('en-US', {
@@ -343,34 +353,34 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
                   });
                   const ms = i > 0 ? `+${ev.timestamp - recent[i - 1].timestamp}ms` : '';
                   const typeColor =
-                    ev.type === 'error' ? '#ff6b6b' :
-                    ev.type === 'timeout' ? '#ffa94d' :
-                    ev.type === 'reconnect' ? '#ffa94d' :
-                    ev.type === 'state_transition' ? '#7cfc94' :
-                    ev.type === 'drift' ? '#ff6b6b' :
-                    '#6fc3f7';
+                    ev.type === 'error' ? 'var(--rose)' :
+                    ev.type === 'timeout' ? 'var(--peach)' :
+                    ev.type === 'reconnect' ? 'var(--peach)' :
+                    ev.type === 'state_transition' ? 'var(--mint)' :
+                    ev.type === 'drift' ? 'var(--rose)' :
+                    'var(--peach)';
                   return (
                     <div key={i} style={{ color: typeColor, fontSize: 9, lineHeight: 1.4 }}>
-                      <span style={{ color: '#666' }}>{time}</span>{' '}
+                      <span style={{ color: 'var(--ink-soft)' }}>{time}</span>{' '}
                       {ev.type === 'state_transition'
                         ? `${ev.from}→${ev.to}`
                         : ev.type}
                       {ev.detail ? ` ${ev.detail.slice(0, 40)}` : ''}
-                      {ms && <span style={{ color: '#555' }}> {ms}</span>}
+                      {ms && <span style={{ color: 'var(--ink-soft)' }}> {ms}</span>}
                     </div>
                   );
                 });
               })()}
 
               {/* Recent turns */}
-              <div style={{ marginTop: 6, color: '#aaa', fontSize: 9, borderTop: '1px solid #333', paddingTop: 4 }}>
-                RECENT TURNS
+              <div style={{ marginTop: 8, color: 'var(--ink-soft)', fontSize: 9, borderTop: '1px dashed var(--line)', paddingTop: 6 }}>
+                RECENT TRANSCRIPT
               </div>
               {recentLog.length === 0 && (
-                <div style={{ color: '#555' }}>no turns yet</div>
+                <div style={{ color: 'var(--ink-soft)' }}>no turns yet</div>
               )}
               {recentLog.map((entry, i) => (
-                <div key={i} style={{ color: entry.who === 'you' ? '#6fc3f7' : '#7cfc94' }}>
+                <div key={i} style={{ color: entry.who === 'you' ? 'var(--mint)' : 'var(--peach)' }}>
                   {entry.who === 'you' ? '→ DR: ' : '← PT: '}{entry.text}
                 </div>
               ))}
@@ -382,7 +392,7 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
       {/* Inline keyframe styles injected once */}
       <style>{`
         @keyframes waveBar {
-          from { transform: scaleY(1); opacity: 0.6; }
+          from { transform: scaleY(0.7); opacity: 0.5; }
           to   { transform: scaleY(2.2); opacity: 1; }
         }
       `}</style>

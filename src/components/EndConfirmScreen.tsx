@@ -114,8 +114,8 @@ export function EndConfirmScreen() {
                     alignItems: 'center',
                     gap: 14,
                     padding: '12px 14px',
-                    background: on ? 'var(--mint)' : 'white',
-                    border: '3px solid var(--line)',
+                    background: on ? 'var(--mint-deep)' : 'var(--paper)',
+                    border: 'var(--stroke) solid var(--line)',
                     borderRadius: 16,
                     boxShadow: 'var(--plush-tiny)',
                   }}
@@ -125,14 +125,14 @@ export function EndConfirmScreen() {
                       width: 32,
                       height: 32,
                       borderRadius: 8,
-                      background: on ? 'white' : 'var(--cream)',
-                      border: '3px solid var(--line)',
+                      background: on ? 'var(--paper)' : 'var(--cream)',
+                      border: 'var(--stroke) solid var(--line)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       fontWeight: 900,
                       fontSize: 18,
-                      color: 'var(--mint-deep)',
+                      color: 'var(--ink)',
                     }}
                   >
                     {on ? '✓' : ''}

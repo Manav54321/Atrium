@@ -64,31 +64,31 @@ function DomainRing({ label, score }: DomainRingProps) {
   const c = 2 * Math.PI * r;
   const color = RING_COLOR[score.verdict];
   const qualitative =
-    score.verdict === 'excellent' || score.verdict === 'good' ? 'on target' :
-    score.verdict === 'satisfactory' ? 'fair' :
-    'work needed';
+    score.verdict === 'excellent' || score.verdict === 'good' ? 'ON TARGET' :
+    score.verdict === 'satisfactory' ? 'FAIR' :
+    'WORK NEEDED';
   return (
     <div
       style={{
-        background: 'white',
-        border: '3px solid var(--line)',
+        background: 'var(--paper)',
+        border: 'var(--stroke) solid var(--line)',
         borderRadius: 16,
-        padding: 14,
-        boxShadow: 'var(--plush-tiny)',
+        padding: '16px 20px',
+        boxShadow: 'var(--plush-sm)',
         display: 'flex',
         alignItems: 'center',
-        gap: 14,
+        gap: 16,
       }}
     >
       <svg width="84" height="84" viewBox="0 0 84 84">
-        <circle cx="42" cy="42" r={r} fill="none" stroke="var(--cream)" strokeWidth="10" />
+        <circle cx="42" cy="42" r={r} fill="none" stroke="var(--cream-2)" strokeWidth="8" />
         <circle
           cx="42"
           cy="42"
           r={r}
           fill="none"
           stroke={color}
-          strokeWidth="10"
+          strokeWidth="8"
           strokeLinecap="round"
           strokeDasharray={`${c * pct} ${c}`}
           transform="rotate(-90 42 42)"
@@ -97,17 +97,26 @@ function DomainRing({ label, score }: DomainRingProps) {
           x="42"
           y="48"
           textAnchor="middle"
-          fontFamily="Nunito"
+          fontFamily="Outfit, sans-serif"
           fontWeight="900"
-          fontSize="16"
+          fontSize="15"
           fill="var(--ink)"
         >
           {formatScore(score.raw)}/{score.max}
         </text>
       </svg>
       <div>
-        <div style={{ fontWeight: 900, fontSize: 14, lineHeight: 1.1 }}>{label}</div>
-        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ink-2)', marginTop: 2 }}>
+        <div style={{ fontWeight: 800, fontSize: 14, lineHeight: 1.2, color: 'var(--ink)' }}>{label}</div>
+        <div
+          style={{
+            fontSize: 10,
+            fontWeight: 800,
+            color: color,
+            marginTop: 4,
+            fontFamily: 'Outfit, sans-serif',
+            letterSpacing: '0.05em',
+          }}
+        >
           {qualitative}
         </div>
       </div>
@@ -119,7 +128,7 @@ function formatScore(n: number): string {
   return Number.isInteger(n) ? String(n) : n.toFixed(1);
 }
 
-// ── Criterion — adapted to take CriterionResult + resolved cite ────
+// ── Criterion ──────────────────────────────────────────────────────
 
 interface Cite {
   title: string;
@@ -139,9 +148,9 @@ const CRITERION_STYLES: Record<
   CriterionProps['status'],
   { icon: string; color: string; label: string; iconColor: string }
 > = {
-  met: { icon: '\u2713', color: 'var(--mint)', label: 'MET', iconColor: 'var(--mint-deep)' },
+  met: { icon: '✓', color: 'var(--mint)', label: 'MET', iconColor: 'var(--mint-deep)' },
   'partially-met': { icon: '~', color: 'var(--butter)', label: 'PARTIAL', iconColor: 'var(--butter-deep)' },
-  missed: { icon: '\u00D7', color: 'var(--rose)', label: 'MISSED', iconColor: 'var(--rose-deep)' },
+  missed: { icon: '✕', color: 'var(--rose)', label: 'MISSED', iconColor: 'var(--rose-deep)' },
 };
 
 function Criterion({ status, text, evidence, cite }: CriterionProps) {
@@ -150,27 +159,27 @@ function Criterion({ status, text, evidence, cite }: CriterionProps) {
     <div
       style={{
         display: 'flex',
-        gap: 12,
+        gap: 14,
         alignItems: 'flex-start',
-        padding: 12,
-        background: '#FFFCF3',
-        border: '2.5px solid var(--line)',
+        padding: 16,
+        background: 'var(--paper)',
+        border: 'var(--stroke) solid var(--line)',
         borderRadius: 14,
-        boxShadow: '0 2px 0 var(--line)',
+        boxShadow: 'var(--plush-tiny)',
       }}
     >
       <div
         style={{
-          width: 36,
-          height: 36,
+          width: 32,
+          height: 32,
           borderRadius: '50%',
-          background: styles.color,
-          border: '2.5px solid var(--line)',
+          background: `${styles.color}20`,
+          border: `var(--stroke) solid ${styles.color}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           fontWeight: 900,
-          fontSize: 20,
+          fontSize: 16,
           color: styles.iconColor,
           flexShrink: 0,
         }}
@@ -178,22 +187,23 @@ function Criterion({ status, text, evidence, cite }: CriterionProps) {
         {styles.icon}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6, flexWrap: 'wrap' }}>
           <span
+            className="chip"
             style={{
-              fontSize: 10,
-              fontWeight: 900,
+              fontSize: 9,
+              fontWeight: 800,
               padding: '2px 8px',
-              borderRadius: 6,
-              background: styles.color,
-              border: '2px solid var(--line)',
+              borderColor: `${styles.color}50`,
+              color: styles.iconColor,
+              background: `${styles.color}15`,
             }}
           >
             {styles.label}
           </span>
-          <span style={{ fontWeight: 800, fontSize: 14 }}>{text}</span>
+          <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--ink)' }}>{text}</span>
         </div>
-        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink-2)', fontStyle: 'italic', lineHeight: 1.4 }}>
           {evidence}
         </div>
         {cite && (
@@ -201,7 +211,7 @@ function Criterion({ status, text, evidence, cite }: CriterionProps) {
             style={{
               marginTop: 8,
               background: 'var(--cream-2)',
-              border: '2.5px dashed var(--line)',
+              border: 'var(--stroke) dashed var(--line)',
               borderRadius: 10,
               padding: '8px 10px',
             }}
@@ -210,7 +220,7 @@ function Criterion({ status, text, evidence, cite }: CriterionProps) {
               {'\uD83D\uDCD6 '}{cite.title}
             </div>
             <div style={{ fontSize: 12, fontWeight: 600, marginTop: 2 }}>{cite.rec}</div>
-            <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--mint-deep)', marginTop: 4 }}>
+            <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--peach)', marginTop: 4, fontFamily: 'Outfit, sans-serif' }}>
               {cite.loE}
               {cite.url && (
                 <>
@@ -647,16 +657,17 @@ function EvaluationBody({ evaluation, patient, c }: BodyProps) {
         <div
           className="plush-lg popin"
           style={{
-            background: 'var(--rose)',
-            padding: 18,
-            marginBottom: 18,
-            border: '3px solid var(--line)',
+            background: 'var(--rose-deep)',
+            padding: 20,
+            marginBottom: 20,
+            border: 'var(--stroke-thick) solid var(--rose)',
+            boxShadow: 'var(--plush)',
           }}
         >
-          <div className="chip" style={{ background: 'white', marginBottom: 8 }}>
-            {'\u26A0 SAFETY BREACH'}
+          <div className="chip rose" style={{ marginBottom: 10 }}>
+            ⚠ SAFETY BREACH
           </div>
-          <div style={{ fontWeight: 800, fontSize: 16, lineHeight: 1.4 }}>
+          <div style={{ fontWeight: 800, fontSize: 16, lineHeight: 1.4, color: 'var(--ink)' }}>
             {evaluation.safety_breach.what}
           </div>
           {evaluation.safety_breach.guideline_ref && (() => {
@@ -664,17 +675,17 @@ function EvaluationBody({ evaluation, patient, c }: BodyProps) {
             return cite ? (
               <div
                 style={{
-                  marginTop: 10,
-                  background: 'white',
-                  border: '2.5px dashed var(--line)',
+                  marginTop: 12,
+                  background: 'var(--paper)',
+                  border: 'var(--stroke) dashed var(--line)',
                   borderRadius: 10,
-                  padding: '8px 10px',
+                  padding: '12px 14px',
                 }}
               >
-                <div style={{ fontSize: 11, fontWeight: 900 }}>{'\uD83D\uDCD6 '}{cite.title}</div>
-                <div style={{ fontSize: 12, fontWeight: 600, marginTop: 2 }}>{cite.rec}</div>
-                <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--mint-deep)', marginTop: 4 }}>
-                  {cite.loE}
+                <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--ink)' }}>📖 {cite.title}</div>
+                <div style={{ fontSize: 13, fontWeight: 500, marginTop: 4, color: 'var(--ink-2)' }}>{cite.rec}</div>
+                <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--peach)', marginTop: 6, fontFamily: 'Outfit, sans-serif' }}>
+                  {cite.loE.toUpperCase()}
                 </div>
               </div>
             ) : null;
@@ -682,128 +693,139 @@ function EvaluationBody({ evaluation, patient, c }: BodyProps) {
         </div>
       )}
 
+      {/* Main Verdict Card */}
       <div
         className="plush-lg popin"
         style={{
-          background: GLOBAL_BG[verdict],
-          padding: 24,
+          background: 'var(--paper)',
+          border: `var(--stroke-thick) solid ${GLOBAL_BG[verdict]}`,
+          padding: 28,
           position: 'relative',
-          marginBottom: 22,
-          transform: 'rotate(-0.4deg)',
+          marginBottom: 24,
+          boxShadow: 'var(--plush)',
         }}
       >
-        <div style={{ position: 'absolute', top: -14, left: 24 }} className="chip butter">
-          YOUR MARK
+        <div style={{ position: 'absolute', top: -14, left: 24 }} className="chip peach">
+          SIMULATION VERDICT
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
-          <div className="floaty">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
+          <div className="floaty" style={{ flexShrink: 0 }}>
             <div
               className="plush"
               style={{
-                width: 110,
-                height: 110,
-                background: 'white',
+                width: 100,
+                height: 100,
+                background: 'var(--cream-2)',
+                borderColor: 'var(--line)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                borderRadius: '50%',
               }}
             >
-              <Doodle kind="star" size={86} color="#FFD86B" />
+              <Doodle kind="star" size={64} color={GLOBAL_DEEP[verdict]} />
             </div>
           </div>
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, minWidth: 280 }}>
             <div
               style={{
-                fontSize: 13,
+                fontSize: 10,
                 fontWeight: 800,
-                color: 'var(--ink-2)',
+                color: 'var(--ink-soft)',
                 textTransform: 'uppercase',
-                letterSpacing: '.06em',
+                letterSpacing: '.12em',
+                fontFamily: 'Outfit, sans-serif',
               }}
             >
-              VERDICT
+              GRADE RECORDED:
             </div>
-            <h1 style={{ fontSize: 38, lineHeight: 1.05, margin: '4px 0 8px' }}>
-              {GLOBAL_HEADLINE[verdict].split(' \u2014 ')[0]}{' '}
-              <span style={{ fontSize: 22, color: GLOBAL_DEEP[verdict] }}>
-                {' \u00B7 ' + (GLOBAL_HEADLINE[verdict].split(' \u2014 ')[1] ?? '')}
+            <h1 style={{ fontSize: 32, lineHeight: 1.1, margin: '6px 0 10px', fontWeight: 900 }}>
+              {GLOBAL_HEADLINE[verdict].split(' — ')[0].toUpperCase()}{' '}
+              <span style={{ fontSize: 18, color: GLOBAL_DEEP[verdict] }}>
+                {' · ' + (GLOBAL_HEADLINE[verdict].split(' — ')[1]?.toUpperCase() ?? '')}
               </span>
             </h1>
-            <div style={{ fontSize: 15, lineHeight: 1.55, fontWeight: 600, color: 'var(--ink)' }}>
+            <div style={{ fontSize: 15, lineHeight: 1.6, fontWeight: 500, color: 'var(--ink-2)' }}>
               {evaluation.narrative}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="plush" style={{ padding: 18, marginBottom: 22 }}>
-        <SectionLabel>DOMAIN SCORES</SectionLabel>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
+      {/* Domain Rings Panel */}
+      <div className="plush" style={{ padding: 20, marginBottom: 24, background: 'var(--cream-2)' }}>
+        <SectionLabel>DOMAIN PERFORMANCE INDEX</SectionLabel>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
           <DomainRing label="Data Gathering" score={evaluation.domain_scores.data_gathering} />
           <DomainRing label="Clinical Management" score={evaluation.domain_scores.clinical_management} />
-          <DomainRing label="Interpersonal" score={evaluation.domain_scores.interpersonal} />
+          <DomainRing label="Interpersonal Skills" score={evaluation.domain_scores.interpersonal} />
         </div>
       </div>
 
+      {/* Criteria Breakdown Panel */}
       {(dgItems.length + cmItems.length + ipItems.length) > 0 && (
-        <div className="plush" style={{ padding: 18, marginBottom: 22 }}>
-          <SectionLabel>PER-CRITERION</SectionLabel>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="plush" style={{ padding: 20, marginBottom: 24, background: 'var(--cream-2)' }}>
+          <SectionLabel>SPECIFIC RUBRIC TARGETS</SectionLabel>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {dgItems.length > 0 && (
-              <CriterionGroup title="Data gathering" items={dgItems} labelMap={labelByCriterionId} />
+              <CriterionGroup title="Data Gathering Criteria" items={dgItems} labelMap={labelByCriterionId} />
             )}
             {cmItems.length > 0 && (
-              <CriterionGroup title="Clinical management" items={cmItems} labelMap={labelByCriterionId} />
+              <CriterionGroup title="Clinical Management Criteria" items={cmItems} labelMap={labelByCriterionId} />
             )}
             {ipItems.length > 0 && (
-              <CriterionGroup title="Interpersonal" items={ipItems} labelMap={labelByCriterionId} />
+              <CriterionGroup title="Interpersonal Skills Criteria" items={ipItems} labelMap={labelByCriterionId} />
             )}
           </div>
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 22 }}>
+      {/* Highlights & Improvements Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 24 }}>
         {evaluation.highlights.length > 0 && (
-          <div className="plush" style={{ background: 'var(--mint)', padding: 16 }}>
-            <div className="chip" style={{ background: 'white', marginBottom: 10 }}>
-              {'\u2713 HIGHLIGHTS'}
+          <div className="plush" style={{ background: 'rgba(132, 210, 196, 0.05)', borderColor: 'var(--line)', padding: 20 }}>
+            <div className="chip mint" style={{ marginBottom: 12 }}>
+              ✓ STRENGTHS / HIGHLIGHTS
             </div>
-            <ul style={{ margin: 0, paddingLeft: 18, fontWeight: 700, fontSize: 14, lineHeight: 1.6 }}>
-              {evaluation.highlights.map((h, i) => <li key={i}>{h}</li>)}
+            <ul style={{ margin: 0, paddingLeft: 18, fontWeight: 500, fontSize: 14, lineHeight: 1.6, color: 'var(--ink)' }}>
+              {evaluation.highlights.map((h, i) => <li key={i} style={{ marginBottom: 6 }}>{h}</li>)}
             </ul>
           </div>
         )}
         {evaluation.improvements.length > 0 && (
-          <div className="plush" style={{ background: 'var(--peach)', padding: 16 }}>
-            <div className="chip" style={{ background: 'white', marginBottom: 10 }}>
-              {'\u2191 NEXT TIME'}
+          <div className="plush" style={{ background: 'rgba(255, 178, 107, 0.05)', borderColor: 'var(--line)', padding: 20 }}>
+            <div className="chip peach" style={{ marginBottom: 12 }}>
+              ↑ FOCUS AREAS / NEXT TIME
             </div>
-            <ul style={{ margin: 0, paddingLeft: 18, fontWeight: 700, fontSize: 14, lineHeight: 1.6 }}>
-              {evaluation.improvements.map((h, i) => <li key={i}>{h}</li>)}
+            <ul style={{ margin: 0, paddingLeft: 18, fontWeight: 500, fontSize: 14, lineHeight: 1.6, color: 'var(--ink)' }}>
+              {evaluation.improvements.map((h, i) => <li key={i} style={{ marginBottom: 6 }}>{h}</li>)}
             </ul>
           </div>
         )}
       </div>
 
-      <div className="plush" style={{ padding: 16, marginBottom: 22 }}>
-        <SectionLabel>ACTIONS YOU TOOK</SectionLabel>
+      {/* Actions Summary */}
+      <div className="plush" style={{ padding: 20, marginBottom: 24, background: 'var(--cream-2)' }}>
+        <SectionLabel>PHYSIOLOGICAL DIAGNOSTICS & RX ADMINISTERED</SectionLabel>
         <ActionChips patient={patient} c={c} />
       </div>
 
+      {/* Triage Info */}
       <div
         className="plush"
         style={{
-          padding: 16,
-          marginBottom: 22,
+          padding: 20,
+          marginBottom: 24,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          background: 'var(--cream-2)',
         }}
       >
         <div>
-          <div style={{ fontWeight: 900, fontSize: 16 }}>Encounter</div>
-          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink-2)' }}>
-            {`${elapsedLabel} \u00B7 ${qLabel} \u00B7 ${patient.orderedTestIds.length} tests \u00B7 ${patient.givenTreatmentIds.length} treatments`}
+          <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--ink)' }}>Encounter Telemetry Summary</div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-2)', marginTop: 4, fontFamily: 'Outfit, sans-serif' }}>
+            {`${elapsedLabel.toUpperCase()} · ${qLabel.toUpperCase()} · ${patient.orderedTestIds.length} TESTS · ${patient.givenTreatmentIds.length} TREATMENTS`}
           </div>
         </div>
       </div>

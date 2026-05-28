@@ -45,9 +45,9 @@ function Stat({ big, sub, out }: StatProps) {
   return (
     <div
       style={{
-        background: 'rgba(255, 255, 255, 0.03)',
-        border: '1px solid var(--line)',
-        borderRadius: 12,
+        background: '#ffffff',
+        border: 'var(--stroke) solid var(--line)',
+        borderRadius: 14,
         padding: 12,
         boxShadow: 'var(--plush-tiny)',
       }}
@@ -195,7 +195,7 @@ export function HomeScreen() {
             <div
               className="plush-lg"
               style={{
-                background: 'var(--cream-2)',
+                background: '#ffffff',
                 padding: 18,
                 position: 'relative',
                 transform: 'rotate(-0.6deg)',
@@ -211,7 +211,7 @@ export function HomeScreen() {
                   alignItems: 'center',
                   background: 'var(--cream-2)',
                   borderRadius: 18,
-                  border: '1px dashed rgba(255, 255, 255, 0.15)',
+                  border: 'var(--stroke) dashed var(--line)',
                   padding: 16,
                 }}
               >
@@ -235,7 +235,7 @@ export function HomeScreen() {
               </div>
             </div>
           ) : (
-            <div className="plush-lg" style={{ background: 'var(--peach)', padding: 18, position: 'relative', transform: 'rotate(-0.6deg)' }}>
+            <div className="plush-lg" style={{ background: '#ffffff', padding: 18, position: 'relative', transform: 'rotate(-0.6deg)' }}>
               <div style={{ position: 'absolute', top: -12, left: 22 }} className="chip butter">
                 ★ pick up where you left off
               </div>
@@ -246,7 +246,7 @@ export function HomeScreen() {
                   alignItems: 'center',
                   background: 'var(--cream-2)',
                   borderRadius: 18,
-                  border: '1px solid var(--line)',
+                  border: 'var(--stroke) solid var(--line)',
                   padding: 16,
                 }}
               >
@@ -352,10 +352,10 @@ export function HomeScreen() {
                         gap: 12,
                         alignItems: 'center',
                         padding: '8px 12px',
-                        background: 'var(--cream)',
-                        border: '2.5px solid var(--line)',
-                        borderRadius: 12,
-                        boxShadow: '0 2px 0 var(--line)',
+                        background: '#ffffff',
+                        border: 'var(--stroke) solid var(--line)',
+                        borderRadius: 16,
+                        boxShadow: 'var(--plush-tiny)',
                       }}
                     >
                       <div
@@ -419,7 +419,7 @@ export function HomeScreen() {
 
         {/* RIGHT — stats */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div className="plush" style={{ padding: 16, background: 'var(--butter)' }}>
+          <div className="plush" style={{ padding: 16, background: '#ffffff' }}>
             <div
               style={{
                 fontWeight: 800,
@@ -443,9 +443,9 @@ export function HomeScreen() {
             <div
               style={{
                 marginTop: 12,
-                background: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid var(--line)',
-                borderRadius: 12,
+                background: 'var(--cream-2)',
+                border: 'var(--stroke) solid var(--line)',
+                borderRadius: 14,
                 padding: 12,
                 boxShadow: 'var(--plush-tiny)',
               }}
@@ -536,10 +536,10 @@ export function HomeScreen() {
                   </div>
                   <div
                     style={{
-                      height: 14,
+                      height: 16,
                       background: 'var(--cream)',
-                      borderRadius: 8,
-                      border: '2.5px solid var(--line)',
+                      borderRadius: 'var(--r-pill)',
+                      border: 'var(--stroke) solid var(--line)',
                       overflow: 'hidden',
                       position: 'relative',
                     }}
@@ -550,7 +550,7 @@ export function HomeScreen() {
                         inset: 0,
                         width: `${d.pct}%`,
                         background: d.color,
-                        borderRight: '2.5px solid var(--line)',
+                        borderRight: 'var(--stroke) solid var(--line)',
                       }}
                     />
                   </div>

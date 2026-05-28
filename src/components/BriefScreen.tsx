@@ -1,4 +1,4 @@
-import { DoodleScatter, PatientFace, TopBar } from './primitives';
+import { PatientFace, TopBar } from './primitives';
 import { getCase, getPatientCase } from '../data/cases';
 import { store, useStore, useTweaks } from '../game/store';
 
@@ -36,244 +36,394 @@ export function BriefScreen() {
         : { label: 'first presentation', tone: 'rose' };
 
   return (
-    <div className="screen paper" style={{ position: 'relative' }}>
+    <div className="screen" style={{ position: 'relative', overflowY: 'auto' }}>
       <TopBar here={3} steps={['Polyclinic', 'GP', 'Case', 'Brief']} />
 
-      <DoodleScatter
-        items={[
-          { kind: 'sparkle', x: 60, y: 100, size: 24, color: '#FFD86B' },
-          { kind: 'sparkle', x: '92%', y: 130, size: 22, color: '#5AB7F2' },
-          { kind: 'star', x: 40, y: 380, size: 30, color: '#FFD86B', anim: 'wobble' },
-        ]}
-      />
+      {/* Friendly Brief Header Sign */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 80,
+          left: 40,
+          fontSize: 12,
+          fontWeight: 700,
+          color: 'var(--ink-soft)',
+          pointerEvents: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+        }}
+      >
+        <span>📄 Consultation Briefing</span>
+      </div>
 
       <div
         style={{
-          padding: '28px 36px',
+          padding: '24px 36px',
           display: 'grid',
           gridTemplateColumns: '1.2fr 1fr',
-          gap: 28,
-          minHeight: 'calc(100vh - 67px)',
+          gap: 32,
+          maxWidth: 1120,
+          margin: '0 auto',
+          minHeight: 'calc(100vh - 80px)',
         }}
       >
-        {/* LEFT: clipboard */}
+        {/* LEFT: clinical datapad / clipboard */}
         <div
           className="plush-lg"
-          style={{ background: '#FFFCF3', padding: 24, position: 'relative', transform: 'rotate(-1deg)' }}
+          style={{
+            background: 'var(--paper)',
+            padding: 32,
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            boxShadow: 'var(--plush)',
+          }}
         >
-          <div style={{ position: 'absolute', top: -22, left: '50%', transform: 'translateX(-50%)' }}>
-            <svg width="120" height="46" viewBox="0 0 120 46">
-              <rect x="20" y="6" width="80" height="34" rx="8" fill="#C9C9CF" stroke="var(--line)" strokeWidth="3.5" />
-              <rect x="34" y="14" width="52" height="18" rx="4" fill="#9C9CA3" stroke="var(--line)" strokeWidth="3" />
-            </svg>
-          </div>
-
+          {/* Friendly Clipboard Clip */}
           <div
             style={{
+              position: 'absolute',
+              top: 0,
+              left: '50%',
+              transform: 'translate(-50%, -40%)',
+              height: 24,
+              width: 120,
+              background: 'var(--sky)',
+              border: '3px solid var(--ink)',
+              borderRadius: '8px 8px 0 0',
+              boxShadow: 'var(--plush-sm)',
               display: 'flex',
-              justifyContent: 'space-between',
               alignItems: 'center',
-              marginTop: 10,
-              marginBottom: 16,
+              justifyContent: 'center',
             }}
           >
-            <span className="chip butter">DOORWAY BRIEF</span>
-            <span className="chip">Case #07</span>
+            <div style={{ width: 16, height: 16, borderRadius: '50%', background: 'var(--paper)', border: '2px solid var(--ink)' }} />
           </div>
 
-          <h1 style={{ fontSize: 32, lineHeight: 1.1, marginBottom: 4 }}>{c.name}</h1>
-          <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--ink-2)', marginBottom: 16 }}>
-            {c.age} y · {c.sex === 'F' ? 'Female' : 'Male'} · {c.cond}
-          </div>
-
-          <div
-            style={{
-              background: 'white',
-              border: '3px solid var(--line)',
-              borderRadius: 'var(--r-md)',
-              padding: 14,
-              marginBottom: 14,
-              boxShadow: 'var(--plush-tiny)',
-            }}
-          >
+          <div>
             <div
               style={{
-                fontWeight: 800,
-                fontSize: 11,
-                color: 'var(--ink-2)',
-                letterSpacing: '.06em',
-                textTransform: 'uppercase',
-                marginBottom: 4,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 20,
               }}
             >
-              CHIEF COMPLAINT
+              <span className="chip peach">DOORWAY BRIEFING</span>
+              <span className="chip" style={{ fontFamily: 'Outfit, sans-serif' }}>
+                Chart: #{caseId.substring(0, 4).toUpperCase()}
+              </span>
             </div>
-            <div style={{ fontSize: 17, fontWeight: 700, lineHeight: 1.35 }}>
-              {`"${chiefComplaint}"`}
-            </div>
-          </div>
 
-          <div
-            style={{
-              background: 'white',
-              border: '3px solid var(--line)',
-              borderRadius: 'var(--r-md)',
-              padding: 12,
-              marginBottom: 14,
-              boxShadow: 'var(--plush-tiny)',
-            }}
-          >
+            <h1 style={{ fontSize: 36, lineHeight: 1.1, marginBottom: 6, fontWeight: 900 }}>
+              {c.name}
+            </h1>
             <div
               style={{
                 fontWeight: 800,
-                fontSize: 11,
-                color: 'var(--ink-2)',
-                letterSpacing: '.06em',
-                textTransform: 'uppercase',
-                marginBottom: 2,
+                fontSize: 13,
+                color: 'var(--peach)',
+                marginBottom: 24,
               }}
             >
-              ON THE BENCH
+              {c.age} Y · {c.sex === 'F' ? 'Female' : 'Male'} · {c.cond.toUpperCase()}
             </div>
-            <div style={{ fontSize: 14, fontWeight: 600 }}>{arrivalBlurb}</div>
+
+            {/* Chief Complaint Panel */}
+            <div
+              style={{
+                background: 'var(--cream-2)',
+                border: 'var(--stroke) solid var(--line)',
+                borderRadius: 'var(--r-md)',
+                padding: 18,
+                marginBottom: 20,
+                boxShadow: 'var(--plush-tiny)',
+              }}
+            >
+              <div
+                style={{
+                  fontWeight: 900,
+                  fontSize: 11,
+                  color: 'var(--ink-soft)',
+                  letterSpacing: '.05em',
+                  textTransform: 'uppercase',
+                  marginBottom: 6,
+                }}
+              >
+                📝 Chief Complaint
+              </div>
+              <div
+                style={{
+                  fontSize: 18,
+                  fontWeight: 700,
+                  lineHeight: 1.4,
+                  color: 'var(--ink)',
+                  fontStyle: 'italic',
+                }}
+              >
+                "{chiefComplaint}"
+              </div>
+            </div>
+
+            {/* Arrival Notes Panel */}
+            <div
+              style={{
+                background: 'var(--cream-2)',
+                border: 'var(--stroke) solid var(--line)',
+                borderRadius: 'var(--r-md)',
+                padding: 16,
+                marginBottom: 20,
+              }}
+            >
+              <div
+                style={{
+                  fontWeight: 900,
+                  fontSize: 11,
+                  color: 'var(--ink-soft)',
+                  letterSpacing: '.05em',
+                  textTransform: 'uppercase',
+                  marginBottom: 4,
+                }}
+              >
+                👁️ Presentation & Observation
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ink-2)' }}>
+                {arrivalBlurb}
+              </div>
+            </div>
           </div>
 
+          {/* Directives / Task Panel */}
           <div
             style={{
-              background: 'var(--butter)',
-              border: '3px solid var(--line)',
+              background: 'var(--sky-deep)',
+              border: 'var(--stroke) solid var(--line)',
               borderRadius: 'var(--r-md)',
-              padding: 14,
+              padding: 18,
               boxShadow: 'var(--plush-tiny)',
             }}
           >
             <div
               style={{
-                fontWeight: 800,
+                fontWeight: 900,
                 fontSize: 11,
                 color: 'var(--ink)',
-                letterSpacing: '.06em',
+                letterSpacing: '.05em',
                 textTransform: 'uppercase',
-                marginBottom: 6,
+                marginBottom: 8,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
               }}
             >
-              YOUR TASK
+              <span className="dot" style={{ background: 'var(--peach)' }} />
+              OPERATIONAL DIRECTIVES
             </div>
-            <ol style={{ margin: 0, paddingLeft: 18, fontSize: 14, fontWeight: 700, lineHeight: 1.5 }}>
-              <li>Take a focused history</li>
-              <li>Examine if appropriate</li>
-              <li>Agree a plan with the patient</li>
+            <ol
+              style={{
+                margin: 0,
+                paddingLeft: 20,
+                fontSize: 14,
+                fontWeight: 600,
+                lineHeight: 1.6,
+                color: 'var(--ink)',
+              }}
+            >
+              <li style={{ marginBottom: 4 }}>Synthesize a clinical case history via voice interface</li>
+              <li style={{ marginBottom: 4 }}>Perform diagnostic physiological tests if indicated</li>
+              <li>Formulate and align a shared care plan with the patient</li>
             </ol>
           </div>
         </div>
 
-        {/* RIGHT */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+        {/* RIGHT: Vitals & Action */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24, justifyContent: 'space-between' }}>
+          {/* Patient Persona Card */}
           <div
             className="plush"
-            style={{ background: 'var(--rose)', padding: 14, position: 'relative', transform: 'rotate(1.2deg)' }}
+            style={{
+              background: 'rgba(255, 255, 255, 0.82)',
+              border: 'var(--stroke-thick) solid var(--line)',
+              padding: 20,
+              position: 'relative',
+            }}
           >
             <div
               style={{
-                background: 'white',
-                borderRadius: 16,
-                border: '3px solid var(--line)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 14,
-                padding: 14,
+                gap: 20,
               }}
             >
-              <div className="floaty">
-                <PatientFace style={tweaks.avatarStyle} skin={c.skin} hair={c.hair} size={110} mood={c.mood} accessory={c.accessory} />
+              <div
+                style={{
+                  position: 'relative',
+                  width: 90,
+                  height: 90,
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  background: 'var(--cream)',
+                  border: 'var(--stroke) solid var(--line)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <PatientFace
+                  style={tweaks.avatarStyle}
+                  skin={c.skin}
+                  hair={c.hair}
+                  size={85}
+                  mood={c.mood}
+                  accessory={c.accessory}
+                  gender={c.sex}
+                  age={c.age}
+                />
               </div>
+
               <div>
-                <div style={{ fontWeight: 900, fontSize: 18 }}>{c.name.split(' ')[0]}</div>
-                <div style={{ fontSize: 13, color: 'var(--ink-2)', fontWeight: 700 }}>currently waiting</div>
-                <div style={{ marginTop: 6 }} className={`chip ${severityChip.tone}`}>
+                <div style={{ fontWeight: 900, fontSize: 22, color: 'var(--ink)' }}>
+                  {c.name.split(' ')[0]}
+                </div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: 'var(--ink-soft)',
+                    fontWeight: 700,
+                  }}
+                >
+                  SIMULATION ENCOUNTER INITIALIZED
+                </div>
+                <div style={{ marginTop: 8 }} className={`chip ${severityChip.tone}`}>
                   {severityChip.label}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="plush" style={{ padding: 14 }}>
+          {/* Vitals Panel */}
+          <div className="plush" style={{ padding: 20, background: 'var(--paper)' }}>
             <div
               style={{
-                fontWeight: 800,
+                fontWeight: 900,
                 fontSize: 11,
-                color: 'var(--ink-2)',
-                letterSpacing: '.06em',
+                color: 'var(--ink-soft)',
+                letterSpacing: '.05em',
                 textTransform: 'uppercase',
-                marginBottom: 8,
+                marginBottom: 12,
               }}
             >
-              TRIAGE VITALS
+              📊 Physiological Telemetry
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
               {VITALS.map((v) => (
                 <div
                   key={v.label}
                   style={{
-                    background: v.color,
-                    border: '3px solid var(--line)',
-                    borderRadius: 12,
-                    padding: '8px 4px',
+                    background: 'var(--cream)',
+                    border: `var(--stroke-thick) solid ${v.color}`,
+                    borderRadius: 'var(--r-sm)',
+                    padding: '12px 4px',
                     textAlign: 'center',
                     boxShadow: 'var(--plush-tiny)',
+                    transition: 'all 0.3s',
                   }}
                 >
-                  <div style={{ fontSize: 18 }}>{v.icon}</div>
-                  <div style={{ fontWeight: 900, fontSize: 16, lineHeight: 1 }}>{v.value}</div>
-                  <div style={{ fontSize: 10, fontWeight: 700 }}>
-                    {v.label} <span style={{ opacity: 0.6 }}>{v.unit}</span>
+                  <div style={{ fontSize: 16, color: v.color, marginBottom: 4 }}>{v.icon}</div>
+                  <div
+                    style={{
+                      fontWeight: 900,
+                      fontSize: 18,
+                      lineHeight: 1,
+                      color: 'var(--ink)',
+                      fontFamily: 'Outfit, sans-serif',
+                    }}
+                  >
+                    {v.value}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 9,
+                      fontWeight: 800,
+                      color: 'var(--ink-2)',
+                      marginTop: 4,
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {v.label} <span style={{ color: 'var(--ink-soft)' }}>{v.unit}</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
+          {/* Simulation Timer Indicator */}
           <div
             className="plush"
-            style={{ padding: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+            style={{
+              padding: 20,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: 'var(--paper)',
+            }}
           >
             <div>
               <div
                 style={{
-                  fontWeight: 800,
+                  fontWeight: 900,
                   fontSize: 11,
-                  color: 'var(--ink-2)',
-                  letterSpacing: '.06em',
+                  color: 'var(--ink-soft)',
+                  letterSpacing: '.05em',
                   textTransform: 'uppercase',
                 }}
               >
-                YOUR TIME
+                SIMULATION LENGTH
               </div>
-              <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--peach-deep)' }}>8:00</div>
+              <div
+                style={{
+                  fontSize: 32,
+                  fontWeight: 900,
+                  color: 'var(--rose)',
+                  fontFamily: 'Outfit, sans-serif',
+                }}
+              >
+                08:00
+              </div>
             </div>
-            <div style={{ display: 'flex', gap: 4 }}>
+            <div style={{ display: 'flex', gap: 5 }}>
               {Array.from({ length: 8 }).map((_, i) => (
                 <div
                   key={i}
                   style={{
                     width: 8,
-                    height: 30,
+                    height: 28,
                     borderRadius: 4,
                     background: 'var(--mint)',
-                    border: '2.5px solid var(--line)',
+                    border: 'var(--stroke) solid var(--line)',
                   }}
                 />
               ))}
             </div>
           </div>
 
+          {/* Action Trigger */}
           <button
             type="button"
-            className="btn-plush primary breathe"
-            style={{ fontSize: 22, padding: '18px 0' }}
+            className="btn-plush mint breathe"
+            style={{
+              fontSize: 18,
+              padding: '20px 0',
+              borderRadius: 14,
+              border: 'var(--stroke-thick) solid var(--line)',
+              fontWeight: 800,
+              textTransform: 'uppercase',
+            }}
             onClick={() => store.setScreen('encounter')}
           >
-            ✊ Knock and enter
+            🚪 KNOCK & ENTER CHAMBER
           </button>
         </div>
       </div>

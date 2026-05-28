@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Doodle, DoodleScatter, PatientFace, TopBar } from './primitives';
+import { PatientFace, TopBar } from './primitives';
 import { CASES, getCase } from '../data/cases';
 import { CLINIC_IDS, CLINIC_LABELS, type ClinicId } from '../game/clinic';
 import { store, useGameState, useTweaks } from '../game/store';
@@ -59,83 +59,122 @@ export function GPRoomScreen() {
   }, []);
 
   return (
-    <div className="screen" style={{ background: 'var(--cream)', position: 'relative' }}>
+    <div className="screen" style={{ background: 'var(--cream)', position: 'relative', overflowY: 'auto' }}>
       <TopBar here={1} steps={['Polyclinic', 'GP']} />
 
-      <DoodleScatter
-        items={[
-          { kind: 'sparkle', x: 60, y: 100, size: 22, color: '#FFD86B' },
-          { kind: 'sparkle', x: '88%', y: 130, size: 20, color: '#5AB7F2' },
-          { kind: 'star', x: 80, y: 560, size: 28, color: '#FFD86B', anim: 'wobble' },
-          { kind: 'pill', x: '86%', y: 580, size: 60, anim: 'wobble' },
-        ]}
-      />
+      {/* Friendly Desk Sign */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 80,
+          left: 40,
+          fontSize: 12,
+          fontWeight: 700,
+          color: 'var(--ink-soft)',
+          pointerEvents: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+        }}
+      >
+        <span>📍 Desk 4</span>
+        <span>•</span>
+        <span>GP Consultation Room</span>
+      </div>
 
-      <div style={{ padding: '36px 36px 12px', textAlign: 'center' }}>
-        <span className="chip butter" style={{ marginBottom: 12 }}>
-          🏥 GENERAL PRACTICE
+      <div
+        style={{
+          position: 'absolute',
+          top: 80,
+          right: 40,
+          fontSize: 12,
+          fontWeight: 700,
+          color: 'var(--ink-soft)',
+          pointerEvents: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+        }}
+      >
+        <span style={{ color: 'var(--peach)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <span className="dot" style={{ background: 'var(--peach)', width: 8, height: 8 }} />
+          Online
         </span>
-        <h1 style={{ fontSize: 42, lineHeight: 1.05, marginTop: 12 }}>How would you like to start?</h1>
+      </div>
+
+      <div style={{ padding: '40px 36px 12px', textAlign: 'center' }}>
+        <span className="chip butter" style={{ marginBottom: 12 }}>
+          🏥 CLINICAL INTRODUCTIONS
+        </span>
+        <h1 style={{ fontSize: 44, lineHeight: 1.05, marginTop: 12, fontWeight: 900 }}>
+          Patient Reception Desk
+        </h1>
         <div
           style={{
             fontSize: 16,
             color: 'var(--ink-2)',
-            fontWeight: 600,
+            fontWeight: 500,
             marginTop: 8,
             maxWidth: 620,
             margin: '8px auto 0',
           }}
         >
-          Pick a polyclinic and the next patient on the bench will walk straight in. Or browse the case folder.
+          Select a specialty clinic below to meet your next patient, or browse patient charts in the case library.
         </div>
       </div>
 
-      {/* Clinic picker — collapsible */}
-      <div style={{ maxWidth: 1080, margin: '0 auto', padding: '12px 36px 4px' }}>
+      {/* Specialty Picker Console */}
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '12px 36px 4px' }}>
         <button
           type="button"
           onClick={() => setPickerOpen((v) => !v)}
           className="btn-plush ghost"
           style={{
             width: '100%',
-            padding: '14px 18px',
+            padding: '16px 20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             fontSize: 15,
-            fontWeight: 800,
-            background: 'white',
+            fontWeight: 700,
+            background: 'var(--paper)',
+            borderColor: pickerOpen ? 'var(--peach)' : 'var(--line)',
+            boxShadow: pickerOpen ? 'var(--plush-sm)' : 'none',
           }}
         >
-          <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <span
               style={{
-                fontSize: 11,
+                fontSize: 10,
                 fontWeight: 800,
-                color: 'var(--ink-2)',
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
+                color: 'var(--ink-soft)',
+                letterSpacing: '0.1em',
+                fontFamily: 'Outfit, sans-serif',
               }}
             >
-              Specialty
+              ACTIVE DEPT:
             </span>
-            <span>
+            <span style={{ color: 'var(--ink)', fontSize: 16, fontWeight: 800 }}>
               {CLINIC_ICON[activeClinic]} {CLINIC_LABELS[activeClinic]}
             </span>
           </span>
-          <span style={{ fontWeight: 800, color: 'var(--ink-2)' }}>{pickerOpen ? '▴' : '▾'}</span>
+          <span style={{ fontWeight: 800, color: 'var(--peach)', fontSize: 16 }}>
+            {pickerOpen ? '▲' : '▼'}
+          </span>
         </button>
 
         {pickerOpen && (
           <div
-            className="plush"
+            className="plush popin"
             style={{
               marginTop: 8,
-              padding: 12,
-              background: 'white',
+              padding: 16,
+              background: 'var(--paper)',
+              border: 'var(--stroke-thick) solid var(--line)',
               display: 'flex',
-              gap: 8,
+              gap: 10,
               flexWrap: 'wrap',
+              boxShadow: 'var(--plush)',
             }}
           >
             {availableClinics.map((id) => {
@@ -143,8 +182,15 @@ export function GPRoomScreen() {
               return (
                 <span
                   key={id}
-                  className={`chip ${isActive ? 'butter' : ''}`}
-                  style={{ cursor: 'pointer' }}
+                  className={`chip ${isActive ? 'peach' : ''}`}
+                  style={{
+                    cursor: 'pointer',
+                    fontSize: 12,
+                    padding: '8px 14px',
+                    borderColor: isActive ? 'var(--peach)' : 'var(--line)',
+                    background: isActive ? 'var(--peach-deep)' : 'var(--cream-2)',
+                    transition: 'all 0.2s',
+                  }}
                   onClick={() => {
                     store.setPolyclinicClinic(id);
                     setPickerOpen(false);
@@ -162,43 +208,79 @@ export function GPRoomScreen() {
         style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
-          gap: 28,
-          padding: '20px 36px 40px',
-          maxWidth: 1080,
+          gap: 32,
+          padding: '24px 36px 40px',
+          maxWidth: 960,
           margin: '0 auto',
         }}
       >
-        {/* LEFT — accept next patient (clinic-aware) */}
+        {/* LEFT — teleporter pad (accept next patient) */}
         <div
           className={`tap plush-lg popin ${next ? 'breathe' : ''}`}
           onClick={() => next && store.acceptNextPatient()}
           style={{
-            background: 'var(--mint)',
+            background: 'var(--paper)',
+            borderColor: next ? 'var(--peach)' : 'var(--line)',
             padding: 32,
             position: 'relative',
-            transform: 'rotate(-0.8deg)',
-            animationDelay: '.05s',
-            opacity: next ? 1 : 0.55,
+            opacity: next ? 1 : 0.5,
             cursor: next ? 'pointer' : 'not-allowed',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'stretch',
+            justifyContent: 'space-between',
+            boxShadow: next ? 'var(--plush)' : 'var(--plush-sm)',
           }}
         >
-          <div style={{ position: 'absolute', top: -14, left: 24 }} className="chip rose">
-            01 · ACCEPT
+          <div
+            style={{
+              position: 'absolute',
+              top: -14,
+              left: 24,
+            }}
+            className="chip peach"
+          >
+            PATIENT INTAKE
           </div>
-          <div className="floaty" style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              margin: '20px 0',
+            }}
+          >
+            {/* Friendly Avatar Container */}
             <div
               className="plush"
               style={{
-                width: 160,
-                height: 160,
-                background: 'white',
+                width: 170,
+                height: 170,
+                background: 'var(--cream-2)',
+                borderColor: next ? 'var(--peach)' : 'var(--line)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 position: 'relative',
                 overflow: 'hidden',
+                borderRadius: '50%',
+                boxShadow: next ? '0 8px 24px rgba(255, 123, 84, 0.15)' : 'none',
               }}
             >
+              {/* Soft warm radial glow */}
+              {next && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'radial-gradient(circle, rgba(255, 213, 107, 0.15) 0%, transparent 70%)',
+                    pointerEvents: 'none',
+                    zIndex: 2,
+                  }}
+                />
+              )}
+
               {next ? (
                 <PatientFace
                   style={tweaks.avatarStyle}
@@ -207,115 +289,146 @@ export function GPRoomScreen() {
                   size={130}
                   mood={next.mood}
                   accessory={next.accessory}
+                  gender={next.sex}
+                  age={next.age}
                 />
               ) : (
-                <span style={{ fontSize: 42 }}>{CLINIC_ICON[activeClinic]}</span>
+                <span style={{ fontSize: 48 }}>
+                  {CLINIC_ICON[activeClinic]}
+                </span>
               )}
-              <span
-                style={{
-                  position: 'absolute',
-                  top: 8,
-                  right: 8,
-                }}
-              >
-                <Doodle kind="sparkle" size={22} color="#FFD86B" />
+            </div>
+          </div>
+
+          <div>
+            <h2 style={{ fontSize: 24, textAlign: 'center', marginBottom: 8, fontWeight: 800 }}>
+              {next ? 'Invite Patient In' : 'Queue Empty'}
+            </h2>
+            <div
+              style={{
+                fontSize: 14,
+                color: 'var(--ink-2)',
+                fontWeight: 500,
+                textAlign: 'center',
+                marginBottom: 20,
+                minHeight: 42,
+                lineHeight: 1.4,
+              }}
+            >
+              {next
+                ? `Ready to welcome ${next.name} into the clinical consultation room.`
+                : `No simulation cases queued in ${CLINIC_LABELS[activeClinic]}.`}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
+              {next && (
+                <>
+                  <span className="chip sky">
+                    {next.name.split(' ')[0]} · {next.age}Y · {next.sex === 'F' ? 'Female' : 'Male'}
+                  </span>
+                  <span className="chip rose">{next.cond}</span>
+                </>
+              )}
+              <span className="chip butter">
+                {queueAhead} IN ROSTER
               </span>
             </div>
           </div>
-          <h2 style={{ fontSize: 28, lineHeight: 1.1, textAlign: 'center', marginBottom: 8 }}>
-            Accept the next patient
-          </h2>
-          <div
-            style={{
-              fontSize: 14,
-              color: 'var(--ink-2)',
-              fontWeight: 600,
-              textAlign: 'center',
-              marginBottom: 16,
-              minHeight: 42,
-            }}
-          >
-            {next
-              ? `${next.name} walks in next — straight into the consultation.`
-              : `No cases queued for ${CLINIC_LABELS[activeClinic]} yet.`}
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
-            {next && (
-              <>
-                <span className="chip" style={{ background: 'white' }}>
-                  {next.name.split(' ')[0]} · {next.age}
-                </span>
-                <span className="chip rose">{next.cond}</span>
-              </>
-            )}
-            <span className="chip butter">
-              {CLINIC_ICON[activeClinic]} {queueAhead} in {CLINIC_LABELS[activeClinic]}
-            </span>
-          </div>
         </div>
 
-        {/* RIGHT — browse charts */}
+        {/* RIGHT — database folder (browse charts) */}
         <div
           className="tap plush-lg popin"
           onClick={() => store.setScreen('library')}
           style={{
-            background: 'var(--sky)',
+            background: 'var(--paper)',
+            borderColor: 'var(--line)',
             padding: 32,
             position: 'relative',
-            transform: 'rotate(0.8deg)',
-            animationDelay: '.15s',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'stretch',
+            justifyContent: 'space-between',
+            boxShadow: 'var(--plush)',
           }}
         >
-          <div style={{ position: 'absolute', top: -14, left: 24 }} className="chip butter">
-            02 · BROWSE
+          <div
+            style={{
+              position: 'absolute',
+              top: -14,
+              left: 24,
+            }}
+            className="chip mint"
+          >
+            CASE ARCHIVE
           </div>
-          <div className="floaty" style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              margin: '20px 0',
+            }}
+          >
+            {/* Friendly Folder Frame */}
             <div
               className="plush"
               style={{
-                width: 160,
-                height: 160,
-                background: 'white',
+                width: 170,
+                height: 170,
+                background: 'var(--cream-2)',
+                borderColor: 'var(--line)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                borderRadius: '50%',
+                position: 'relative',
+                boxShadow: '0 8px 24px var(--shadow)',
               }}
             >
-              <ChartFolder />
+              <div style={{ transform: 'scale(1.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ChartFolder />
+              </div>
             </div>
           </div>
-          <h2 style={{ fontSize: 28, lineHeight: 1.1, textAlign: 'center', marginBottom: 8 }}>
-            Pick from the charts
-          </h2>
-          <div
-            style={{
-              fontSize: 14,
-              color: 'var(--ink-2)',
-              fontWeight: 600,
-              textAlign: 'center',
-              marginBottom: 16,
-              minHeight: 42,
-            }}
-          >
-            Open the case folder, filter by specialty or red-flag, attempted ribbons on completed.
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <span className="chip" style={{ background: 'white' }}>
-              📁 {totalAll} cases
-            </span>
-            <span className="chip butter">filterable</span>
+
+          <div>
+            <h2 style={{ fontSize: 24, textAlign: 'center', marginBottom: 8, fontWeight: 800 }}>
+              Case Library
+            </h2>
+            <div
+              style={{
+                fontSize: 14,
+                color: 'var(--ink-2)',
+                fontWeight: 500,
+                textAlign: 'center',
+                marginBottom: 20,
+                minHeight: 42,
+                lineHeight: 1.4,
+              }}
+            >
+              Browse through clinical cases, review attempt ribbons, and practice specific scenarios.
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <span className="chip sky">
+                📁 {totalAll} Cases
+              </span>
+              <span className="chip peach">INDEX SORTED</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 36 }}>
+      <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 40 }}>
         <button
           type="button"
           className="btn-plush ghost"
-          style={{ fontSize: 14, padding: '10px 18px' }}
+          style={{ fontSize: 13, padding: '12px 24px' }}
           onClick={() => store.setScreen('mode')}
         >
-          ← Back to corridor
+          ← EXIT TO CORRIDOR
         </button>
       </div>
     </div>

@@ -5,136 +5,140 @@ interface DoorProps {
   label: string;
   sub: string;
   color: string;
-  doorColor: string;
+  glowColor: string;
   available?: boolean;
   locked?: boolean;
   tags?: string[];
   onOpen?: () => void;
 }
 
-function Door({ label, sub, color, doorColor, available, locked, tags = [], onOpen }: DoorProps) {
+function DiagnosticPod({ label, sub, glowColor, available, locked, tags = [], onOpen }: DoorProps) {
   return (
     <div
       className={available ? 'tap' : ''}
       onClick={available ? onOpen : undefined}
       style={{
-        width: 240,
+        width: 280,
         position: 'relative',
-        filter: locked ? 'grayscale(0.4) brightness(0.96)' : 'none',
+        filter: locked ? 'brightness(0.85)' : 'none',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
+      {/* Outer Chamber Frame */}
       <div
+        className="plush-lg"
         style={{
-          background: color,
-          border: '4px solid var(--line)',
-          borderRadius: '32px 32px 6px 6px',
-          padding: 14,
-          boxShadow: 'var(--plush)',
+          background: '#ffffff',
+          border: `var(--stroke-thick) solid ${available ? 'var(--line)' : 'rgba(0, 0, 0, 0.08)'}`,
+          borderRadius: 24,
+          padding: 16,
+          boxShadow: available ? `0 8px 24px rgba(${glowColor}, 0.08)` : 'none',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          height: 380,
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
+        {/* Holographic Scan Screen */}
         <div
           style={{
+            width: '100%',
+            height: 160,
+            background: 'var(--cream-2)',
+            border: `var(--stroke) solid ${available ? 'var(--line)' : 'rgba(0,0,0,0.05)'}`,
+            borderRadius: 16,
+            marginBottom: 20,
             position: 'relative',
-            height: 320,
-            background: doorColor,
-            border: '4px solid var(--line)',
-            borderRadius: '24px 24px 4px 4px',
-            padding: 16,
+            overflow: 'hidden',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
+          {/* Grid lines inside display */}
           <div
             style={{
-              background: 'linear-gradient(180deg, #DFF1FF 0%, #B6DFFE 100%)',
-              border: '4px solid var(--line)',
-              borderRadius: 18,
-              height: 110,
-              marginBottom: 16,
-              position: 'relative',
-              overflow: 'hidden',
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: 'linear-gradient(var(--line) 0.5px, transparent 0.5px), linear-gradient(90deg, var(--line) 0.5px, transparent 0.5px)',
+              backgroundSize: '12px 12px',
+              opacity: 0.3,
             }}
-          >
+          />
+
+          {available ? (
             <div
+              className="floaty"
               style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 50%)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 8,
               }}
-            />
-            {available && (
-              <div
-                style={{ position: 'absolute', bottom: 4, left: 0, right: 0, textAlign: 'center', fontSize: 28 }}
-                className="floaty"
-              >
-                <Doodle kind="cross" size={36} color="#F47A92" />
-              </div>
-            )}
-            {locked && (
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+            >
+              <Doodle kind="cross" size={48} color={`rgb(${glowColor})`} />
+              <div 
+                style={{ 
+                  fontSize: 10, 
+                  fontWeight: 900,
+                  color: `rgb(${glowColor})`,
                 }}
               >
-                <div
-                  style={{
-                    background: 'white',
-                    border: '3px solid var(--line)',
-                    borderRadius: '50%',
-                    width: 50,
-                    height: 50,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: 'var(--plush-tiny)',
-                  }}
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24">
-                    <path
-                      d="M 6 11 V 8 a 6 6 0 0 1 12 0 v 3"
-                      stroke="var(--line)"
-                      strokeWidth="3"
-                      fill="none"
-                      strokeLinecap="round"
-                    />
-                    <rect
-                      x="4"
-                      y="11"
-                      width="16"
-                      height="11"
-                      rx="3"
-                      fill="var(--butter)"
-                      stroke="var(--line)"
-                      strokeWidth="3"
-                    />
-                  </svg>
-                </div>
+                ✦ ACTIVE ✦
               </div>
-            )}
+            </div>
+          ) : (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 8,
+                opacity: 0.5,
+              }}
+            >
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--ink-2)" strokeWidth="2.5">
+                <rect x="3" y="11" width="18" height="11" rx="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              <div style={{ fontSize: 10, fontWeight: 900, color: 'var(--ink-soft)' }}>
+                ✦ RESTRICTED ✦
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Info Deck */}
+        <div style={{ textAlign: 'center', width: '100%', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div>
+            <h3 style={{ fontSize: 22, fontWeight: 900, marginBottom: 6, color: 'var(--ink)' }}>{label}</h3>
+            <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.4, fontWeight: 600 }}>{sub}</div>
           </div>
 
-          <div
-            style={{
-              background: 'white',
-              border: '4px solid var(--line)',
-              borderRadius: 14,
-              padding: '10px 12px',
-              textAlign: 'center',
-              boxShadow: 'var(--plush-tiny)',
+          {/* Action indicator */}
+          <div 
+            style={{ 
+              fontSize: 11, 
+              color: available ? 'var(--peach)' : 'var(--ink-soft)',
+              fontWeight: 800,
+              background: 'var(--cream)',
+              padding: '6px 12px',
+              borderRadius: 'var(--r-sm)',
+              border: 'var(--stroke) solid var(--line)',
+              marginTop: 10
             }}
           >
-            <div style={{ fontWeight: 900, fontSize: 18, color: 'var(--ink)' }}>{label}</div>
-            <div style={{ fontWeight: 600, fontSize: 12, color: 'var(--ink-2)', marginTop: 2 }}>{sub}</div>
+            {available ? '▸ OPEN FOR TRAINING' : '🔒 COMING SOON'}
           </div>
-
         </div>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 14, flexWrap: 'wrap' }}>
+      {/* Specialty Chips */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 16, flexWrap: 'wrap' }}>
         {tags.map((t, i) => (
-          <span key={i} className={`chip ${available ? 'mint' : ''}`}>
+          <span key={i} className={`chip ${available ? 'peach' : ''}`}>
             {t}
           </span>
         ))}
@@ -143,100 +147,79 @@ function Door({ label, sub, color, doorColor, available, locked, tags = [], onOp
   );
 }
 
-function Plant({ flip = false }: { flip?: boolean }) {
-  return (
-    <svg width="80" height="100" viewBox="0 0 80 100" style={{ transform: flip ? 'scaleX(-1)' : 'none' }}>
-      <path d="M 40 70 Q 30 40 16 28" stroke="var(--line)" strokeWidth="3" fill="none" />
-      <path d="M 40 70 Q 50 44 64 32" stroke="var(--line)" strokeWidth="3" fill="none" />
-      <ellipse cx="18" cy="26" rx="14" ry="9" fill="#5FCFA0" stroke="var(--line)" strokeWidth="3" transform="rotate(-30 18 26)" />
-      <ellipse cx="62" cy="32" rx="14" ry="9" fill="#A8E5C8" stroke="var(--line)" strokeWidth="3" transform="rotate(30 62 32)" />
-      <ellipse cx="40" cy="14" rx="14" ry="10" fill="#5FCFA0" stroke="var(--line)" strokeWidth="3" />
-      <path d="M 22 70 L 58 70 L 54 96 H 26 Z" fill="#FFB68A" stroke="var(--line)" strokeWidth="3.5" />
-      <ellipse cx="40" cy="70" rx="18" ry="5" fill="#3A2417" />
-    </svg>
-  );
-}
-
 export function ModeSelectScreen() {
   return (
-    <div className="screen" style={{ background: 'var(--cream)' }}>
+    <div className="screen" style={{ background: 'var(--cream)', overflowY: 'auto' }}>
       <TopBar here={0} showProfile />
 
-      <div style={{ position: 'relative', height: 'calc(100vh - 67px)' }}>
-        <svg
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-          viewBox="0 0 1200 700"
-          preserveAspectRatio="none"
-        >
-          <defs>
-            <pattern id="floortile" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
-              <rect width="80" height="80" fill="#FFE8C9" />
-              <path d="M 0 80 L 80 0" stroke="#F4D5A8" strokeWidth="2" />
-            </pattern>
-          </defs>
-          <rect x="0" y="0" width="1200" height="380" fill="#FFF2DC" />
-          <rect x="0" y="370" width="1200" height="14" fill="#E8C892" stroke="var(--line)" strokeWidth="3" />
-          <path
-            d="M 0 700 L 1200 700 L 900 384 L 300 384 Z"
-            fill="url(#floortile)"
-            stroke="var(--line)"
-            strokeWidth="4"
-          />
-          <line x1="600" y1="384" x2="0" y2="700" stroke="#D7B07A" strokeWidth="2" strokeDasharray="6 8" />
-          <line x1="600" y1="384" x2="1200" y2="700" stroke="#D7B07A" strokeWidth="2" strokeDasharray="6 8" />
-        </svg>
+      {/* Control Desk Content */}
+      <div 
+        style={{ 
+          padding: '48px 24px', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          gap: 40,
+          position: 'relative',
+          minHeight: 'calc(100vh - 67px)'
+        }}
+      >
+        {/* Sector telemetries */}
+        <div style={{ textAlign: 'center', maxWidth: 680 }}>
+          <span className="chip butter" style={{ marginBottom: 12 }}>
+            ★ SIMULATION WINGS
+          </span>
+          <h1 style={{ fontSize: 44, lineHeight: 1.1, marginBottom: 10 }}>Select Simulation Wing</h1>
+          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink-2)' }}>
+            Select a simulation wing to begin your clinical training and review diagnostics.
+          </div>
+        </div>
 
+        {/* The Diagnostic Pod Deck */}
         <div
           style={{
-            position: 'absolute',
-            top: 130,
-            left: 0,
-            right: 0,
             display: 'flex',
             justifyContent: 'center',
-            gap: 70,
-            padding: '0 80px',
+            gap: 40,
+            flexWrap: 'wrap',
+            zIndex: 10,
+            width: '100%',
+            maxWidth: 1000,
           }}
         >
-          <Door
+          <DiagnosticPod
             label="Polyclinics"
-            sub="Outpatient — choose a specialty"
+            sub="General Outpatients — Specialty Consultation Decks"
             color="var(--mint)"
-            doorColor="#5FCFA0"
+            glowColor="132, 210, 196"
             available
-            tags={['Open now', '24 specialties']}
+            tags={['Active now', '24 Specialties']}
             onOpen={() => store.setScreen('gpRoom')}
           />
-          <Door
-            label="Services"
-            sub="Imaging, lab, pharmacy"
+          <DiagnosticPod
+            label="Diagnostics Hub"
+            sub="Lab Core, Imaging Systems & Pharmacy Telemetries"
             color="var(--sky)"
-            doorColor="#5AB7F2"
+            glowColor="156, 180, 204"
             locked
             tags={['Coming soon']}
           />
-          <Door
-            label="Emergency"
-            sub="ED triage & resus"
+          <DiagnosticPod
+            label="Emergency Wing"
+            sub="ED Triage Stations, Resuscitation & Critical Care Pods"
             color="var(--rose)"
-            doorColor="#F47A92"
+            glowColor="244, 122, 146"
             locked
             tags={['Coming soon']}
           />
         </div>
 
-        <div style={{ position: 'absolute', bottom: 30, left: 60 }} className="wobble">
-          <Doodle kind="pill" size={70} />
+        {/* Ambient floating elements */}
+        <div style={{ position: 'absolute', bottom: 30, left: '8%' }} className="wobble">
+          <Doodle kind="pill" size={54} color="var(--peach)" />
         </div>
-        <div style={{ position: 'absolute', bottom: 60, right: 80 }} className="floaty">
-          <Doodle kind="stetho" size={64} color="var(--mint)" />
-        </div>
-
-        <div style={{ position: 'absolute', bottom: 24, left: 200 }}>
-          <Plant />
-        </div>
-        <div style={{ position: 'absolute', bottom: 24, right: 220 }}>
-          <Plant flip />
+        <div style={{ position: 'absolute', bottom: 50, right: '10%' }} className="floaty">
+          <Doodle kind="stetho" size={48} color="var(--peach-deep)" />
         </div>
       </div>
     </div>

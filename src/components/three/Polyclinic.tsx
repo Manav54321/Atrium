@@ -63,24 +63,24 @@ const PALETTE = {
   scrubsDoc: '#0284c7',
   patientTop: '#475569',
   patientPants: '#334155',
-  floor: '#f1f5f9',
-  floorPlank: '#f8fafc',
-  floorSeam: '#cbd5e1', // Subtle seam lines
+  floor: '#fdfbf7',
+  floorPlank: '#fcf8f2',
+  floorSeam: '#e6dfd3', // Subtle warm seam lines
   wall: '#ffffff',
-  wallLow: '#f8fafc',
-  wallTrim: '#e2e8f0',
+  wallLow: '#faf6ee',
+  wallTrim: '#e9e2d5',
   ceiling: '#ffffff',
-  ceilingTrim: '#f8fafc',
-  trim: '#0ea5e9',
-  accent: '#0ea5e9',
+  ceilingTrim: '#faf6ee',
+  trim: '#e6b37a', // Warm wood/gold
+  accent: '#ff7b54', // Warm coral
   wood: '#ffffff',
-  woodDark: '#f1f5f9',
-  leather: '#f8fafc',
-  plant: '#10b981', // Natural green plant
-  pot: '#cbd5e1',
+  woodDark: '#f7f2ea',
+  leather: '#fbf9f4',
+  plant: '#84d2c4', // Softer mint-green plant
+  pot: '#e0d5c1',
   paper: '#ffffff',
-  brass: '#0ea5e9', // Cyber blue accent
-  rugRed: '#e2e8f0', // Clean neutral gray rug
+  brass: '#d97706', // Warm brass
+  rugRed: '#f2eae1', // Warm cream/tan rug
 };
 
 const FRONT_WALL_SEGMENTS = [
@@ -154,7 +154,7 @@ function Floor() {
         position={[x, 0.005, OUTER_CENTER_Z]}
       >
         <planeGeometry args={[0.015, OUTER_DEPTH]} />
-        <meshStandardMaterial color={PALETTE.floorSeam} emissive={PALETTE.floorSeam} emissiveIntensity={1.5} toneMapped={false} />
+        <meshStandardMaterial color={PALETTE.floorSeam} roughness={1.0} />
       </mesh>
     );
   }
@@ -169,7 +169,7 @@ function Floor() {
         position={[OUTER_CENTER_X, 0.005, z]}
       >
         <planeGeometry args={[OUTER_WIDTH, 0.015]} />
-        <meshStandardMaterial color={PALETTE.floorSeam} emissive={PALETTE.floorSeam} emissiveIntensity={1.5} toneMapped={false} />
+        <meshStandardMaterial color={PALETTE.floorSeam} roughness={1.0} />
       </mesh>
     );
   }
@@ -320,15 +320,15 @@ function PatientChair({ position, rotationY = 0 }: { position: [number, number, 
 function Lighting() {
   return (
     <>
-      {/* Ambient — high intensity for a bright, sterile, modern clinical workspace */}
-      <ambientLight intensity={0.8} color="#ffffff" />
-      {/* Soft sky / floor bounce — bright white/blue daylight tint */}
-      <hemisphereLight args={['#ffffff', '#e2e8f0', 0.4]} />
+      {/* Ambient — soft warm lighting */}
+      <ambientLight intensity={0.75} color="#fffaf0" />
+      {/* Soft sky / floor bounce — warm golden tint */}
+      <hemisphereLight args={['#fff9f0', '#ebdcd0', 0.5]} />
       {/* Clean key light casting soft shadows, optimized shadow map size for performance */}
       <directionalLight
         position={[-8, 10, 5]}
         intensity={0.8}
-        color="#ffffff"
+        color="#fffbf7"
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
@@ -340,7 +340,7 @@ function Lighting() {
         shadow-camera-far={25}
       />
       {/* Subtle fill light from the opposite side */}
-      <directionalLight position={[8, 8, 8]} intensity={0.2} color="#f0f9ff" />
+      <directionalLight position={[8, 8, 8]} intensity={0.2} color="#fffcf9" />
     </>
   );
 }
@@ -380,12 +380,12 @@ function makeMonitorTexture(patient: MonitorPatient | null): CanvasTexture {
   c.width = w; c.height = h;
   const ctx = c.getContext('2d')!;
 
-  // Deep Obsidian background
-  ctx.fillStyle = '#090b0f';
+  // Warm light cream background
+  ctx.fillStyle = '#fffcf9';
   ctx.fillRect(0, 0, w, h);
 
-  // High-tech blueprint grid
-  ctx.strokeStyle = 'rgba(0, 245, 212, 0.05)';
+  // Soft grid lines
+  ctx.strokeStyle = 'rgba(255, 123, 84, 0.04)';
   ctx.lineWidth = 1;
   for (let y = 0; y < h; y += 20) {
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
@@ -395,34 +395,34 @@ function makeMonitorTexture(patient: MonitorPatient | null): CanvasTexture {
   }
 
   // Header Title Bar
-  ctx.fillStyle = '#121620';
+  ctx.fillStyle = '#ffebd9';
   ctx.fillRect(0, 0, w, 40);
-  ctx.strokeStyle = '#1e293b';
+  ctx.strokeStyle = 'rgba(255, 123, 84, 0.15)';
   ctx.lineWidth = 1.5;
   ctx.beginPath(); ctx.moveTo(0, 40); ctx.lineTo(w, 40); ctx.stroke();
 
-  ctx.fillStyle = '#00f5d4';
-  ctx.font = 'bold 13px "JetBrains Mono", monospace';
-  ctx.fillText('ATRIUM // NEURAL INTELLIGENCE COMMAND', 14, 25);
+  ctx.fillStyle = '#2d2727';
+  ctx.font = 'bold 13px "Outfit", sans-serif';
+  ctx.fillText('ATRIUM CLINIC // PATIENT PROFILE', 14, 25);
 
-  ctx.fillStyle = '#00f5d4';
-  ctx.font = 'bold 11px "JetBrains Mono", monospace';
-  ctx.fillText('● SYSTEM ACTIVE', w - 130, 25);
+  ctx.fillStyle = '#ff7b54';
+  ctx.font = 'bold 11px "Outfit", sans-serif';
+  ctx.fillText('● ONLINE', w - 80, 25);
 
   const cardX = 14, cardY = 54, cardW = w - 28, cardH = h - 68;
 
   if (!patient) {
-    ctx.fillStyle = '#64748b';
+    ctx.fillStyle = '#5f5454';
     ctx.font = '500 13px "Outfit", sans-serif';
-    ctx.fillText('NO CLIENT CONNECTED // STANDBY MODE', cardX + 10, cardY + cardH / 2);
+    ctx.fillText('WAITING FOR NEXT PATIENT...', cardX + 10, cardY + cardH / 2);
     const tex = new THREE.CanvasTexture(c);
     tex.colorSpace = THREE.SRGBColorSpace;
     return tex;
   }
 
   // Draw diagnostic sidebar / metadata
-  ctx.fillStyle = 'rgba(18, 22, 32, 0.6)';
-  ctx.strokeStyle = '#1e293b';
+  ctx.fillStyle = '#ffffff';
+  ctx.strokeStyle = 'rgba(255, 123, 84, 0.15)';
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.roundRect(cardX, cardY, 200, cardH, 6);
@@ -430,25 +430,25 @@ function makeMonitorTexture(patient: MonitorPatient | null): CanvasTexture {
   ctx.stroke();
 
   // Name & Demographics
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '800 16px "Outfit", sans-serif';
+  ctx.fillStyle = '#2d2727';
+  ctx.font = 'bold 16px "Outfit", sans-serif';
   ctx.fillText(patient.name.toUpperCase(), cardX + 12, cardY + 28);
 
-  ctx.fillStyle = '#94a3b8';
+  ctx.fillStyle = '#5f5454';
   ctx.font = '500 12px "Outfit", sans-serif';
   ctx.fillText(`AGE/SEX: ${patient.age} / ${patient.gender}`, cardX + 12, cardY + 48);
   ctx.fillText(`ID: ${patient.id.toUpperCase()}`, cardX + 12, cardY + 66);
 
   // Divider
-  ctx.strokeStyle = '#1e293b';
+  ctx.strokeStyle = 'rgba(255, 123, 84, 0.15)';
   ctx.beginPath(); ctx.moveTo(cardX + 12, cardY + 80); ctx.lineTo(cardX + 188, cardY + 80); ctx.stroke();
 
   // Symptoms
-  ctx.fillStyle = '#ffb703';
-  ctx.font = '700 10px "JetBrains Mono", monospace';
+  ctx.fillStyle = '#ff7b54';
+  ctx.font = '800 10px "Outfit", sans-serif';
   ctx.fillText('CHIEF COMPLAINT:', cardX + 12, cardY + 98);
 
-  ctx.fillStyle = '#f1f5f9';
+  ctx.fillStyle = '#2d2727';
   ctx.font = '500 11px "Outfit", sans-serif';
   // Simple wrapping for complaint
   const comp = patient.chiefComplaint;
@@ -460,14 +460,15 @@ function makeMonitorTexture(patient: MonitorPatient | null): CanvasTexture {
 
   // Telemetry screen on the right half
   const telX = cardX + 212, telY = cardY, telW = cardW - 212, telH = cardH;
-  ctx.fillStyle = 'rgba(18, 22, 32, 0.6)';
+  ctx.fillStyle = '#ffffff';
+  ctx.strokeStyle = 'rgba(255, 123, 84, 0.15)';
   ctx.beginPath();
   ctx.roundRect(telX, telY, telW, telH, 6);
   ctx.fill();
   ctx.stroke();
 
   // Waveform drawing (Simulated ECG)
-  ctx.strokeStyle = '#00f5d4';
+  ctx.strokeStyle = '#ff7b54';
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   let wx = telX + 8;
@@ -488,15 +489,15 @@ function makeMonitorTexture(patient: MonitorPatient | null): CanvasTexture {
   ctx.stroke();
 
   // Diagnostics status boxes
-  ctx.fillStyle = '#ffb703';
-  ctx.font = '700 9px "JetBrains Mono", monospace';
+  ctx.fillStyle = '#5f5454';
+  ctx.font = '800 10px "Outfit", sans-serif';
   ctx.fillText('ECG/HR : 72 BPM  STABLE', telX + 12, telY + 22);
   ctx.fillText('O2 SAT : 98%      NORMAL', telX + 12, telY + 38);
   ctx.fillText('TEMP   : 36.8 C   NORMAL', telX + 12, telY + 54);
 
   // Bottom buttons
-  drawChip(ctx, cardX + 12, cardY + cardH - 28, 'TELEM LIVE', '#00f5d4');
-  drawChip(ctx, cardX + 116, cardY + cardH - 28, 'OSCE RUN', '#ffb703');
+  drawChip(ctx, cardX + 12, cardY + cardH - 28, 'TELEM LIVE', '#84d2c4');
+  drawChip(ctx, cardX + 116, cardY + cardH - 28, 'CLINIC ACTIVE', '#ffb26b');
 
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -504,7 +505,7 @@ function makeMonitorTexture(patient: MonitorPatient | null): CanvasTexture {
 }
 
 function drawChip(ctx: CanvasRenderingContext2D, x: number, y: number, label: string, fill: string) {
-  ctx.font = 'bold 11px "Nunito", sans-serif';
+  ctx.font = 'bold 11px "Outfit", sans-serif';
   const padX = 10;
   const w = ctx.measureText(label).width + padX * 2;
   const h = 22;
@@ -512,10 +513,10 @@ function drawChip(ctx: CanvasRenderingContext2D, x: number, y: number, label: st
   ctx.roundRect(x, y, w, h, 11);
   ctx.fillStyle = fill;
   ctx.fill();
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = '#2B1E16';
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = 'rgba(255, 123, 84, 0.15)';
   ctx.stroke();
-  ctx.fillStyle = '#3B2A1F';
+  ctx.fillStyle = '#2d2727';
   ctx.fillText(label, x + padX, y + 15);
 }
 
@@ -581,8 +582,8 @@ function DoctorDesk({
           <planeGeometry args={[0.48, 0.32]} />
           <meshStandardMaterial
             map={monitorTex}
-            emissive="#6a8aa8"
-            emissiveIntensity={0.75}
+            emissive="#fffaf0"
+            emissiveIntensity={0.15}
             emissiveMap={monitorTex}
             toneMapped={false}
           />
@@ -590,7 +591,7 @@ function DoctorDesk({
         {/* power-LED on the front bezel */}
         <mesh position={[0, -0.195, 0.021]}>
           <boxGeometry args={[0.06, 0.01, 0.003]} />
-          <meshStandardMaterial color="#66a8e4" emissive="#66a8e4" emissiveIntensity={1.3} toneMapped={false} />
+          <meshStandardMaterial color="#ff7b54" emissive="#ff7b54" emissiveIntensity={0.4} toneMapped={false} />
         </mesh>
       </group>
       {/* keyboard */}

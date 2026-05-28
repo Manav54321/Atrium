@@ -351,9 +351,15 @@ export class Conversation {
         this.transition('listening', 'response cancelled');
         break;
 
-      case 'error':
-        this.handleError(event.error?.message ?? event.message ?? 'Realtime API error');
+      case 'error': {
+        const msg = event.error?.message ?? event.message ?? 'Realtime API error';
+        if (msg.includes('Cancellation failed: no active response found') || msg.includes('no active response found')) {
+          this.logEvent({ type: 'error', detail: `Ignored benign OpenAI cancellation warning: ${msg}` });
+          break;
+        }
+        this.handleError(msg);
         break;
+      }
     }
   }
 
