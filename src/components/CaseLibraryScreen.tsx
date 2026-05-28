@@ -4,161 +4,6 @@ import { CASES, CONDITION_COLORS, type Case } from '../data/cases';
 import { CLINIC_IDS, CLINIC_LABELS, type ClinicId } from '../game/clinic';
 import { store, useTweaks } from '../game/store';
 
-interface CaseCardProps {
-  c: Case;
-  delay?: number;
-  avatarStyle: ReturnType<typeof useTweaks>['avatarStyle'];
-}
-
-function CaseCard({ c, delay = 0, avatarStyle }: CaseCardProps) {
-  const bg = CONDITION_COLORS[c.cond] ?? 'var(--butter)';
-  return (
-    <div
-      className="tap popin"
-      onClick={() => store.selectCase(c.id)}
-      style={{ animationDelay: `${delay}s`, position: 'relative', marginTop: 12 }}
-    >
-      {/* Condition label badge */}
-      <div
-        style={{
-          position: 'absolute',
-          top: -10,
-          left: 14,
-          zIndex: 2,
-          background: 'var(--paper)',
-          border: `var(--stroke) solid ${bg}`,
-          borderRadius: 'var(--r-sm)',
-          padding: '3px 10px',
-          fontWeight: 800,
-          fontSize: 10,
-          color: 'var(--ink)',
-          fontFamily: 'Outfit, sans-serif',
-          letterSpacing: '0.05em',
-        }}
-      >
-        {c.cond.toUpperCase()}
-      </div>
-
-      <div
-        className="plush"
-        style={{
-          padding: 16,
-          opacity: c.attempted ? 0.9 : 1,
-          position: 'relative',
-          overflow: 'hidden',
-          background: 'var(--paper)',
-          border: 'var(--stroke) solid var(--line)',
-          borderRadius: 16,
-        }}
-      >
-        {/* Attempted score badge */}
-        {c.attempted && c.score && (
-          <div
-            className="chip mint"
-            style={{
-              position: 'absolute',
-              top: 14,
-              right: 14,
-              zIndex: 3,
-              fontSize: 10,
-              padding: '2px 8px',
-            }}
-          >
-            SCORE: {c.score}
-          </div>
-        )}
-
-        {/* Patient portrait deck box */}
-        <div
-          style={{
-            background: 'var(--cream-2)',
-            borderRadius: 12,
-            border: 'var(--stroke) solid var(--line)',
-            height: 140,
-            display: 'flex',
-            alignItems: 'flex-end',
-            justifyContent: 'center',
-            marginBottom: 12,
-            overflow: 'hidden',
-            position: 'relative',
-            borderBottom: `var(--stroke-thick) solid ${bg}`,
-          }}
-        >
-          <div style={{ marginBottom: -8 }} className="floaty">
-            <PatientFace
-              name={c.name}
-              style={avatarStyle}
-              skin={c.skin}
-              hair={c.hair}
-              size={120}
-              mood={c.mood}
-              accessory={c.accessory}
-              gender={c.sex}
-              age={c.age}
-            />
-          </div>
-        </div>
-
-        <div style={{ fontWeight: 800, fontSize: 16, lineHeight: 1.2, color: 'var(--ink)' }}>{c.name}</div>
-        <div
-          style={{
-            fontWeight: 700,
-            fontSize: 11,
-            color: 'var(--ink-soft)',
-            marginBottom: 8,
-            fontFamily: 'Outfit, sans-serif',
-          }}
-        >
-          {c.age}Y · {c.sex === 'F' ? 'Female' : 'Male'}
-        </div>
-        <div
-          style={{
-            fontSize: 13,
-            color: 'var(--ink-2)',
-            minHeight: 38,
-            lineHeight: 1.4,
-            fontWeight: 500,
-            fontStyle: 'italic',
-          }}
-        >
-          "{c.complaint}"
-        </div>
-
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
-          {c.tags.slice(0, 2).map((t) => {
-            const isRedFlag = t.toLowerCase().includes('red flag');
-            return (
-              <span
-                key={t}
-                className={`chip ${isRedFlag ? 'rose' : ''}`}
-                style={{
-                  fontSize: 9,
-                  padding: '2px 8px',
-                }}
-              >
-                {t.toUpperCase()}
-              </span>
-            );
-          })}
-        </div>
-        <div
-          style={{
-            marginTop: 10,
-            fontSize: 10,
-            fontWeight: 700,
-            color: 'var(--ink-soft)',
-            fontFamily: 'Outfit, sans-serif',
-          }}
-        >
-          📖 {c.guideline.toUpperCase()}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-type ClinicFilter = ClinicId | 'all' | 'red-flag';
-
 const CLINIC_ICON: Record<ClinicId, string> = {
   'all-specialties': '🌈',
   'internal-medicine': '🩺',
@@ -187,12 +32,176 @@ const CLINIC_ICON: Record<ClinicId, string> = {
   'cardiothoracic-vascular-surgery': '🫀',
 };
 
+interface CaseCardProps {
+  c: Case;
+  delay?: number;
+  avatarStyle: ReturnType<typeof useTweaks>['avatarStyle'];
+}
+
+function CaseCard({ c, delay = 0, avatarStyle }: CaseCardProps) {
+  const accentColor = CONDITION_COLORS[c.cond] ?? 'var(--butter)';
+  const isRedFlag = c.tags.some((t) => t.toLowerCase().includes('red flag'));
+
+  return (
+    <div
+      className="tap popin"
+      onClick={() => store.selectCase(c.id)}
+      style={{ animationDelay: `${delay}s`, position: 'relative' }}
+    >
+      <div
+        style={{
+          background: 'white',
+          borderRadius: 24,
+          border: '1.5px solid var(--line)',
+          boxShadow: '0 4px 20px rgba(26,26,46,0.06)',
+          overflow: 'hidden',
+          position: 'relative',
+          transition: 'all 300ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+        }}
+      >
+        {/* Colorful header zone */}
+        <div
+          style={{
+            height: 140,
+            background: `linear-gradient(160deg, ${accentColor}22 0%, ${accentColor}10 100%)`,
+            borderBottom: `2.5px solid ${accentColor}`,
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'center',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Condition badge */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 12,
+              left: 12,
+              background: 'white',
+              border: `2px solid ${accentColor}`,
+              borderRadius: 'var(--r-pill)',
+              padding: '3px 10px',
+              fontSize: 9,
+              fontWeight: 900,
+              color: 'var(--ink)',
+              fontFamily: "'Nunito', sans-serif",
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+            }}
+          >
+            {c.cond}
+          </div>
+
+          {/* Attempted score */}
+          {c.attempted && c.score && (
+            <div
+              style={{
+                position: 'absolute',
+                top: 12,
+                right: 12,
+                background: 'var(--mint-lt)',
+                border: '1.5px solid var(--mint)',
+                borderRadius: 'var(--r-pill)',
+                padding: '3px 10px',
+                fontSize: 9,
+                fontWeight: 900,
+                color: 'var(--mint-deep)',
+                fontFamily: "'Nunito', sans-serif",
+              }}
+            >
+              ✓ {c.score}
+            </div>
+          )}
+
+          {/* Red flag marker */}
+          {isRedFlag && (
+            <div
+              style={{
+                position: 'absolute',
+                top: 12,
+                right: c.attempted && c.score ? 64 : 12,
+                background: 'var(--coral-lt)',
+                border: '1.5px solid var(--coral)',
+                borderRadius: 'var(--r-pill)',
+                padding: '3px 10px',
+                fontSize: 9,
+                fontWeight: 900,
+                color: 'var(--coral-deep)',
+                fontFamily: "'Nunito', sans-serif",
+              }}
+            >
+              🚩
+            </div>
+          )}
+
+          <div className="floaty" style={{ marginBottom: -6 }}>
+            <PatientFace
+              name={c.name}
+              style={avatarStyle}
+              skin={c.skin}
+              hair={c.hair}
+              size={118}
+              mood={c.mood}
+              accessory={c.accessory}
+              gender={c.sex}
+              age={c.age}
+            />
+          </div>
+        </div>
+
+        {/* Card body */}
+        <div style={{ padding: '14px 16px 16px' }}>
+          <div style={{ fontWeight: 900, fontSize: 17, lineHeight: 1.2, color: 'var(--ink)', marginBottom: 4, fontFamily: "'Nunito', sans-serif" }}>
+            {c.name}
+          </div>
+          <div style={{ fontWeight: 700, fontSize: 11, color: 'var(--ink-soft)', marginBottom: 10 }}>
+            {c.age}Y · {c.sex === 'F' ? 'Female' : 'Male'}
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--ink-2)', minHeight: 38, lineHeight: 1.5, fontWeight: 600, fontStyle: 'italic', marginBottom: 12 }}>
+            "{c.complaint}"
+          </div>
+
+          {/* Tags */}
+          <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 8 }}>
+            {c.tags.slice(0, 2).map((t) => {
+              const rf = t.toLowerCase().includes('red flag');
+              return (
+                <span
+                  key={t}
+                  style={{
+                    background: rf ? 'var(--coral-lt)' : 'var(--bg-soft)',
+                    border: `1.5px solid ${rf ? 'var(--coral)' : 'var(--line)'}`,
+                    borderRadius: 'var(--r-pill)',
+                    padding: '3px 8px',
+                    fontSize: 9,
+                    fontWeight: 800,
+                    color: rf ? 'var(--coral-deep)' : 'var(--ink-2)',
+                    fontFamily: "'Nunito', sans-serif",
+                    letterSpacing: '0.03em',
+                  }}
+                >
+                  {t.toUpperCase()}
+                </span>
+              );
+            })}
+          </div>
+
+          <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--ink-soft)', display: 'flex', alignItems: 'center', gap: 4 }}>
+            📖 {c.guideline.toUpperCase()}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type ClinicFilter = ClinicId | 'all' | 'red-flag';
+
 export function CaseLibraryScreen() {
   const tweaks = useTweaks();
   const [filter, setFilter] = useState<ClinicFilter>('all');
 
-  // Group every case by its clinic once. The grouping respects
-  // CLINIC_IDS order so sections render in the same canonical order.
   const grouped = useMemo(() => {
     const map = new Map<ClinicId, Case[]>();
     for (const id of CLINIC_IDS) {
@@ -206,8 +215,6 @@ export function CaseLibraryScreen() {
     return map;
   }, []);
 
-  // Apply the active filter to the grouped data so we can render it as
-  // sections without having to re-group inside the JSX.
   const visibleGroups = useMemo<Array<[ClinicId, Case[]]>>(() => {
     if (filter === 'red-flag') {
       const out: Array<[ClinicId, Case[]]> = [];
@@ -234,65 +241,78 @@ export function CaseLibraryScreen() {
   };
 
   const clinicChips: Array<{ id: ClinicFilter; label: string; icon?: string }> = [
-    { id: 'all', label: 'All clinics', icon: '🌈' },
-    { id: 'red-flag', label: 'Red-flag only', icon: '🚩' },
+    { id: 'all', label: 'All Clinics', icon: '🌈' },
+    { id: 'red-flag', label: 'Red Flag', icon: '🚩' },
     ...CLINIC_IDS.filter((id) => id !== 'all-specialties' && (grouped.get(id)?.length ?? 0) > 0).map(
       (id) => ({ id: id as ClinicFilter, label: CLINIC_LABELS[id], icon: CLINIC_ICON[id] }),
     ),
   ];
 
   return (
-    <div className="screen" style={{ background: 'var(--cream)', overflowY: 'auto' }}>
+    <div className="screen" style={{ background: 'var(--bg)', overflowY: 'auto' }}>
       <TopBar here={2} steps={['Polyclinic', 'GP', 'Case']} />
 
-      {/* Header row: back button + title + shuffle */}
+      {/* Header */}
       <div
         style={{
-          padding: '24px 32px 0',
+          padding: '28px 36px 0',
           display: 'flex',
           alignItems: 'flex-start',
           justifyContent: 'space-between',
           gap: 20,
-          maxWidth: 1200,
+          maxWidth: 1240,
           margin: '0 auto',
+          flexWrap: 'wrap',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
           <button
             type="button"
             className="btn-plush ghost"
-            style={{ fontSize: 13, padding: '10px 18px' }}
+            style={{ fontSize: 13, padding: '10px 20px', fontFamily: "'Nunito', sans-serif" }}
             onClick={() => store.setScreen('gpRoom')}
-            title="Back to the GP room"
           >
-            ← BACK
+            ← Back
           </button>
           <div>
-            <h1 style={{ fontSize: 36, marginBottom: 4, fontWeight: 900 }}>Clinical Catalogue</h1>
-            <div style={{ fontWeight: 500, color: 'var(--ink-2)', fontSize: 14 }}>
-              Grouped by simulation clinic. Select a category node below to filter.
+            <div className="chip butter" style={{ marginBottom: 8, fontSize: 12, padding: '5px 14px', fontFamily: "'Nunito', sans-serif" }}>
+              📚 Case Archive
+            </div>
+            <h1
+              style={{
+                fontSize: 'clamp(28px, 3.5vw, 42px)',
+                marginBottom: 4,
+                fontWeight: 900,
+                fontFamily: "'Nunito', sans-serif",
+                letterSpacing: '-0.02em',
+              }}
+            >
+              Clinical Catalogue
+            </h1>
+            <div style={{ fontWeight: 600, color: 'var(--ink-2)', fontSize: 14 }}>
+              {totalVisible} case{totalVisible !== 1 ? 's' : ''} · grouped by specialty
             </div>
           </div>
         </div>
         <button
           type="button"
           className="btn-plush mint"
-          style={{ fontSize: 14, padding: '12px 22px', whiteSpace: 'nowrap', fontWeight: 800 }}
+          style={{ fontSize: 14, padding: '13px 24px', whiteSpace: 'nowrap', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}
           onClick={shuffle}
         >
-          🔀 DEPLOY RANDOM ({totalVisible})
+          🔀 Random Case
         </button>
       </div>
 
-      {/* Clinic filter chip row */}
+      {/* Filter chips */}
       <div
         style={{
-          padding: '20px 32px 10px',
+          padding: '20px 36px 10px',
           display: 'flex',
-          gap: 10,
+          gap: 8,
           flexWrap: 'wrap',
           alignItems: 'center',
-          maxWidth: 1200,
+          maxWidth: 1240,
           margin: '0 auto',
         }}
       >
@@ -301,26 +321,34 @@ export function CaseLibraryScreen() {
           return (
             <span
               key={chip.id}
-              className={`chip ${isActive ? 'peach' : ''}`}
+              className="tap"
               style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
                 cursor: 'pointer',
-                padding: '6px 12px',
+                padding: '8px 16px',
                 fontSize: 12,
-                borderColor: isActive ? 'var(--peach)' : 'var(--line)',
-                background: isActive ? 'var(--butter-deep)' : 'var(--paper)',
-                transition: 'all 0.2s',
+                fontWeight: 800,
+                borderRadius: 'var(--r-pill)',
+                border: `2px solid ${isActive ? 'var(--mint)' : 'var(--line)'}`,
+                background: isActive ? 'var(--mint-lt)' : 'white',
+                color: isActive ? 'var(--mint-deep)' : 'var(--ink-2)',
+                boxShadow: isActive ? '0 4px 14px rgba(78,205,196,0.2)' : 'var(--shadow-xs)',
+                transition: 'all 0.2s ease',
+                fontFamily: "'Nunito', sans-serif",
               }}
               onClick={() => setFilter(chip.id)}
             >
-              {chip.icon ? `${chip.icon} ` : ''}
-              {chip.label.toUpperCase()}
+              {chip.icon && <span>{chip.icon}</span>}
+              {chip.label}
             </span>
           );
         })}
       </div>
 
       {/* Grouped sections */}
-      <div style={{ padding: '10px 32px 40px', display: 'flex', flexDirection: 'column', gap: 32, maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ padding: '12px 36px 48px', display: 'flex', flexDirection: 'column', gap: 36, maxWidth: 1240, margin: '0 auto' }}>
         {visibleGroups.map(([clinic, list]) => (
           <section key={clinic}>
             <div
@@ -328,24 +356,45 @@ export function CaseLibraryScreen() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 12,
-                marginBottom: 16,
-                paddingBottom: 10,
-                borderBottom: '1px dashed var(--line)',
+                marginBottom: 18,
+                paddingBottom: 14,
+                borderBottom: '2px solid var(--line)',
               }}
             >
-              <span style={{ fontSize: 24 }}>{CLINIC_ICON[clinic] ?? '🏥'}</span>
-              <h2 style={{ fontSize: 22, margin: 0, fontWeight: 800, color: 'var(--ink)' }}>
-                {CLINIC_LABELS[clinic].toUpperCase()}
+              <span
+                style={{
+                  width: 42, height: 42, borderRadius: '50%',
+                  background: 'var(--bg-soft)',
+                  border: '2px solid var(--line)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 22, flexShrink: 0,
+                }}
+              >
+                {CLINIC_ICON[clinic] ?? '🏥'}
+              </span>
+              <h2 style={{ fontSize: 20, margin: 0, fontWeight: 900, color: 'var(--ink)', fontFamily: "'Nunito', sans-serif" }}>
+                {CLINIC_LABELS[clinic]}
               </h2>
-              <span className="chip" style={{ fontSize: 10, marginLeft: 8, fontFamily: 'JetBrains Mono, monospace' }}>
-                {list.length} CODE{list.length === 1 ? '' : 'S'}
+              <span
+                style={{
+                  background: 'var(--mint-lt)',
+                  border: '1.5px solid var(--mint)',
+                  borderRadius: 'var(--r-pill)',
+                  padding: '4px 12px',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  color: 'var(--mint-deep)',
+                  fontFamily: "'Nunito', sans-serif",
+                }}
+              >
+                {list.length} case{list.length !== 1 ? 's' : ''}
               </span>
             </div>
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-                gap: 20,
+                gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))',
+                gap: 18,
               }}
             >
               {list.map((c, i) => (
@@ -357,10 +406,18 @@ export function CaseLibraryScreen() {
 
         {visibleGroups.length === 0 && (
           <div
-            className="plush"
-            style={{ padding: 32, textAlign: 'center', color: 'var(--ink-2)', fontWeight: 600, background: 'var(--paper)' }}
+            style={{
+              background: 'white',
+              borderRadius: 'var(--r-xl)',
+              padding: '40px 32px',
+              textAlign: 'center',
+              color: 'var(--ink-2)',
+              fontWeight: 600,
+              border: '2px dashed var(--line)',
+            }}
           >
-            No simulation cases match the selected diagnostics node.
+            <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
+            <div style={{ fontWeight: 800, fontSize: 16 }}>No cases match this filter.</div>
           </div>
         )}
       </div>

@@ -102,10 +102,10 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
 
   const live = status === 'listening' || status === 'speaking' || status === 'thinking' || status === 'ready';
   const statusColor =
-    status === 'speaking'  ? '#e8541a' :
+    status === 'speaking'  ? 'var(--peach)' :
     status === 'listening' ? '#2d9e6b' :
-    status === 'thinking'  ? '#c8900a' :
-    live                   ? '#2d9e6b' : '#9a8d80';
+    status === 'thinking'  ? '#d99a06' :
+    live                   ? '#2d9e6b' : 'var(--ink-soft)';
 
   const showSubtitle  = !!subtitle.text && subtitle.text !== '…';
   const speakerLabel  = subtitle.who === 'you' ? 'You' : firstName;
@@ -120,22 +120,28 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
 
   return (
     <div
-      className="plush"
       style={{
         position: 'fixed',
         top: 18,
         right: 18,
         zIndex: 60,
-        width: 280,
-        background: 'rgba(255, 255, 255, 0.95)',
-        border: 'var(--stroke-thick) solid var(--line)',
-        borderRadius: 'var(--r-md)',
-        boxShadow: 'var(--plush)',
-        fontFamily: 'Outfit, system-ui, sans-serif',
+        width: 300,
+        background: 'rgba(255, 255, 255, 0.97)',
+        border: '1.5px solid var(--line)',
+        borderRadius: 28,
+        boxShadow: '0 16px 48px rgba(26,26,46,0.12)',
+        fontFamily: "'Nunito', sans-serif",
         color: 'var(--ink)',
         overflow: 'hidden',
       }}
     >
+      {/* Top color accent */}
+      <div style={{
+        height: 4, width: '100%',
+        background: `linear-gradient(90deg, ${statusColor} 0%, ${statusColor}88 100%)`,
+        transition: 'background 0.3s',
+      }} />
+
       {/* ── Header ─────────────────────────────────────────── */}
       <div
         style={{
@@ -144,36 +150,40 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
           justifyContent: 'space-between',
           gap: 8,
           padding: '12px 16px',
-          borderBottom: 'var(--stroke) solid var(--line)',
-          background: 'var(--cream-2)',
+          borderBottom: '1.5px solid var(--line)',
+          background: 'var(--bg-soft)',
         }}
       >
-        <div style={{ fontSize: 14, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ color: 'var(--ink)' }}>{patientName}</span>
-          <span
-            style={{
-              fontSize: 10,
-              color: 'var(--ink-soft)',
-              fontWeight: 600,
-              fontFamily: 'Outfit, sans-serif',
-            }}
-          >
-            {patientLabel}
-          </span>
+        <div style={{ fontSize: 14, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{
+            width: 34, height: 34, borderRadius: '50%',
+            background: 'linear-gradient(135deg, var(--peach-lt) 0%, var(--rose-lt) 100%)',
+            border: '1.5px solid var(--line)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 16, flexShrink: 0,
+          }}>
+            {EMOTION_ICONS[emotion]}
+          </div>
+          <div>
+            <div style={{ fontWeight: 900, fontSize: 14, color: 'var(--ink)', fontFamily: "'Nunito', sans-serif" }}>{patientName}</div>
+            <div style={{ fontSize: 10, color: 'var(--ink-soft)', fontWeight: 700 }}>{patientLabel}</div>
+          </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {/* Language chip */}
           <div
-            className={`chip ${langIsHindi ? 'butter' : 'sky'}`}
             style={{
-              fontSize: 8,
-              padding: '2px 6px',
-              fontFamily: 'Outfit, sans-serif',
-              fontWeight: 800,
+              background: langIsHindi ? 'var(--butter-lt)' : 'var(--sky-lt)',
+              border: `1.5px solid ${langIsHindi ? 'var(--butter)' : 'var(--sky)'}`,
+              borderRadius: 'var(--r-pill)',
+              padding: '3px 8px',
+              fontSize: 9, fontWeight: 900,
+              color: langIsHindi ? '#9a6800' : 'var(--sky-deep)',
+              fontFamily: "'Nunito', sans-serif",
             }}
           >
-            {langIsHindi ? 'HI' : 'EN'}
+            {langIsHindi ? 'हिंदी' : 'EN'}
           </div>
 
           {/* Status badge */}
@@ -183,24 +193,24 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
               alignItems: 'center',
               gap: 5,
               fontSize: 9,
-              letterSpacing: '0.08em',
+              letterSpacing: '0.06em',
               color: statusColor,
               textTransform: 'uppercase',
               fontWeight: 900,
               whiteSpace: 'nowrap',
-              padding: '3px 7px',
+              padding: '4px 10px',
               borderRadius: 'var(--r-pill)',
-              background: 'var(--cream)',
-              border: 'var(--stroke) solid var(--line)',
-              fontFamily: 'Outfit, sans-serif',
+              background: 'white',
+              border: '1.5px solid var(--line)',
+              fontFamily: "'Nunito', sans-serif",
               transition: 'color 0.25s',
             }}
           >
             <span
               className={live ? 'breathe' : undefined}
               style={{
-                width: 6,
-                height: 6,
+                width: 7,
+                height: 7,
                 borderRadius: '50%',
                 background: statusColor,
                 display: 'inline-block',
@@ -213,22 +223,21 @@ export function DockedVoicePanel({ patientName, patientLabel }: Props) {
         </div>
       </div>
 
-      {/* ── Subtitle / transcript box ───────────────────────── */}
-      <div style={{ padding: '12px 16px 14px' }}>
+      {/* ── Transcript box ─────────────────────────────────── */}
+      <div style={{ padding: '14px 16px 16px' }}>
         <div
           ref={scrollRef}
           style={{
-            fontStyle: showSubtitle ? 'italic' : 'normal',
             fontSize: 13,
-            lineHeight: 1.5,
+            lineHeight: 1.6,
             color: showSubtitle ? 'var(--ink)' : 'var(--ink-2)',
-            fontWeight: 500,
+            fontWeight: 600,
             maxHeight: status === 'speaking' ? 120 : 90,
             overflowY: 'auto',
             background: 'var(--cream-2)',
             border: 'var(--stroke) solid var(--line)',
-            borderRadius: 8,
-            padding: '10px 12px',
+            borderRadius: 14,
+            padding: '10px 14px',
             transition: 'max-height 0.2s',
           }}
         >

@@ -32,14 +32,38 @@ const CLINIC_ICON: Record<ClinicId, string> = {
   'cardiothoracic-vascular-surgery': '🫀',
 };
 
+function IllustratedFolder() {
+  return (
+    <svg width="130" height="130" viewBox="0 0 130 130">
+      <defs>
+        <linearGradient id="folderGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#FFF0B3" />
+          <stop offset="100%" stopColor="#FFD166" />
+        </linearGradient>
+      </defs>
+      {/* Folder tab */}
+      <rect x="14" y="20" width="42" height="16" rx="5" fill="url(#folderGrad)" stroke="rgba(74,74,106,0.15)" strokeWidth="2" />
+      {/* Main folder body */}
+      <rect x="10" y="28" width="110" height="86" rx="12" fill="url(#folderGrad)" stroke="rgba(74,74,106,0.15)" strokeWidth="2.5" />
+      {/* Paper inside */}
+      <rect x="22" y="40" width="86" height="64" rx="6" fill="white" stroke="rgba(74,74,106,0.1)" strokeWidth="2" />
+      {/* Lines on paper */}
+      <line x1="32" y1="56" x2="98" y2="56" stroke="rgba(74,74,106,0.15)" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="32" y1="68" x2="90" y2="68" stroke="rgba(74,74,106,0.15)" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="32" y1="80" x2="82" y2="80" stroke="rgba(74,74,106,0.15)" strokeWidth="2.5" strokeLinecap="round" />
+      {/* Stethoscope icon accent */}
+      <circle cx="98" cy="88" r="12" fill="var(--coral)" />
+      <text x="98" y="92" textAnchor="middle" fontFamily="Nunito" fontWeight="900" fontSize="12" fill="white">🩺</text>
+    </svg>
+  );
+}
+
 export function GPRoomScreen() {
   const tweaks = useTweaks();
   const state = useGameState();
   const activeClinic = state.polyclinic.clinic;
   const [pickerOpen, setPickerOpen] = useState(false);
 
-  // Cases from the active clinic — that's what "Accept the next patient"
-  // will walk through. 'all-specialties' pulls from every roster.
   const clinicCases = useMemo(() => {
     if (activeClinic === 'all-specialties') return CASES;
     return CASES.filter((c) => c.clinic === activeClinic);
@@ -50,8 +74,6 @@ export function GPRoomScreen() {
   const nextId = store.pickNextCaseId() ?? clinicCases[0]?.id ?? CASES[0]?.id;
   const next = nextId ? getCase(nextId) : null;
 
-  // Only show clinics that actually have at least one case in the
-  // catalogue, plus the synthetic "all" option at the top.
   const availableClinics = useMemo(() => {
     return CLINIC_IDS.filter(
       (id) => id === 'all-specialties' || CASES.some((c) => c.clinic === id),
@@ -59,396 +81,381 @@ export function GPRoomScreen() {
   }, []);
 
   return (
-    <div className="screen" style={{ background: 'var(--cream)', position: 'relative', overflowY: 'auto' }}>
+    <div className="screen" style={{ background: 'var(--bg)', position: 'relative', overflowY: 'auto' }}>
       <TopBar here={1} steps={['Polyclinic', 'GP']} />
 
-      {/* Friendly Desk Sign */}
       <div
         style={{
-          position: 'absolute',
-          top: 80,
-          left: 40,
-          fontSize: 12,
-          fontWeight: 700,
-          color: 'var(--ink-soft)',
-          pointerEvents: 'none',
+          padding: '40px 36px 56px',
+          maxWidth: 980,
+          margin: '0 auto',
           display: 'flex',
-          alignItems: 'center',
-          gap: 6,
+          flexDirection: 'column',
+          gap: 28,
         }}
       >
-        <span>📍 Desk 4</span>
-        <span>•</span>
-        <span>GP Consultation Room</span>
-      </div>
+        {/* Header */}
+        <div style={{ textAlign: 'center' }}>
+          <div className="chip mint" style={{ marginBottom: 14, fontSize: 12, padding: '6px 18px', fontFamily: "'Nunito', sans-serif" }}>
+            🏥 Patient Reception
+          </div>
+          <h1
+            style={{
+              fontSize: 'clamp(32px, 4.5vw, 50px)',
+              lineHeight: 1.05,
+              fontFamily: "'Nunito', sans-serif",
+              fontWeight: 900,
+              letterSpacing: '-0.02em',
+              marginBottom: 12,
+            }}
+          >
+            Who's next? 👨‍⚕️
+          </h1>
+          <p style={{ fontSize: 16, color: 'var(--ink-2)', fontWeight: 600, maxWidth: 520, margin: '0 auto', lineHeight: 1.55 }}>
+            Select a specialty clinic to meet your next patient, or browse the full case library.
+          </p>
+        </div>
 
-      <div
-        style={{
-          position: 'absolute',
-          top: 80,
-          right: 40,
-          fontSize: 12,
-          fontWeight: 700,
-          color: 'var(--ink-soft)',
-          pointerEvents: 'none',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-        }}
-      >
-        <span style={{ color: 'var(--peach)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-          <span className="dot" style={{ background: 'var(--peach)', width: 8, height: 8 }} />
-          Online
-        </span>
-      </div>
-
-      <div style={{ padding: '40px 36px 12px', textAlign: 'center' }}>
-        <span className="chip butter" style={{ marginBottom: 12 }}>
-          🏥 CLINICAL INTRODUCTIONS
-        </span>
-        <h1 style={{ fontSize: 44, lineHeight: 1.05, marginTop: 12, fontWeight: 900 }}>
-          Patient Reception Desk
-        </h1>
+        {/* Specialty picker */}
         <div
           style={{
-            fontSize: 16,
-            color: 'var(--ink-2)',
-            fontWeight: 500,
-            marginTop: 8,
-            maxWidth: 620,
-            margin: '8px auto 0',
+            background: 'white',
+            borderRadius: 'var(--r-xl)',
+            border: `2px solid ${pickerOpen ? 'var(--mint)' : 'var(--line)'}`,
+            boxShadow: pickerOpen
+              ? '0 8px 32px rgba(78,205,196,0.18)'
+              : '0 4px 16px rgba(26,26,46,0.06)',
+            overflow: 'hidden',
+            transition: 'all 0.25s ease',
           }}
         >
-          Select a specialty clinic below to meet your next patient, or browse patient charts in the case library.
-        </div>
-      </div>
-
-      {/* Specialty Picker Console */}
-      <div style={{ maxWidth: 960, margin: '0 auto', padding: '12px 36px 4px' }}>
-        <button
-          type="button"
-          onClick={() => setPickerOpen((v) => !v)}
-          className="btn-plush ghost"
-          style={{
-            width: '100%',
-            padding: '16px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            fontSize: 15,
-            fontWeight: 700,
-            background: 'var(--paper)',
-            borderColor: pickerOpen ? 'var(--peach)' : 'var(--line)',
-            boxShadow: pickerOpen ? 'var(--plush-sm)' : 'none',
-          }}
-        >
-          <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button
+            type="button"
+            onClick={() => setPickerOpen((v) => !v)}
+            style={{
+              width: '100%',
+              padding: '18px 24px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              fontFamily: "'Nunito', sans-serif",
+            }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontSize: 22 }}>{CLINIC_ICON[activeClinic]}</span>
+              <span>
+                <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--ink-soft)', display: 'block', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>
+                  Active Department
+                </span>
+                <span style={{ fontSize: 17, fontWeight: 900, color: 'var(--ink)' }}>
+                  {CLINIC_LABELS[activeClinic]}
+                </span>
+              </span>
+            </span>
             <span
               style={{
-                fontSize: 10,
-                fontWeight: 800,
-                color: 'var(--ink-soft)',
-                letterSpacing: '0.1em',
-                fontFamily: 'Outfit, sans-serif',
+                width: 34, height: 34, borderRadius: '50%',
+                background: pickerOpen ? 'var(--mint-lt)' : 'var(--bg-soft)',
+                border: `1.5px solid ${pickerOpen ? 'var(--mint)' : 'var(--line)'}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontWeight: 900, fontSize: 16, color: pickerOpen ? 'var(--mint-deep)' : 'var(--ink-2)',
+                transition: 'all 0.2s ease',
+                transform: pickerOpen ? 'rotate(180deg)' : 'none',
               }}
             >
-              ACTIVE DEPT:
+              ▾
             </span>
-            <span style={{ color: 'var(--ink)', fontSize: 16, fontWeight: 800 }}>
-              {CLINIC_ICON[activeClinic]} {CLINIC_LABELS[activeClinic]}
-            </span>
-          </span>
-          <span style={{ fontWeight: 800, color: 'var(--peach)', fontSize: 16 }}>
-            {pickerOpen ? '▲' : '▼'}
-          </span>
-        </button>
+          </button>
 
-        {pickerOpen && (
-          <div
-            className="plush popin"
-            style={{
-              marginTop: 8,
-              padding: 16,
-              background: 'var(--paper)',
-              border: 'var(--stroke-thick) solid var(--line)',
-              display: 'flex',
-              gap: 10,
-              flexWrap: 'wrap',
-              boxShadow: 'var(--plush)',
-            }}
-          >
-            {availableClinics.map((id) => {
-              const isActive = activeClinic === id;
-              return (
-                <span
-                  key={id}
-                  className={`chip ${isActive ? 'peach' : ''}`}
-                  style={{
-                    cursor: 'pointer',
-                    fontSize: 12,
-                    padding: '8px 14px',
-                    borderColor: isActive ? 'var(--peach)' : 'var(--line)',
-                    background: isActive ? 'var(--peach-deep)' : 'var(--cream-2)',
-                    transition: 'all 0.2s',
-                  }}
-                  onClick={() => {
-                    store.setPolyclinicClinic(id);
-                    setPickerOpen(false);
-                  }}
-                >
-                  {CLINIC_ICON[id]} {CLINIC_LABELS[id]}
-                </span>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 32,
-          padding: '24px 36px 40px',
-          maxWidth: 960,
-          margin: '0 auto',
-        }}
-      >
-        {/* LEFT — teleporter pad (accept next patient) */}
-        <div
-          className={`tap plush-lg popin ${next ? 'breathe' : ''}`}
-          onClick={() => next && store.acceptNextPatient()}
-          style={{
-            background: 'var(--paper)',
-            borderColor: next ? 'var(--peach)' : 'var(--line)',
-            padding: 32,
-            position: 'relative',
-            opacity: next ? 1 : 0.5,
-            cursor: next ? 'pointer' : 'not-allowed',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'stretch',
-            justifyContent: 'space-between',
-            boxShadow: next ? 'var(--plush)' : 'var(--plush-sm)',
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              top: -14,
-              left: 24,
-            }}
-            className="chip peach"
-          >
-            PATIENT INTAKE
-          </div>
-
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              margin: '20px 0',
-            }}
-          >
-            {/* Friendly Avatar Container */}
+          {pickerOpen && (
             <div
-              className="plush"
+              className="popin"
               style={{
-                width: 170,
-                height: 170,
-                background: 'var(--cream-2)',
-                borderColor: next ? 'var(--peach)' : 'var(--line)',
+                padding: '0 20px 20px',
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'relative',
-                overflow: 'hidden',
-                borderRadius: '50%',
-                boxShadow: next ? '0 8px 24px rgba(255, 123, 84, 0.15)' : 'none',
+                gap: 8,
+                flexWrap: 'wrap',
+                borderTop: '1.5px solid var(--line)',
+                paddingTop: 16,
               }}
             >
-              {/* Soft warm radial glow */}
-              {next && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    background: 'radial-gradient(circle, rgba(255, 213, 107, 0.15) 0%, transparent 70%)',
-                    pointerEvents: 'none',
-                    zIndex: 2,
-                  }}
-                />
-              )}
-
-              {next ? (
-                <PatientFace
-                  style={tweaks.avatarStyle}
-                  skin={next.skin}
-                  hair={next.hair}
-                  size={130}
-                  mood={next.mood}
-                  accessory={next.accessory}
-                  gender={next.sex}
-                  age={next.age}
-                />
-              ) : (
-                <span style={{ fontSize: 48 }}>
-                  {CLINIC_ICON[activeClinic]}
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <h2 style={{ fontSize: 24, textAlign: 'center', marginBottom: 8, fontWeight: 800 }}>
-              {next ? 'Invite Patient In' : 'Queue Empty'}
-            </h2>
-            <div
-              style={{
-                fontSize: 14,
-                color: 'var(--ink-2)',
-                fontWeight: 500,
-                textAlign: 'center',
-                marginBottom: 20,
-                minHeight: 42,
-                lineHeight: 1.4,
-              }}
-            >
-              {next
-                ? `Ready to welcome ${next.name} into the clinical consultation room.`
-                : `No simulation cases queued in ${CLINIC_LABELS[activeClinic]}.`}
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
-              {next && (
-                <>
-                  <span className="chip sky">
-                    {next.name.split(' ')[0]} · {next.age}Y · {next.sex === 'F' ? 'Female' : 'Male'}
+              {availableClinics.map((id) => {
+                const isActive = activeClinic === id;
+                return (
+                  <span
+                    key={id}
+                    className="tap"
+                    onClick={() => {
+                      store.setPolyclinicClinic(id);
+                      setPickerOpen(false);
+                    }}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '8px 14px',
+                      borderRadius: 'var(--r-pill)',
+                      border: `2px solid ${isActive ? 'var(--mint)' : 'var(--line)'}`,
+                      background: isActive ? 'var(--mint-lt)' : 'var(--bg)',
+                      fontSize: 13,
+                      fontWeight: 800,
+                      color: isActive ? 'var(--mint-deep)' : 'var(--ink-2)',
+                      cursor: 'pointer',
+                      transition: 'all 0.18s ease',
+                      fontFamily: "'Nunito', sans-serif",
+                    }}
+                  >
+                    {CLINIC_ICON[id]} {CLINIC_LABELS[id]}
                   </span>
-                  <span className="chip rose">{next.cond}</span>
-                </>
-              )}
-              <span className="chip butter">
-                {queueAhead} IN ROSTER
-              </span>
+                );
+              })}
             </div>
-          </div>
+          )}
         </div>
 
-        {/* RIGHT — database folder (browse charts) */}
+        {/* Two action cards */}
         <div
-          className="tap plush-lg popin"
-          onClick={() => store.setScreen('library')}
           style={{
-            background: 'var(--paper)',
-            borderColor: 'var(--line)',
-            padding: 32,
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'stretch',
-            justifyContent: 'space-between',
-            boxShadow: 'var(--plush)',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 24,
           }}
         >
+          {/* LEFT: Accept next patient */}
           <div
+            className={`tap popin ${next ? 'breathe' : ''}`}
+            onClick={() => next && store.acceptNextPatient()}
             style={{
-              position: 'absolute',
-              top: -14,
-              left: 24,
-            }}
-            className="chip mint"
-          >
-            CASE ARCHIVE
-          </div>
-
-          <div
-            style={{
+              background: 'white',
+              borderRadius: 'var(--r-xl)',
+              border: `2.5px solid ${next ? 'var(--coral)' : 'rgba(74,74,106,0.1)'}`,
+              boxShadow: next
+                ? '0 12px 40px rgba(255,107,107,0.18), 0 4px 12px rgba(26,26,46,0.06)'
+                : '0 4px 16px rgba(26,26,46,0.05)',
+              padding: 28,
+              position: 'relative',
+              cursor: next ? 'pointer' : 'not-allowed',
+              opacity: next ? 1 : 0.55,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              margin: '20px 0',
+              justifyContent: 'space-between',
+              overflow: 'hidden',
+              minHeight: 400,
             }}
           >
-            {/* Friendly Folder Frame */}
-            <div
-              className="plush"
-              style={{
-                width: 170,
-                height: 170,
-                background: 'var(--cream-2)',
-                borderColor: 'var(--line)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '50%',
-                position: 'relative',
-                boxShadow: '0 8px 24px var(--shadow)',
-              }}
-            >
-              <div style={{ transform: 'scale(1.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <ChartFolder />
+            {/* Top accent */}
+            {next && (
+              <div style={{
+                position: 'absolute', top: 0, left: 0, right: 0, height: 5,
+                background: 'linear-gradient(90deg, var(--coral) 0%, var(--peach) 100%)',
+                borderRadius: '32px 32px 0 0',
+              }} />
+            )}
+
+            {/* Floating badge */}
+            <div style={{ position: 'absolute', top: 18, left: 20 }}>
+              <span className="chip coral" style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11 }}>
+                Patient Intake
+              </span>
+            </div>
+
+            {/* Avatar area */}
+            <div style={{ marginTop: 36, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, flex: 1 }}>
+              <div
+                className="floaty"
+                style={{
+                  width: 160,
+                  height: 160,
+                  borderRadius: '50%',
+                  background: next
+                    ? 'linear-gradient(135deg, rgba(255,160,122,0.12) 0%, rgba(255,107,107,0.08) 100%)'
+                    : 'var(--bg-soft)',
+                  border: `2.5px solid ${next ? 'var(--coral)' : 'rgba(74,74,106,0.1)'}`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: next ? '0 12px 36px rgba(255,107,107,0.18)' : 'none',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+              >
+                {next && (
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    background: 'radial-gradient(circle, rgba(255,213,107,0.18) 0%, transparent 70%)',
+                    pointerEvents: 'none', zIndex: 2,
+                  }} />
+                )}
+                {next ? (
+                  <PatientFace
+                    style={tweaks.avatarStyle}
+                    skin={next.skin}
+                    hair={next.hair}
+                    size={130}
+                    mood={next.mood}
+                    accessory={next.accessory}
+                    gender={next.sex}
+                    age={next.age}
+                  />
+                ) : (
+                  <span style={{ fontSize: 52 }}>{CLINIC_ICON[activeClinic]}</span>
+                )}
+              </div>
+
+              <div style={{ textAlign: 'center', width: '100%' }}>
+                <h2 style={{ fontSize: 22, fontWeight: 900, marginBottom: 8, color: 'var(--ink)', fontFamily: "'Nunito', sans-serif" }}>
+                  {next ? 'Invite Patient In' : 'Queue Empty'}
+                </h2>
+                <p style={{ fontSize: 14, color: 'var(--ink-2)', fontWeight: 600, lineHeight: 1.5, marginBottom: 16, maxWidth: 260, margin: '0 auto 16px' }}>
+                  {next
+                    ? `Ready to welcome ${next.name} into the consultation room.`
+                    : `No simulation cases queued in ${CLINIC_LABELS[activeClinic]}.`}
+                </p>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  {next && (
+                    <>
+                      <span className="chip sky" style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11 }}>
+                        {next.name.split(' ')[0]} · {next.age}Y · {next.sex === 'F' ? 'F' : 'M'}
+                      </span>
+                      <span className="chip coral" style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11 }}>
+                        {next.cond}
+                      </span>
+                    </>
+                  )}
+                  <span className="chip butter" style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11 }}>
+                    {queueAhead} in roster
+                  </span>
+                </div>
               </div>
             </div>
+
+            {/* CTA */}
+            {next && (
+              <div
+                style={{
+                  width: '100%', marginTop: 20,
+                  background: 'linear-gradient(135deg, var(--coral) 0%, var(--peach) 100%)',
+                  borderRadius: 'var(--r-pill)',
+                  padding: '14px 0',
+                  textAlign: 'center',
+                  fontWeight: 900,
+                  fontSize: 16,
+                  color: 'white',
+                  fontFamily: "'Nunito', sans-serif",
+                  boxShadow: '0 6px 20px rgba(255,107,107,0.35)',
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                🚪 Welcome Patient →
+              </div>
+            )}
           </div>
 
-          <div>
-            <h2 style={{ fontSize: 24, textAlign: 'center', marginBottom: 8, fontWeight: 800 }}>
-              Case Library
-            </h2>
-            <div
-              style={{
-                fontSize: 14,
-                color: 'var(--ink-2)',
-                fontWeight: 500,
-                textAlign: 'center',
-                marginBottom: 20,
-                minHeight: 42,
-                lineHeight: 1.4,
-              }}
-            >
-              Browse through clinical cases, review attempt ribbons, and practice specific scenarios.
+          {/* RIGHT: Case library */}
+          <div
+            className="tap popin"
+            onClick={() => store.setScreen('library')}
+            style={{
+              background: 'white',
+              borderRadius: 'var(--r-xl)',
+              border: '2px solid var(--line)',
+              boxShadow: '0 8px 28px rgba(26,26,46,0.07)',
+              padding: 28,
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              overflow: 'hidden',
+              minHeight: 400,
+              cursor: 'pointer',
+              transition: 'all 300ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+            }}
+          >
+            {/* Top accent */}
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0, height: 5,
+              background: 'linear-gradient(90deg, var(--butter) 0%, var(--peach) 100%)',
+              borderRadius: '32px 32px 0 0',
+            }} />
+
+            <div style={{ position: 'absolute', top: 18, left: 20 }}>
+              <span className="chip butter" style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11 }}>
+                Case Archive
+              </span>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <span className="chip sky">
-                📁 {totalAll} Cases
-              </span>
-              <span className="chip peach">INDEX SORTED</span>
+            <div style={{ marginTop: 36, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, flex: 1 }}>
+              <div
+                className="floaty"
+                style={{
+                  width: 160,
+                  height: 160,
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, var(--butter-lt) 0%, rgba(255,160,122,0.1) 100%)',
+                  border: '2px solid var(--line)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <IllustratedFolder />
+              </div>
+
+              <div style={{ textAlign: 'center', width: '100%' }}>
+                <h2 style={{ fontSize: 22, fontWeight: 900, marginBottom: 8, color: 'var(--ink)', fontFamily: "'Nunito', sans-serif" }}>
+                  Case Library
+                </h2>
+                <p style={{ fontSize: 14, color: 'var(--ink-2)', fontWeight: 600, lineHeight: 1.5, marginBottom: 16, maxWidth: 260, margin: '0 auto 16px' }}>
+                  Browse clinical cases, pick a specific scenario, and practice on your own terms.
+                </p>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  <span className="chip sky" style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11 }}>
+                    📁 {totalAll} Cases
+                  </span>
+                  <span className="chip lav" style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11 }}>
+                    24 Specialties
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div
+              style={{
+                width: '100%', marginTop: 20,
+                background: 'linear-gradient(135deg, var(--butter) 0%, var(--peach) 100%)',
+                borderRadius: 'var(--r-pill)',
+                padding: '14px 0',
+                textAlign: 'center',
+                fontWeight: 900,
+                fontSize: 16,
+                color: 'var(--ink)',
+                fontFamily: "'Nunito', sans-serif",
+                boxShadow: '0 6px 20px rgba(255,209,102,0.35)',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              📚 Browse Cases →
             </div>
           </div>
         </div>
-      </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 40 }}>
-        <button
-          type="button"
-          className="btn-plush ghost"
-          style={{ fontSize: 13, padding: '12px 24px' }}
-          onClick={() => store.setScreen('mode')}
-        >
-          ← EXIT TO CORRIDOR
-        </button>
+        {/* Back button */}
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <button
+            type="button"
+            className="btn-plush ghost"
+            style={{ fontSize: 14, padding: '12px 28px', fontFamily: "'Nunito', sans-serif" }}
+            onClick={() => store.setScreen('mode')}
+          >
+            ← Back to Wings
+          </button>
+        </div>
       </div>
     </div>
-  );
-}
-
-function ChartFolder() {
-  const stroke = 'var(--line)';
-  return (
-    <svg width="120" height="120" viewBox="0 0 120 120">
-      <rect x="14" y="22" width="92" height="14" rx="4" fill="#FFD86B" stroke={stroke} strokeWidth="3.5" />
-      <rect x="10" y="30" width="100" height="78" rx="10" fill="#FFB68A" stroke={stroke} strokeWidth="4" />
-      <rect x="20" y="42" width="80" height="60" rx="6" fill="white" stroke={stroke} strokeWidth="3" />
-      <line x1="30" y1="56" x2="86" y2="56" stroke={stroke} strokeWidth="3" strokeLinecap="round" />
-      <line x1="30" y1="68" x2="78" y2="68" stroke={stroke} strokeWidth="3" strokeLinecap="round" />
-      <line x1="30" y1="80" x2="70" y2="80" stroke={stroke} strokeWidth="3" strokeLinecap="round" />
-      <circle cx="92" cy="84" r="9" fill="#F47A92" stroke={stroke} strokeWidth="3" />
-      <text x="92" y="88" textAnchor="middle" fontFamily="Nunito" fontWeight="900" fontSize="11" fill="white">
-        +
-      </text>
-    </svg>
   );
 }

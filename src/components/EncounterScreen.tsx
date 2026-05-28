@@ -103,18 +103,21 @@ function Loader() {
     <Html center>
       <div
         style={{
-          fontFamily: 'Nunito, sans-serif',
+          fontFamily: "'Nunito', sans-serif",
           fontWeight: 800,
-          color: 'var(--peach-deep)',
+          color: 'var(--ink)',
           background: 'white',
-          padding: '8px 14px',
-          border: '3px solid var(--line)',
+          padding: '10px 20px',
+          border: '2px solid var(--mint)',
           borderRadius: 'var(--r-pill)',
-          boxShadow: 'var(--plush-tiny)',
-          fontSize: 13,
-          letterSpacing: '0.05em',
+          boxShadow: '0 4px 20px rgba(78,205,196,0.25)',
+          fontSize: 14,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
         }}
       >
+        <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block', animation: 'breathe 1.5s ease-in-out infinite' }} />
         Loading polyclinic…
       </div>
     </Html>
@@ -124,7 +127,7 @@ function Loader() {
 function Crosshair() {
   const active = useActiveInteractable();
   const hot = !!active;
-  const size = hot ? 14 : 6;
+  const size = hot ? 16 : 7;
   return (
     <div
       style={{
@@ -136,11 +139,11 @@ function Crosshair() {
         marginLeft: -size / 2,
         marginTop: -size / 2,
         borderRadius: '50%',
-        background: hot ? 'transparent' : 'rgba(255,248,236,0.85)',
-        border: hot ? '2.5px solid var(--peach-deep)' : 'none',
+        background: hot ? 'transparent' : 'rgba(255, 255, 255, 0.9)',
+        border: hot ? '2.5px solid var(--coral)' : 'none',
         boxShadow: hot
-          ? '0 0 12px rgba(255,142,92,0.55), 0 0 0 1px rgba(43,30,22,0.3)'
-          : '0 0 0 1px rgba(43,30,22,0.4)',
+          ? '0 0 14px rgba(255,107,107,0.6), 0 0 0 2px rgba(255,107,107,0.2)'
+          : '0 0 0 1.5px rgba(26,26,46,0.35)',
         pointerEvents: 'none',
         transition: 'width 0.12s, height 0.12s, margin 0.12s, border 0.12s, box-shadow 0.12s',
       }}
@@ -152,13 +155,14 @@ function Kbd({ children }: { children: React.ReactNode }) {
   return (
     <span
       style={{
-        background: 'var(--cream)',
-        padding: '2px 8px',
-        borderRadius: 6,
-        fontFamily: 'ui-monospace, monospace',
+        background: 'rgba(255,255,255,0.85)',
+        padding: '2px 9px',
+        borderRadius: 7,
+        fontFamily: "'Nunito', sans-serif",
         fontSize: 11,
-        border: '2px solid var(--line)',
-        boxShadow: '0 2px 0 var(--line)',
+        fontWeight: 800,
+        border: '1.5px solid rgba(255,255,255,0.5)',
+        boxShadow: '0 2px 0 rgba(26,26,46,0.15)',
         margin: '0 2px',
         color: 'var(--ink)',
       }}
@@ -168,7 +172,7 @@ function Kbd({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Ambient mic indicator — subtle pulsing dot when voice is live. Clickable to toggle mute. */
+/** Ambient mic indicator — clickable to toggle mute. */
 function MicIndicator({ muted, onToggle }: { muted: boolean; onToggle?: () => void }) {
   return (
     <button
@@ -177,18 +181,20 @@ function MicIndicator({ muted, onToggle }: { muted: boolean; onToggle?: () => vo
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 6,
-        background: 'white',
-        border: '2.5px solid var(--line)',
+        gap: 7,
+        background: muted ? 'rgba(255,255,255,0.85)' : 'rgba(78,205,196,0.15)',
+        border: `1.5px solid ${muted ? 'rgba(255,255,255,0.4)' : 'rgba(78,205,196,0.5)'}`,
         borderRadius: 'var(--r-pill)',
-        padding: '6px 12px',
-        boxShadow: 'var(--plush-tiny)',
-        fontSize: 11,
+        padding: '7px 14px',
+        boxShadow: '0 2px 12px rgba(26,26,46,0.12)',
+        fontSize: 12,
         fontWeight: 800,
-        color: muted ? 'var(--ink-soft)' : 'var(--mint-deep)',
-        letterSpacing: '0.04em',
+        color: muted ? 'rgba(74,74,106,0.7)' : 'rgba(78,205,196,1)',
         cursor: 'pointer',
-        fontFamily: 'inherit',
+        fontFamily: "'Nunito', sans-serif",
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        transition: 'all 0.2s ease',
       }}
     >
       <span
@@ -197,12 +203,13 @@ function MicIndicator({ muted, onToggle }: { muted: boolean; onToggle?: () => vo
           width: 8,
           height: 8,
           borderRadius: '50%',
-          background: muted ? 'var(--ink-soft)' : '#2d9e6b',
+          background: muted ? 'rgba(142,142,170,0.7)' : '#4ECDC4',
           display: 'inline-block',
           transition: 'background 0.3s',
+          boxShadow: muted ? 'none' : '0 0 8px rgba(78,205,196,0.6)',
         }}
       />
-      {muted ? 'MIC MUTED' : 'VOICE LIVE'}
+      {muted ? 'Mic Muted' : 'Voice Live'}
     </button>
   );
 }
@@ -356,7 +363,7 @@ export function EncounterScreen() {
         <Canvas
           shadows
           camera={{ position: playerSpawn, fov: 55 }}
-          style={{ background: 'linear-gradient(#f0ebe1, #e3dac7)' }}
+          style={{ background: 'linear-gradient(#fbf9f4, #f5ecd9)' }}
         >
           <AdaptiveCameraFov />
           <Suspense fallback={<Loader />}>
@@ -379,76 +386,77 @@ export function EncounterScreen() {
 
         {pointerLocked && <Crosshair />}
 
-        {/* Action button — End consultation */}
+        {/* Glass HUD bar — bottom center */}
         <div
           style={{
             position: 'absolute',
-            bottom: 18,
-            right: 18,
+            bottom: 20,
+            left: '50%',
+            transform: 'translateX(-50%)',
             zIndex: 6,
             display: 'flex',
+            alignItems: 'center',
             gap: 10,
+            background: 'rgba(26, 26, 46, 0.55)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            border: '1.5px solid rgba(255,255,255,0.15)',
+            borderRadius: 'var(--r-pill)',
+            padding: '8px 12px',
+            boxShadow: '0 8px 32px rgba(26,26,46,0.3)',
           }}
         >
+          <MicIndicator muted={micMuted} onToggle={toggleMute} />
+
+          <div
+            style={{
+              height: 24, width: 1.5,
+              background: 'rgba(255,255,255,0.15)',
+              borderRadius: 1, flexShrink: 0,
+            }}
+          />
+
+          {pointerLocked ? (
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.7)', fontFamily: "'Nunito', sans-serif", whiteSpace: 'nowrap', display: 'flex', gap: 4 }}>
+              <Kbd>E</Kbd> examine · <Kbd>M</Kbd> mute · <Kbd>Esc</Kbd> release
+            </div>
+          ) : (
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.7)', fontFamily: "'Nunito', sans-serif", whiteSpace: 'nowrap', display: 'flex', gap: 4 }}>
+              Click to look around · <Kbd>E</Kbd> examine · <Kbd>M</Kbd> mute
+            </div>
+          )}
+
+          <div
+            style={{
+              height: 24, width: 1.5,
+              background: 'rgba(255,255,255,0.15)',
+              borderRadius: 1, flexShrink: 0,
+            }}
+          />
+
           <button
             type="button"
-            className="btn-plush ghost"
             onClick={(e) => {
               e.stopPropagation();
               endConsultation();
             }}
-            style={{ fontSize: 14, padding: '12px 18px' }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              background: 'linear-gradient(135deg, var(--coral) 0%, var(--peach) 100%)',
+              border: 'none',
+              borderRadius: 'var(--r-pill)',
+              padding: '7px 16px',
+              fontSize: 12, fontWeight: 900,
+              color: 'white',
+              cursor: 'pointer',
+              fontFamily: "'Nunito', sans-serif",
+              boxShadow: '0 4px 14px rgba(255,107,107,0.4)',
+              transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap',
+            }}
           >
-            End consultation →
+            End Consultation →
           </button>
-        </div>
-
-        {/* Bottom-left: ambient status indicators */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 18,
-            left: 18,
-            zIndex: 6,
-            display: 'flex',
-            gap: 8,
-            alignItems: 'center',
-          }}
-        >
-          <MicIndicator muted={micMuted} onToggle={toggleMute} />
-          {pointerLocked ? (
-            <div
-              style={{
-                background: 'white',
-                border: '2.5px solid var(--line)',
-                borderRadius: 'var(--r-pill)',
-                padding: '6px 12px',
-                boxShadow: 'var(--plush-tiny)',
-                fontSize: 11,
-                fontWeight: 700,
-                color: 'var(--ink-2)',
-                pointerEvents: 'none',
-              }}
-            >
-              <Kbd>E</Kbd> examine · <Kbd>M</Kbd> mute · <Kbd>Esc</Kbd> release
-            </div>
-          ) : (
-            <div
-              style={{
-                background: 'white',
-                border: '2.5px solid var(--line)',
-                borderRadius: 'var(--r-pill)',
-                padding: '6px 12px',
-                boxShadow: 'var(--plush-tiny)',
-                fontSize: 11,
-                fontWeight: 700,
-                color: 'var(--ink-2)',
-                pointerEvents: 'none',
-              }}
-            >
-              Click room to look around · <Kbd>E</Kbd> examine · <Kbd>M</Kbd> mute
-            </div>
-          )}
         </div>
       </div>
 

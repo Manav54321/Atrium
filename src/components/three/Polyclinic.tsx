@@ -321,13 +321,13 @@ function Lighting() {
   return (
     <>
       {/* Ambient — soft warm lighting */}
-      <ambientLight intensity={0.75} color="#fffaf0" />
+      <ambientLight intensity={0.9} color="#fffaf0" />
       {/* Soft sky / floor bounce — warm golden tint */}
-      <hemisphereLight args={['#fff9f0', '#ebdcd0', 0.5]} />
+      <hemisphereLight args={['#fff9f0', '#ebdcd0', 0.65]} />
       {/* Clean key light casting soft shadows, optimized shadow map size for performance */}
       <directionalLight
         position={[-8, 10, 5]}
-        intensity={0.8}
+        intensity={0.95}
         color="#fffbf7"
         castShadow
         shadow-mapSize-width={1024}
@@ -340,7 +340,7 @@ function Lighting() {
         shadow-camera-far={25}
       />
       {/* Subtle fill light from the opposite side */}
-      <directionalLight position={[8, 8, 8]} intensity={0.2} color="#fffcf9" />
+      <directionalLight position={[8, 8, 8]} intensity={0.25} color="#fffcf9" />
     </>
   );
 }

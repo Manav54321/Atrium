@@ -502,6 +502,7 @@ export function Breadcrumb({ steps, here }: BreadcrumbProps) {
         const clickable = !isHere && !!target;
         return (
           <Fragment key={i}>
+            {i > 0 && <span className="sep">›</span>}
             {isHere ? (
               <span className="here">{s}</span>
             ) : (
@@ -509,21 +510,22 @@ export function Breadcrumb({ steps, here }: BreadcrumbProps) {
                 onClick={clickable ? () => store.setScreen(target) : undefined}
                 style={{
                   cursor: clickable ? 'pointer' : 'default',
-                  textDecoration: clickable ? 'underline' : 'none',
-                  textDecorationStyle: 'dotted',
-                  textUnderlineOffset: 3,
+                  fontWeight: 600,
+                  fontSize: 12,
+                  color: 'var(--ink-2)',
+                  transition: 'color 0.2s',
                 }}
               >
                 {s}
               </span>
             )}
-            {i < steps.length - 1 && <span className="sep">›</span>}
           </Fragment>
         );
       })}
     </div>
   );
 }
+
 
 // ─── TOP BAR ─────────────────────────────────
 interface TopBarProps {
@@ -543,12 +545,14 @@ export function TopBar({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '14px 22px',
-        borderBottom: 'var(--stroke) solid var(--line)',
-        background: 'rgba(255, 255, 255, 0.9)',
-        backdropFilter: 'blur(12px)',
+        padding: '12px 24px',
+        borderBottom: '1.5px solid var(--line)',
+        background: 'rgba(255, 248, 245, 0.92)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
         position: 'relative',
         zIndex: 10,
+        boxShadow: '0 1px 12px rgba(26, 26, 46, 0.06)',
       }}
     >
       <span
@@ -557,7 +561,7 @@ export function TopBar({
         title="Back to start"
         style={{ display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }}
       >
-        <Wordmark size={24} />
+        <Wordmark size={22} />
       </span>
       <Breadcrumb steps={steps} here={here} />
       {showProfile ? (
@@ -565,23 +569,34 @@ export function TopBar({
           className="tap"
           onClick={() => store.setScreen('home')}
           title="Open profile"
-          style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
+          style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
         >
-          <span style={{ fontWeight: 800, fontSize: 13, color: 'var(--ink-2)' }}>DR. DESAI</span>
+          <span
+            style={{
+              fontFamily: "'Nunito', sans-serif",
+              fontWeight: 800,
+              fontSize: 13,
+              color: 'var(--ink-2)',
+            }}
+          >
+            Dr. Desai
+          </span>
           <div
             style={{
-              width: 32,
-              height: 32,
+              width: 34,
+              height: 34,
               borderRadius: '50%',
-              background: 'var(--peach-deep)',
-              border: '2px solid var(--line)',
-              boxShadow: 'var(--plush-tiny)',
+              background: 'linear-gradient(135deg, var(--mint) 0%, var(--sky) 100%)',
+              border: '2px solid rgba(255,255,255,0.8)',
+              boxShadow: '0 3px 10px rgba(78, 205, 196, 0.35)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              fontFamily: "'Nunito', sans-serif",
               fontWeight: 900,
-              fontSize: 13,
+              fontSize: 14,
               color: '#ffffff',
+              letterSpacing: 0,
             }}
           >
             D
@@ -606,15 +621,14 @@ export function Wordmark({ size = 36, dark = false }: WordmarkProps) {
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 8,
-        fontFamily: "'Outfit', sans-serif",
+        gap: 6,
+        fontFamily: "'Nunito', sans-serif",
         fontWeight: 900,
         fontSize: size,
-        color: dark ? '#ffffff' : 'var(--ink)',
-        letterSpacing: '-0.02em',
+        letterSpacing: '-0.03em',
       }}
     >
-      <span>
+      <span style={{ color: dark ? '#ffffff' : 'var(--ink)' }}>
         atri
         <span style={{ color: 'var(--peach)' }}>um</span>
       </span>

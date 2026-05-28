@@ -317,7 +317,6 @@ function StatusBanner({
         padding: 24,
         position: 'relative',
         marginBottom: 22,
-        transform: 'rotate(-0.4deg)',
       }}
     >
       <div style={{ position: 'absolute', top: -14, left: 24 }} className="chip butter">
@@ -393,7 +392,6 @@ function GradingProgress({ partialNarration }: { partialNarration: string }) {
         padding: 24,
         position: 'relative',
         marginBottom: 22,
-        transform: 'rotate(-0.4deg)',
       }}
     >
       <div style={{ position: 'absolute', top: -14, left: 24 }} className="chip butter">

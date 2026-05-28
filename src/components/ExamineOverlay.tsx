@@ -144,9 +144,9 @@ export function ExamineOverlay({ onClose, onDispatch }: Props) {
         <div
           style={{
             display: 'flex',
-            gap: 6,
-            padding: '12px 24px 0',
-            borderBottom: 'var(--stroke) solid var(--line)',
+            gap: 8,
+            padding: '16px 24px 0',
+            borderBottom: 'var(--stroke-thick) solid var(--line)',
             background: 'var(--cream-2)',
           }}
         >
@@ -162,23 +162,24 @@ export function ExamineOverlay({ onClose, onDispatch }: Props) {
                 disabled={disabled}
                 title={disabled ? 'Submit a diagnosis first' : undefined}
                 style={{
-                  background: active ? 'var(--paper)' : 'transparent',
-                  border: 'var(--stroke) solid var(--line)',
-                  borderBottom: active ? 'var(--stroke) solid var(--paper)' : 'var(--stroke) solid var(--line)',
-                  borderRadius: '8px 8px 0 0',
-                  padding: '10px 18px',
-                  fontWeight: 700,
+                  background: active ? 'var(--peach)' : 'var(--paper)',
+                  border: 'var(--stroke-thick) solid var(--line)',
+                  borderBottom: active ? 'none' : 'var(--stroke-thick) solid var(--line)',
+                  borderRadius: '14px 14px 0 0',
+                  padding: '12px 20px',
+                  fontWeight: 900,
                   fontSize: 13,
                   cursor: disabled ? 'not-allowed' : 'pointer',
-                  marginBottom: -1.5,
+                  marginBottom: -3,
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 8,
                   fontFamily: 'Outfit, sans-serif',
-                  color: active ? 'var(--peach)' : 'var(--ink-soft)',
+                  color: active ? '#ffffff' : 'var(--ink-soft)',
                   opacity: disabled ? 0.4 : 1,
                   transition: 'all 0.2s',
                   boxShadow: active ? 'var(--plush-tiny)' : 'none',
+                  zIndex: active ? 2 : 1,
                 }}
               >
                 {t.label}
@@ -187,10 +188,11 @@ export function ExamineOverlay({ onClose, onDispatch }: Props) {
                     className="chip"
                     style={{
                       fontSize: 10,
-                      padding: '1px 6px',
-                      background: active ? 'var(--peach)' : 'var(--cream-2)',
-                      color: active ? '#fff' : 'var(--ink)',
-                      borderColor: active ? 'var(--peach)' : 'var(--line)',
+                      fontWeight: 800,
+                      padding: '2px 8px',
+                      background: active ? 'var(--paper)' : 'var(--cream-2)',
+                      color: active ? 'var(--peach)' : 'var(--ink)',
+                      borderColor: active ? 'var(--paper)' : 'var(--line)',
                     }}
                   >
                     {t.badge}
@@ -279,18 +281,18 @@ function Vital({
   return (
     <div
       style={{
-        background: 'var(--paper)',
+        background: 'var(--cream)',
         border: `var(--stroke-thick) solid ${tone}`,
-        borderRadius: 'var(--r-sm)',
-        padding: '8px 4px',
+        borderRadius: 20,
+        padding: '12px 6px',
         textAlign: 'center',
         boxShadow: 'var(--plush-tiny)',
         transition: 'all 0.3s',
       }}
     >
-      <div style={{ fontSize: 14, color: tone, marginBottom: 2 }}>{icon}</div>
-      <div style={{ fontWeight: 900, fontSize: 16, lineHeight: 1, color: 'var(--ink)', fontFamily: 'Outfit, sans-serif' }}>{value}</div>
-      <div style={{ fontSize: 9, fontWeight: 800, color: 'var(--ink-2)', textTransform: 'uppercase', marginTop: 2 }}>
+      <div style={{ fontSize: 16, color: tone, marginBottom: 4 }}>{icon}</div>
+      <div style={{ fontWeight: 900, fontSize: 18, lineHeight: 1, color: 'var(--ink)', fontFamily: 'Outfit, sans-serif' }}>{value}</div>
+      <div style={{ fontSize: 9, fontWeight: 900, color: 'var(--ink-2)', textTransform: 'uppercase', marginTop: 4 }}>
         {label} <span style={{ color: 'var(--ink-soft)' }}>{unit}</span>
       </div>
     </div>
@@ -716,9 +718,9 @@ function ResultsTab({ patient }: { patient: NonNullable<ReturnType<typeof useGam
                     key={i}
                     style={{
                       margin: 0,
-                      background: '#0b0b0d',
+                      background: 'var(--cream)',
                       borderRadius: 12,
-                      border: '2px solid var(--line)',
+                      border: 'var(--stroke-thick) solid var(--line)',
                       overflow: 'hidden',
                     }}
                   >
@@ -733,17 +735,18 @@ function ResultsTab({ patient }: { patient: NonNullable<ReturnType<typeof useGam
                         width: '100%',
                         maxHeight: 420,
                         objectFit: 'contain',
-                        background: '#0b0b0d',
+                        background: 'var(--cream)',
                         cursor: 'zoom-in',
                       }}
                     />
                     <figcaption
                       style={{
-                        padding: '6px 10px',
+                        padding: '8px 12px',
                         fontSize: 11,
-                        color: '#d8d8dc',
-                        fontWeight: 600,
-                        background: '#0b0b0d',
+                        color: 'var(--ink)',
+                        fontWeight: 700,
+                        background: 'var(--cream-2)',
+                        borderTop: 'var(--stroke) dashed var(--line)',
                       }}
                     >
                       {img.caption}
