@@ -7,60 +7,66 @@
 
 /* ── Design Tokens ──────────────────────────────────────────── */
 :root {
-  /* PRIMARY CARTOON PALETTE — bright, warm, highly saturated */
-  --mint:       #4ECDC4;
-  --mint-lt:    #CCF5F1;
+  /* PRIMARY CARTOON PALETTE — bright, warm, highly saturated (Atrium Design System Rebuild) */
+  --mint:       #20C9D2; /* Teal */
+  --mint-lt:    #DFFBE6;
   --mint-deep:  #1CA89E;
 
-  --sky:        #74CFFF;
-  --sky-lt:     #D4F3F8;
+  --sky:        #74CFFF; /* Sky Blue Accent */
+  --sky-lt:     #EEF4FF; /* Sky Blue Light background */
   --sky-deep:   #1D8EA8;
 
-  --coral:      #FF6B6B;
-  --coral-lt:   #FFE3E3;
+  --coral:      #FF6B6B; /* Coral */
+  --coral-lt:   #FFF0ED;
   --coral-deep: #D94B4B;
 
-  --peach:      #FF8A5B;
-  --peach-lt:   #FFEADB;
+  --peach:      #FF8A5B; /* Orange */
+  --peach-lt:   #FFF0ED;
   --peach-deep: #D96232;
 
-  --lav:        #9B7EDE;
-  --lav-lt:     #ECE5FA;
+  --lav:        #A978FF; /* Purple */
+  --lav-lt:     #F3EDFF;
   --lav-deep:   #7858BF;
 
-  --butter:     #FFD166;
-  --butter-lt:  #FFF5D6;
+  --butter:     #FFD84D; /* Yellow — stronger, more saturated */
+  --butter-lt:  #FFF5CC;
   --butter-deep:#CFA22B;
 
-  --rose:       #FF8FAB;
+  --rose:       #FF8FB1; /* Pink — vivid */
   --rose-lt:    #FFE5EC;
   --rose-deep:  #D96281;
 
-  --green:      #6BCB77;
-  --green-lt:   #E1F7E4;
+  --green:      #6BCB77; /* Mint Green */
+  --green-lt:   #E8FFF1;
   --green-deep: #41A84D;
 
   /* ALIAS — kept for legacy code compatibility */
-  --cream-2: #DDF3FF;
+  --cream-2: #E3F7FF;
   --paper: #FFFFFF;
-  --cream: #EFFAFF;
+  --cream: #DFF5FF;
 
   /* BACKGROUNDS */
-  --bg:         var(--cream);   /* very soft blue tint */
+  --bg:         var(--cream);   /* bright sunny sky blue */
   --bg-card:    #FFFFFF;
-  --bg-soft:    #DDF3FF;   /* soft blue tinted panel */
-  --bg-mint:    #F0FDFB;
-  --bg-sky:     #F0FAFD;
-  --bg-lav:     #F5F3FF;
-  --dots-color: rgba(21, 27, 61, 0.12);
+  --bg-soft:    var(--cream-2);   /* soft blue tinted panel */
+  --bg-mint:    #E9FFF6;
+  --bg-sky:     #DFF5FF;
+  --bg-lav:     #F3EDFF;
+  --dots-color: rgba(64, 160, 255, 0.12); /* soft sky-blue dots */
+
+  /* LANDSCAPE HILLS */
+  --hill-back:   #D6F2A5;
+  --hill-mid:    #BDEB89;
+  --hill-front:  #9EDB63;
+  --grass-green: #6BCB77;
 
   /* INK — deep navy outlines and black ink */
-  --ink:        #151B3D;
-  --ink-2:      #2A2F54;
-  --ink-soft:   #575D8F;
-  --line:       #151B3D;
-  --shadow:     #151B3D;
-  --shadow-color: #151B3D;
+  --ink:        #000000;
+  --ink-2:      #000000;
+  --ink-soft:   #000000;
+  --line:       #000000;
+  --shadow:     #000000;
+  --shadow-color: #000000;
 
   /* RADIUS — large, chunky and round */
   --r-sm:   16px;
@@ -74,12 +80,12 @@
   --stroke:       4px;
   --stroke-thick: 4px;
 
-  /* SHADOWS — 3D cartoon offset sticker shadows */
-  --shadow-xs:  2px 2px 0px #151B3D;
-  --shadow-sm:  3px 3px 0px #151B3D;
-  --shadow-md:  4px 4px 0px #151B3D;
-  --shadow-lg:  6px 6px 0px #151B3D;
-  --shadow-xl:  8px 8px 0px #151B3D;
+  /* SHADOWS — 3D cartoon offset vertical sticker shadows (Duolingo style) */
+  --shadow-xs:  0 2px 0px #000000;
+  --shadow-sm:  0 3px 0px #000000;
+  --shadow-md:  0 4px 0px #000000;
+  --shadow-lg:  0 8px 0px #000000;
+  --shadow-xl:  0 10px 0px #000000;
 
   /* Legacy compat */
   --plush:      var(--shadow-lg);
@@ -105,7 +111,7 @@ html, body, #root {
 
 body {
   margin: 0;
-  font-family: 'Nunito', system-ui, sans-serif;
+  font-family: 'Fredoka', 'Baloo 2', system-ui, sans-serif;
   color: var(--ink);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
@@ -239,7 +245,7 @@ h4 { font-weight: 600; font-family: 'Fredoka', sans-serif; }
   box-shadow: var(--shadow-md) !important;
 }
 .btn-plush.primary:hover:not(:disabled) {
-  background: #ff9b73;
+  background: #FF7440;
 }
 
 /* Mint — Green/Teal */
@@ -682,7 +688,7 @@ h4 { font-weight: 600; font-family: 'Fredoka', sans-serif; }
 
 .active-wing-card:hover {
   transform: scale(1.03) translateY(-10px) !important;
-  box-shadow: 10px 10px 0px #151B3D !important;
+  box-shadow: 10px 10px 0px #000000 !important;
 }
 
 .locked-wing-card {
@@ -701,4 +707,85 @@ h4 { font-weight: 600; font-family: 'Fredoka', sans-serif; }
   animation: drift-cloud 18s ease-in-out infinite;
 }
 
+/* ── Landscape System ─────────────────────────────────────────── */
+.landscape-scene {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 220px;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
 
+.hill-back {
+  position: absolute;
+  bottom: 80px;
+  left: -5%;
+  width: 110%;
+  height: 160px;
+  background: var(--hill-back);
+  border-top: 4px solid #000000;
+  border-radius: 60% 70% 0 0 / 80% 90% 0 0;
+}
+
+.hill-mid {
+  position: absolute;
+  bottom: 40px;
+  left: -8%;
+  width: 70%;
+  height: 130px;
+  background: var(--hill-mid);
+  border-top: 4px solid #000000;
+  border-radius: 80% 50% 0 0 / 100% 70% 0 0;
+}
+
+.hill-mid-right {
+  position: absolute;
+  bottom: 30px;
+  right: -8%;
+  width: 65%;
+  height: 120px;
+  background: var(--hill-mid);
+  border-top: 4px solid #000000;
+  border-radius: 50% 80% 0 0 / 70% 100% 0 0;
+}
+
+.hill-front {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: var(--hill-front);
+  border-top: 4px solid #000000;
+  border-radius: 40% 60% 0 0 / 30% 50% 0 0;
+}
+
+/* Grass tuft cluster */
+@keyframes grass-sway {
+  0%, 100% { transform: rotate(-2deg); }
+  50%       { transform: rotate(2deg); }
+}
+
+.grass-tuft {
+  display: inline-flex;
+  gap: 2px;
+  align-items: flex-end;
+  animation: grass-sway 3s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* Music chip in nav */
+.music-chip {
+  background: var(--butter) !important;
+  border-color: #000000 !important;
+}
+
+/* Stronger decorations */
+.deco-star    { color: #FFD84D; }
+.deco-heart   { color: #FF8FB1; }
+.deco-leaf    { color: #6BCB77; }
+.deco-sparkle { color: #A978FF; }
+.deco-medical { color: #7DBEFF; }

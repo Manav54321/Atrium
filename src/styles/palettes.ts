@@ -2,63 +2,63 @@ export type PaletteName = 'sunshine' | 'candy' | 'forest';
 
 const PALETTES: Record<PaletteName, Record<string, string>> = {
   sunshine: {
-    '--cream': '#EFFAFF',
-    '--cream-2': '#DDF3FF',
+    '--cream': '#DFF5FF',
+    '--cream-2': '#E3F7FF',
     '--paper': '#FFFFFF',
     
     '--peach': '#FF8A5B',
-    '--peach-lt': '#FFEADB',
+    '--peach-lt': '#FFF0ED',
     '--peach-deep': '#D96232',
     
-    '--butter': '#FFD166',
-    '--butter-lt': '#FFF5D6',
+    '--butter': '#FFD84D',
+    '--butter-lt': '#FFF5CC',
     '--butter-deep': '#CFA22B',
     
-    '--mint': '#4ECDC4',
-    '--mint-lt': '#CCF5F1',
+    '--mint': '#20C9D2',
+    '--mint-lt': '#DFFBE6',
     '--mint-deep': '#1CA89E',
     
     '--sky': '#74CFFF',
-    '--sky-lt': '#D4F3F8',
+    '--sky-lt': '#DFF5FF',
     '--sky-deep': '#1D8EA8',
     
-    '--rose': '#FF8FAB',
+    '--rose': '#FF8FB1',
     '--rose-lt': '#FFE5EC',
     '--rose-deep': '#D96281',
 
     '--coral': '#FF6B6B',
-    '--coral-lt': '#FFE3E3',
+    '--coral-lt': '#FFF0E8',
     '--coral-deep': '#D94B4B',
 
-    '--lav': '#9B7EDE',
-    '--lav-lt': '#ECE5FA',
+    '--lav': '#A978FF',
+    '--lav-lt': '#F3E8FF',
     '--lav-deep': '#7858BF',
 
-    '--ink': '#151B3D',
-    '--ink-2': '#2A2F54',
-    '--ink-soft': '#575D8F',
-    '--line': '#151B3D',
-    '--shadow': '#151B3D',
+    '--ink': '#000000',
+    '--ink-2': '#000000',
+    '--ink-soft': '#000000',
+    '--line': '#000000',
+    '--shadow': '#000000',
   },
   candy: {
-    '--cream': '#FFF5F8',
-    '--cream-2': '#FFE5EC',
+    '--cream': '#F4FCFF',
+    '--cream-2': '#F0FAFF',
     '--paper': '#FFFFFF',
     
     '--peach': '#FF8FAB',
     '--peach-lt': '#FFE5EC',
     '--peach-deep': '#D96281',
     
-    '--butter': '#FFD166',
-    '--butter-lt': '#FFF5D6',
+    '--butter': '#FFD44D',
+    '--butter-lt': '#FFFCE8',
     '--butter-deep': '#CFA22B',
     
-    '--mint': '#4ECDC4',
-    '--mint-lt': '#CCF5F1',
+    '--mint': '#20C9D2',
+    '--mint-lt': '#E9FFF6',
     '--mint-deep': '#1CA89E',
     
-    '--sky': '#9B7EDE',
-    '--sky-lt': '#ECE5FA',
+    '--sky': '#A978FF',
+    '--sky-lt': '#F3EDFF',
     '--sky-deep': '#7858BF',
     
     '--rose': '#FF8FAB',
@@ -66,38 +66,38 @@ const PALETTES: Record<PaletteName, Record<string, string>> = {
     '--rose-deep': '#D96281',
 
     '--coral': '#FF6B6B',
-    '--coral-lt': '#FFE3E3',
+    '--coral-lt': '#FFF0ED',
     '--coral-deep': '#D94B4B',
 
-    '--lav': '#9B7EDE',
-    '--lav-lt': '#ECE5FA',
+    '--lav': '#A978FF',
+    '--lav-lt': '#F3EDFF',
     '--lav-deep': '#7858BF',
 
-    '--ink': '#151B3D',
-    '--ink-2': '#2A2F54',
-    '--ink-soft': '#575D8F',
-    '--line': '#151B3D',
-    '--shadow': '#151B3D',
+    '--ink': '#000000',
+    '--ink-2': '#000000',
+    '--ink-soft': '#000000',
+    '--line': '#000000',
+    '--shadow': '#000000',
   },
   forest: {
-    '--cream': '#F3F8F3',
-    '--cream-2': '#E1F7E4',
+    '--cream': '#F4FCFF',
+    '--cream-2': '#F0FAFF',
     '--paper': '#FFFFFF',
     
-    '--peach': '#6BCB77',
-    '--peach-lt': '#E1F7E4',
+    '--peach': '#7EE3B5',
+    '--peach-lt': '#E9FFF6',
     '--peach-deep': '#41A84D',
     
-    '--butter': '#FFD166',
-    '--butter-lt': '#FFF5D6',
+    '--butter': '#FFD44D',
+    '--butter-lt': '#FFFCE8',
     '--butter-deep': '#CFA22B',
     
-    '--mint': '#4ECDC4',
-    '--mint-lt': '#CCF5F1',
+    '--mint': '#20C9D2',
+    '--mint-lt': '#E9FFF6',
     '--mint-deep': '#1CA89E',
     
-    '--sky': '#45B7D1',
-    '--sky-lt': '#D4F3F8',
+    '--sky': '#BDEEFF',
+    '--sky-lt': '#F4FCFF',
     '--sky-deep': '#1D8EA8',
     
     '--rose': '#FF8FAB',
@@ -105,18 +105,18 @@ const PALETTES: Record<PaletteName, Record<string, string>> = {
     '--rose-deep': '#D96281',
 
     '--coral': '#FF6B6B',
-    '--coral-lt': '#FFE3E3',
+    '--coral-lt': '#FFF0ED',
     '--coral-deep': '#D94B4B',
 
-    '--lav': '#9B7EDE',
-    '--lav-lt': '#ECE5FA',
+    '--lav': '#A978FF',
+    '--lav-lt': '#F3EDFF',
     '--lav-deep': '#7858BF',
 
-    '--ink': '#151B3D',
-    '--ink-2': '#2A2F54',
-    '--ink-soft': '#575D8F',
-    '--line': '#151B3D',
-    '--shadow': '#151B3D',
+    '--ink': '#000000',
+    '--ink-2': '#000000',
+    '--ink-soft': '#000000',
+    '--line': '#000000',
+    '--shadow': '#000000',
   },
 };
 

@@ -100,7 +100,7 @@ export function BackgroundMusic() {
         height: 36,
         borderRadius: 18,
         border: '3px solid var(--line)',
-        background: off ? 'var(--cream)' : 'var(--butter)',
+        background: off ? '#ffffff' : 'var(--butter)',
         boxShadow: '0 2px 0 var(--line)',
         display: 'flex',
         alignItems: 'center',

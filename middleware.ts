@@ -8,9 +8,8 @@ export const config = {
   matcher: ['/agent/:path*', '/voice/:path*'],
 };
 
-// NOTE: keeping `grand-rounds-backend.onrender.com` until/unless we rename
-// the Render service. Renaming breaks the public hostname.
-const BACKEND_URL = 'https://grand-rounds-backend.onrender.com';
+// NOTE: Reads target backend URL from environment variable, falling back to Render production domain.
+const BACKEND_URL = process.env.BACKEND_URL || 'https://grand-rounds-backend.onrender.com';
 
 export default async function middleware(request: Request): Promise<Response> {
   const incoming = new URL(request.url);

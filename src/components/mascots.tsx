@@ -27,7 +27,7 @@ export function normalizeMood(mood?: string): ChibiMood {
 function ChibiFaceElements({ mood, eyeY = 82, eyeGap = 22 }: { mood: ChibiMood; eyeY?: number; eyeGap?: number }) {
   const leftX = 100 - eyeGap;
   const rightX = 100 + eyeGap;
-  const stroke = '#151B3D';
+  const stroke = '#000000';
 
   // Blush Cheeks (Always visible for maximum cute idle charm)
   const blushY = eyeY + 12;
@@ -167,39 +167,39 @@ export function GPMascot({ size = 200, style, className }: MascotProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" style={style} className={`${className} floaty`}>
       {/* Background Badge circle */}
-      <circle cx="100" cy="100" r="86" fill="var(--mint-lt)" stroke="#151B3D" strokeWidth="4" />
+      <circle cx="100" cy="100" r="86" fill="var(--mint-lt)" stroke="#000000" strokeWidth="4" />
       
       {/* Tiny Stubby Body & White Lab Coat */}
-      <path d="M70 145 C70 128 80 124 100 124 C120 124 130 128 130 145 C130 162 135 174 130 180 H70 C65 174 70 162 70 145 Z" fill="#ffffff" stroke="#151B3D" strokeWidth="4" strokeLinejoin="round" />
-      <path d="M88 124 L100 144 L112 124 Z" fill="#FF8A5B" stroke="#151B3D" strokeWidth="4" />
-      <path d="M100 124 V180" stroke="#151B3D" strokeWidth="4" />
+      <path d="M70 145 C70 128 80 124 100 124 C120 124 130 128 130 145 C130 162 135 174 130 180 H70 C65 174 70 162 70 145 Z" fill="#ffffff" stroke="#000000" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M88 124 L100 144 L112 124 Z" fill="#FF8A5B" stroke="#000000" strokeWidth="4" />
+      <path d="M100 124 V180" stroke="#000000" strokeWidth="4" />
 
       {/* Tiny Stubby Hands holding clipboard */}
-      <rect x="84" y="146" width="32" height="24" rx="4" fill="#FFD166" stroke="#151B3D" strokeWidth="3" />
-      <rect x="92" y="142" width="16" height="6" fill="#151B3D" />
-      <circle cx="70" cy="154" r="7" fill="#FFE0BD" stroke="#151B3D" strokeWidth="3" />
-      <circle cx="130" cy="154" r="7" fill="#FFE0BD" stroke="#151B3D" strokeWidth="3" />
+      <rect x="84" y="146" width="32" height="24" rx="4" fill="#FFD166" stroke="#000000" strokeWidth="3" />
+      <rect x="92" y="142" width="16" height="6" fill="#000000" />
+      <circle cx="70" cy="154" r="7" fill="#FFE0BD" stroke="#000000" strokeWidth="3" />
+      <circle cx="130" cy="154" r="7" fill="#FFE0BD" stroke="#000000" strokeWidth="3" />
 
       {/* Stethoscope */}
-      <path d="M 80 128 C 80 144 120 144 120 128" stroke="#151B3D" strokeWidth="4" fill="none" />
+      <path d="M 80 128 C 80 144 120 144 120 128" stroke="#000000" strokeWidth="4" fill="none" />
 
       {/* Huge Chibi Head (Head size > 60% of vertical body projection) */}
-      <circle cx="100" cy="74" r="52" fill="#FFE0BD" stroke="#151B3D" strokeWidth="4" />
+      <circle cx="100" cy="74" r="52" fill="#FFE0BD" stroke="#000000" strokeWidth="4" />
 
       {/* Hair (Short neat brown hair) */}
-      <path d="M48 76 C48 42 66 22 100 22 C134 22 152 42 152 76 C152 76 136 56 100 56 C64 56 48 76 48 76 Z" fill="#5A3A22" stroke="#151B3D" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M48 76 C48 42 66 22 100 22 C134 22 152 42 152 76 C152 76 136 56 100 56 C64 56 48 76 48 76 Z" fill="#5A3A22" stroke="#000000" strokeWidth="4" strokeLinejoin="round" />
 
       {/* Round Glasses */}
-      <circle cx="78" cy="76" r="17" stroke="#151B3D" strokeWidth="4.5" fill="rgba(255,255,255,0.2)" />
-      <circle cx="122" cy="76" r="17" stroke="#151B3D" strokeWidth="4.5" fill="rgba(255,255,255,0.2)" />
-      <path d="M95 76 H105" stroke="#151B3D" strokeWidth="4.5" />
+      <circle cx="78" cy="76" r="17" stroke="#000000" strokeWidth="4.5" fill="rgba(255,255,255,0.2)" />
+      <circle cx="122" cy="76" r="17" stroke="#000000" strokeWidth="4.5" fill="rgba(255,255,255,0.2)" />
+      <path d="M95 76 H105" stroke="#000000" strokeWidth="4.5" />
 
       {/* Expressive Eyes & Blush */}
       <ChibiFaceElements mood="curious" eyeY={76} eyeGap={22} />
 
       {/* Doctor's Reflector Cap */}
-      <rect x="88" y="14" width="24" height="8" rx="4" fill="#FF6B6B" stroke="#151B3D" strokeWidth="4" />
-      <circle cx="100" cy="18" r="10" fill="#45B7D1" stroke="#151B3D" strokeWidth="4" />
+      <rect x="88" y="14" width="24" height="8" rx="4" fill="#FF6B6B" stroke="#000000" strokeWidth="4" />
+      <circle cx="100" cy="18" r="10" fill="#45B7D1" stroke="#000000" strokeWidth="4" />
       <circle cx="100" cy="18" r="3" fill="#ffffff" />
     </svg>
   );
@@ -210,28 +210,28 @@ export function EmergencyMascot({ size = 200, style, className }: MascotProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" style={style} className={`${className} floaty`}>
       {/* Background Badge circle */}
-      <circle cx="100" cy="100" r="86" fill="var(--rose-lt)" stroke="#151B3D" strokeWidth="4" />
+      <circle cx="100" cy="100" r="86" fill="var(--rose-lt)" stroke="#000000" strokeWidth="4" />
 
       {/* Tiny Stubby Scrubs Body */}
-      <path d="M70 145 C70 128 80 124 100 124 C120 124 130 128 130 145 C130 162 135 174 130 180 H70 C65 174 70 162 70 145 Z" fill="#FF8A5B" stroke="#151B3D" strokeWidth="4" strokeLinejoin="round" />
-      <path d="M88 124 L100 142 L112 124 Z" fill="#FFEADB" stroke="#151B3D" strokeWidth="4" />
+      <path d="M70 145 C70 128 80 124 100 124 C120 124 130 128 130 145 C130 162 135 174 130 180 H70 C65 174 70 162 70 145 Z" fill="#FF8A5B" stroke="#000000" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M88 124 L100 142 L112 124 Z" fill="#FFEADB" stroke="#000000" strokeWidth="4" />
 
       {/* Hands to Cheeks in panic */}
-      <path d="M 52 110 Q 56 94 48 84" stroke="#151B3D" strokeWidth="4" fill="none" />
-      <path d="M 148 110 Q 144 94 152 84" stroke="#151B3D" strokeWidth="4" fill="none" />
+      <path d="M 52 110 Q 56 94 48 84" stroke="#000000" strokeWidth="4" fill="none" />
+      <path d="M 148 110 Q 144 94 152 84" stroke="#000000" strokeWidth="4" fill="none" />
 
       {/* Huge Chibi Head */}
-      <circle cx="100" cy="76" r="50" fill="#FFD0B0" stroke="#151B3D" strokeWidth="4" />
+      <circle cx="100" cy="76" r="50" fill="#FFD0B0" stroke="#000000" strokeWidth="4" />
 
       {/* Spiky hair flying up in panic */}
-      <path d="M50 64 L 42 34 L 66 28 L 80 12 L 100 20 L 120 12 L 134 28 L 158 34 L 150 64 Z" fill="#FFD166" stroke="#151B3D" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M50 64 L 42 34 L 66 28 L 80 12 L 100 20 L 120 12 L 134 28 L 158 34 L 150 64 Z" fill="#FFD166" stroke="#000000" strokeWidth="4" strokeLinejoin="round" />
 
       {/* Face elements: Shocked / Surprised */}
       <ChibiFaceElements mood="surprised" eyeY={76} eyeGap={20} />
 
       {/* Panicked Sweat flying off */}
-      <path d="M30 45 Q 24 50 28 56 Z" fill="#74CFFF" stroke="#151B3D" strokeWidth="2" />
-      <path d="M170 50 Q 176 55 172 62 Z" fill="#74CFFF" stroke="#151B3D" strokeWidth="2" />
+      <path d="M30 45 Q 24 50 28 56 Z" fill="#74CFFF" stroke="#000000" strokeWidth="2" />
+      <path d="M170 50 Q 176 55 172 62 Z" fill="#74CFFF" stroke="#000000" strokeWidth="2" />
     </svg>
   );
 }
@@ -241,32 +241,32 @@ export function ScientistMascot({ size = 200, style, className }: MascotProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" style={style} className={`${className} floaty`}>
       {/* Background Badge circle */}
-      <circle cx="100" cy="100" r="86" fill="var(--lav-lt)" stroke="#151B3D" strokeWidth="4" />
+      <circle cx="100" cy="100" r="86" fill="var(--lav-lt)" stroke="#000000" strokeWidth="4" />
 
       {/* Tiny Lab Coat Body */}
-      <path d="M70 145 C70 128 80 124 100 124 C120 124 130 128 130 145 L128 180 H72 Z" fill="#ffffff" stroke="#151B3D" strokeWidth="4" strokeLinejoin="round" />
-      <path d="M86 124 L100 144 L114 124 Z" fill="#9B7EDE" stroke="#151B3D" strokeWidth="4" />
+      <path d="M70 145 C70 128 80 124 100 124 C120 124 130 128 130 145 L128 180 H72 Z" fill="#ffffff" stroke="#000000" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M86 124 L100 144 L114 124 Z" fill="#9B7EDE" stroke="#000000" strokeWidth="4" />
 
       {/* Steaming flask in hand */}
-      <path d="M136 142 L144 165 H170 L178 142 Z" fill="#9B7EDE" stroke="#151B3D" strokeWidth="3" />
-      <rect x="150" y="130" width="14" height="12" fill="#ffffff" stroke="#151B3D" strokeWidth="3" />
+      <path d="M136 142 L144 165 H170 L178 142 Z" fill="#9B7EDE" stroke="#000000" strokeWidth="3" />
+      <rect x="150" y="130" width="14" height="12" fill="#ffffff" stroke="#000000" strokeWidth="3" />
       {/* Steam lines */}
-      <path d="M 148 120 Q 152 114 150 124" stroke="#151B3D" strokeWidth="2.5" fill="none" />
-      <path d="M 158 118 Q 162 112 160 122" stroke="#151B3D" strokeWidth="2.5" fill="none" />
+      <path d="M 148 120 Q 152 114 150 124" stroke="#000000" strokeWidth="2.5" fill="none" />
+      <path d="M 158 118 Q 162 112 160 122" stroke="#000000" strokeWidth="2.5" fill="none" />
 
       {/* Huge Chibi Head */}
-      <circle cx="100" cy="74" r="50" fill="#FFE0BD" stroke="#151B3D" strokeWidth="4" />
+      <circle cx="100" cy="74" r="50" fill="#FFE0BD" stroke="#000000" strokeWidth="4" />
 
       {/* Scientist Fluffy hair */}
-      <circle cx="50" cy="58" r="18" fill="#E5DACE" stroke="#151B3D" strokeWidth="4" />
-      <circle cx="150" cy="58" r="18" fill="#E5DACE" stroke="#151B3D" strokeWidth="4" />
-      <circle cx="100" cy="26" r="22" fill="#E5DACE" stroke="#151B3D" strokeWidth="4" />
-      <circle cx="72" cy="34" r="20" fill="#E5DACE" stroke="#151B3D" strokeWidth="4" />
-      <circle cx="128" cy="34" r="20" fill="#E5DACE" stroke="#151B3D" strokeWidth="4" />
+      <circle cx="50" cy="58" r="18" fill="#E5DACE" stroke="#000000" strokeWidth="4" />
+      <circle cx="150" cy="58" r="18" fill="#E5DACE" stroke="#000000" strokeWidth="4" />
+      <circle cx="100" cy="26" r="22" fill="#E5DACE" stroke="#000000" strokeWidth="4" />
+      <circle cx="72" cy="34" r="20" fill="#E5DACE" stroke="#000000" strokeWidth="4" />
+      <circle cx="128" cy="34" r="20" fill="#E5DACE" stroke="#000000" strokeWidth="4" />
 
       {/* Safety Goggles */}
-      <rect x="56" y="62" width="88" height="24" rx="12" fill="rgba(78,205,196,0.35)" stroke="#151B3D" strokeWidth="4.5" />
-      <line x1="100" y1="62" x2="100" y2="86" stroke="#151B3D" strokeWidth="4.5" />
+      <rect x="56" y="62" width="88" height="24" rx="12" fill="rgba(78,205,196,0.35)" stroke="#000000" strokeWidth="4.5" />
+      <line x1="100" y1="62" x2="100" y2="86" stroke="#000000" strokeWidth="4.5" />
 
       {/* Curious/Happy Eyes & Face */}
       <ChibiFaceElements mood="curious" eyeY={74} eyeGap={22} />
@@ -279,22 +279,22 @@ export function NurseMascot({ size = 200, style, className }: MascotProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" style={style} className={`${className} floaty`}>
       {/* Background Badge circle */}
-      <circle cx="100" cy="100" r="86" fill="var(--rose-lt)" stroke="#151B3D" strokeWidth="4" />
+      <circle cx="100" cy="100" r="86" fill="var(--rose-lt)" stroke="#000000" strokeWidth="4" />
 
       {/* Tiny Scrubs Body */}
-      <path d="M70 145 C70 128 80 124 100 124 C120 124 130 128 130 145 L128 180 H72 Z" fill="#FF8FAB" stroke="#151B3D" strokeWidth="4" strokeLinejoin="round" />
-      <path d="M86 124 L100 140 L114 124 Z" fill="#FFE5EC" stroke="#151B3D" strokeWidth="4" />
+      <path d="M70 145 C70 128 80 124 100 124 C120 124 130 128 130 145 L128 180 H72 Z" fill="#FF8FAB" stroke="#000000" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M86 124 L100 140 L114 124 Z" fill="#FFE5EC" stroke="#000000" strokeWidth="4" />
 
       {/* Huge Chibi Head */}
-      <circle cx="100" cy="74" r="50" fill="#FFE0BD" stroke="#151B3D" strokeWidth="4" />
+      <circle cx="100" cy="74" r="50" fill="#FFE0BD" stroke="#000000" strokeWidth="4" />
 
       {/* Nurse Buns & Hair */}
-      <circle cx="58" cy="36" r="16" fill="#1F1410" stroke="#151B3D" strokeWidth="4" />
-      <circle cx="142" cy="36" r="16" fill="#1F1410" stroke="#151B3D" strokeWidth="4" />
-      <path d="M50 72 C50 44 68 34 100 34 C132 34 150 44 150 72 Z" fill="#1F1410" stroke="#151B3D" strokeWidth="4" />
+      <circle cx="58" cy="36" r="16" fill="#1F1410" stroke="#000000" strokeWidth="4" />
+      <circle cx="142" cy="36" r="16" fill="#1F1410" stroke="#000000" strokeWidth="4" />
+      <path d="M50 72 C50 44 68 34 100 34 C132 34 150 44 150 72 Z" fill="#1F1410" stroke="#000000" strokeWidth="4" />
 
       {/* Nurse Cap */}
-      <path d="M78 34 L122 34 L114 16 L86 16 Z" fill="#ffffff" stroke="#151B3D" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M78 34 L122 34 L114 16 L86 16 Z" fill="#ffffff" stroke="#000000" strokeWidth="4" strokeLinejoin="round" />
       <path d="M94 24 H106 M100 18 V30" stroke="#FF6B6B" strokeWidth="3" />
 
       {/* Relieved/Happy Warm Face */}
@@ -306,7 +306,7 @@ export function NurseMascot({ size = 200, style, className }: MascotProps) {
 // ─── 5. ELDERLY PATIENT MASCOT (SUPER CUTE CHIBI REDESIGN) ─────────
 export function ElderlyPatientMascot({ size = 200, mood = 'neutral', style, className }: MascotProps) {
   const cleanMood = normalizeMood(mood);
-  const stroke = '#151B3D';
+  const stroke = '#000000';
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" style={style} className={`${className} floaty`}>
       {/* Background Badge circle */}
@@ -343,7 +343,7 @@ export function ElderlyPatientMascot({ size = 200, mood = 'neutral', style, clas
 // ─── 6. CHILD PATIENT MASCOT (SUPER CUTE CHIBI REDESIGN) ───────────
 export function ChildPatientMascot({ size = 200, mood = 'neutral', style, className }: MascotProps) {
   const cleanMood = normalizeMood(mood);
-  const stroke = '#151B3D';
+  const stroke = '#000000';
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" style={style} className={`${className} floaty`}>
       {/* Background Badge circle */}
@@ -376,7 +376,7 @@ export function ChildPatientMascot({ size = 200, mood = 'neutral', style, classN
 // ─── 7. OFFICE WORKER PATIENT MASCOT (SUPER CUTE CHIBI REDESIGN) ───
 export function OfficeWorkerPatientMascot({ size = 200, mood = 'neutral', style, className }: MascotProps) {
   const cleanMood = normalizeMood(mood);
-  const stroke = '#151B3D';
+  const stroke = '#000000';
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" style={style} className={`${className} floaty`}>
       {/* Background Badge circle */}
@@ -409,7 +409,7 @@ export function OfficeWorkerPatientMascot({ size = 200, mood = 'neutral', style,
 // ─── 8. ATHLETE PATIENT MASCOT (SUPER CUTE CHIBI REDESIGN) ─────────
 export function AthletePatientMascot({ size = 200, mood = 'neutral', style, className }: MascotProps) {
   const cleanMood = normalizeMood(mood);
-  const stroke = '#151B3D';
+  const stroke = '#000000';
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" style={style} className={`${className} floaty`}>
       {/* Background Badge circle */}
@@ -441,7 +441,7 @@ export function AthletePatientMascot({ size = 200, mood = 'neutral', style, clas
 // ─── 9. PREGNANT PATIENT MASCOT (SUPER CUTE CHIBI REDESIGN) ────────
 export function PregnantPatientMascot({ size = 200, mood = 'neutral', style, className }: MascotProps) {
   const cleanMood = normalizeMood(mood);
-  const stroke = '#151B3D';
+  const stroke = '#000000';
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" style={style} className={`${className} floaty`}>
       {/* Background Badge circle */}
@@ -477,26 +477,31 @@ interface GeneralMascotProps extends MascotProps {
 }
 
 export function Mascot({ name, size = 200, mood = 'neutral', style, className }: GeneralMascotProps) {
+  const enhancedStyle = {
+    ...style,
+    filter: `${style?.filter || ''} saturate(1.25) drop-shadow(4px 4px 0px rgba(17, 27, 87, 0.125))`,
+  };
+
   switch (name) {
     case 'gp':
-      return <GPMascot size={size} style={style} className={className} />;
+      return <GPMascot size={size} style={enhancedStyle} className={className} />;
     case 'emergency':
-      return <EmergencyMascot size={size} style={style} className={className} />;
+      return <EmergencyMascot size={size} style={enhancedStyle} className={className} />;
     case 'scientist':
-      return <ScientistMascot size={size} style={style} className={className} />;
+      return <ScientistMascot size={size} style={enhancedStyle} className={className} />;
     case 'nurse':
-      return <NurseMascot size={size} style={style} className={className} />;
+      return <NurseMascot size={size} style={enhancedStyle} className={className} />;
     case 'elderly':
-      return <ElderlyPatientMascot size={size} mood={mood} style={style} className={className} />;
+      return <ElderlyPatientMascot size={size} mood={mood} style={enhancedStyle} className={className} />;
     case 'child':
-      return <ChildPatientMascot size={size} mood={mood} style={style} className={className} />;
+      return <ChildPatientMascot size={size} mood={mood} style={enhancedStyle} className={className} />;
     case 'pregnant':
-      return <PregnantPatientMascot size={size} mood={mood} style={style} className={className} />;
+      return <PregnantPatientMascot size={size} mood={mood} style={enhancedStyle} className={className} />;
     case 'athlete':
-      return <AthletePatientMascot size={size} mood={mood} style={style} className={className} />;
+      return <AthletePatientMascot size={size} mood={mood} style={enhancedStyle} className={className} />;
     case 'officeWorker':
     default:
-      return <OfficeWorkerPatientMascot size={size} mood={mood} style={style} className={className} />;
+      return <OfficeWorkerPatientMascot size={size} mood={mood} style={enhancedStyle} className={className} />;
   }
 }
 

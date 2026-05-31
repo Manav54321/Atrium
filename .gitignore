@@ -52,3 +52,7 @@ tsconfig.tsbuildinfo
 .vibe/
 .windsurf/
 .zencoder/
+
+# Database files
+*.db
+

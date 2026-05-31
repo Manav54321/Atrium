@@ -527,8 +527,22 @@ ATRIUM_CUSTOM_TOOLS: list[dict] = [
 _openai_client: Optional["OpenAI"] = None
 _async_openai_client: Optional["AsyncOpenAI"] = None
 
-# In-memory session manager to replace OpenAI Assistants threads
-SESSIONS: dict[str, list[dict]] = {}
+import sqlite3
+
+DB_PATH = os.environ.get("ATRIUM_DB_PATH", "atrium_sessions.db")
+
+def init_db() -> None:
+    try:
+        with sqlite3.connect(DB_PATH, timeout=10.0) as conn:
+            conn.execute(
+                "CREATE TABLE IF NOT EXISTS sessions (session_id TEXT PRIMARY KEY, messages TEXT)"
+            )
+            conn.commit()
+    except Exception as e:
+        _agent_log.error("Failed to initialize SQLite database: %s", e)
+
+# Initialize database on module load
+init_db()
 
 
 def _ensure_openai_available() -> None:
@@ -634,9 +648,29 @@ def get_best_transcribe_model() -> str:
 
 
 def get_session_messages(session_id: str) -> list[dict]:
-    if session_id not in SESSIONS:
-        SESSIONS[session_id] = []
-    return SESSIONS[session_id]
+    try:
+        with sqlite3.connect(DB_PATH, timeout=10.0) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT messages FROM sessions WHERE session_id = ?", (session_id,))
+            row = cursor.fetchone()
+            if row:
+                return json.loads(row[0])
+    except Exception as e:
+        _agent_log.error("Error reading session messages for %s: %s", session_id, e)
+    return []
+
+
+def save_session_messages(session_id: str, messages: list[dict]) -> None:
+    try:
+        with sqlite3.connect(DB_PATH, timeout=10.0) as conn:
+            conn.execute(
+                "INSERT INTO sessions (session_id, messages) VALUES (?, ?) "
+                "ON CONFLICT(session_id) DO UPDATE SET messages = excluded.messages",
+                (session_id, json.dumps(messages))
+            )
+            conn.commit()
+    except Exception as e:
+        _agent_log.error("Error saving session messages for %s: %s", session_id, e)
 
 
 class BootstrapResponse(BaseModel):
@@ -678,7 +712,7 @@ def create_session(req: CreateSessionRequest):
     """Create a new local session thread."""
     import uuid
     session_id = f"thread_{uuid.uuid4().hex[:12]}"
-    SESSIONS[session_id] = []
+    save_session_messages(session_id, [])
     _agent_log.info("create_session: thread %s (OpenAI mode)", session_id)
     return CreateSessionResponse(session_id=session_id)
 
@@ -737,6 +771,7 @@ async def send_events(session_id: str, request: Request):
             })
             _agent_log.info("send_events: user interrupt thread=%s", session_id)
             
+    save_session_messages(session_id, msgs)
     return {"ok": True}
 
 
@@ -896,6 +931,8 @@ async def stream_events(session_id: str, request: Request):
                     "content": accumulated_text,
                     "created_at": int(time.time())
                 })
+
+            save_session_messages(session_id, msgs)
 
             # Signal turn ended/idle
             payload = json.dumps({

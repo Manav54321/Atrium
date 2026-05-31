@@ -42,15 +42,15 @@ export function PatientFace({
           width: size,
           height: size,
           borderRadius: '50%',
-          background: '#151B3D',
+          background: '#000000',
           color: 'white',
           fontWeight: 900,
           fontSize: size * 0.36,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          border: '4px solid #151B3D',
-          boxShadow: '3px 3px 0px #151B3D',
+          border: '4px solid #000000',
+          boxShadow: '3px 3px 0px #000000',
           fontFamily: "'Fredoka', sans-serif",
         }}
       >
@@ -104,7 +104,7 @@ interface DoodleProps {
 }
 
 export function Doodle({ kind, size = 50, color, style }: DoodleProps) {
-  const stroke = '#151B3D';
+  const stroke = '#000000';
   const defaultColors: Record<DoodleKind, string> = {
     pill: 'var(--peach)',
     cross: 'var(--coral)',
@@ -262,10 +262,10 @@ export function Breadcrumb({ steps, here }: BreadcrumbProps) {
         gap: 8, 
         alignItems: 'center', 
         background: '#ffffff', 
-        border: '4px solid #151B3D', 
+        border: '4px solid #000000', 
         borderRadius: '999px', 
         padding: '6px 16px', 
-        boxShadow: '4px 4px 0px #151B3D' 
+        boxShadow: '4px 4px 0px #000000' 
       }}
     >
       {steps.map((s, i) => {
@@ -276,7 +276,7 @@ export function Breadcrumb({ steps, here }: BreadcrumbProps) {
 
         return (
           <Fragment key={i}>
-            {i > 0 && <span className="sep" style={{ color: '#151B3D', fontWeight: 900 }}>→</span>}
+            {i > 0 && <span className="sep" style={{ color: '#000000', fontWeight: 900 }}>→</span>}
             <span
               onMouseEnter={clickable ? (e) => soundSystem.playHover(e.currentTarget) : undefined}
               onClick={clickable ? () => { soundSystem.playClick(); store.setScreen(target); } : undefined}
@@ -284,11 +284,11 @@ export function Breadcrumb({ steps, here }: BreadcrumbProps) {
                 cursor: clickable ? 'pointer' : 'default',
                 fontWeight: 800,
                 fontSize: 13,
-                color: isHere ? '#ffffff' : '#151B3D',
+                color: isHere ? '#ffffff' : '#000000',
                 background: isHere ? '#FF8A5B' : 'transparent',
                 padding: isHere ? '4px 12px' : '0px',
                 borderRadius: '999px',
-                border: isHere ? '3px solid #151B3D' : 'none',
+                border: isHere ? '3px solid #000000' : 'none',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 4,
@@ -326,11 +326,11 @@ export function TopBar({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '16px 24px',
-        borderBottom: '4px solid #151B3D',
-        background: 'var(--cream)',
+        borderBottom: '4px solid #000000',
+        background: '#203580',
         position: 'relative',
         zIndex: 10,
-        boxShadow: '0 4px 0px rgba(21, 27, 61, 0.05)',
+        boxShadow: '0 4px 0px rgba(0, 0, 0, 0.15)',
       }}
     >
       <span
@@ -355,10 +355,10 @@ export function TopBar({
             gap: 10, 
             cursor: 'pointer',
             background: '#ffffff',
-            border: '3px solid #151B3D',
+            border: '3px solid #000000',
             borderRadius: '999px',
             padding: '4px 12px',
-            boxShadow: '2px 2px 0px #151B3D',
+            boxShadow: '2px 2px 0px #000000',
           }}
         >
           <span
@@ -377,7 +377,7 @@ export function TopBar({
               height: 30,
               borderRadius: '50%',
               background: 'var(--mint)',
-              border: '2px solid #151B3D',
+              border: '2px solid #000000',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -397,32 +397,34 @@ export function TopBar({
   );
 }
 
-// ─── WORDMARK ────────────────────────────────
 interface WordmarkProps {
   size?: number;
-  dark?: boolean;
 }
 
-export function Wordmark({ size = 36, dark = false }: WordmarkProps) {
+export function Wordmark({ size = 36 }: WordmarkProps) {
   return (
     <div
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 1,
         fontFamily: "'Fredoka', sans-serif",
-        fontWeight: 800,
+        fontWeight: 900,
         fontSize: size,
         letterSpacing: '-0.02em',
+        background: '#ffffff',
+        border: '4px solid #000000',
+        borderRadius: '16px',
+        padding: '6px 14px',
+        boxShadow: '0 4px 0 #000000, inset 0 -3.5px 0 #FFD166',
+        transform: 'rotate(-2deg)',
+        lineHeight: 1,
+        userSelect: 'none',
       }}
     >
-      <span style={{ color: dark ? '#ffffff' : 'var(--ink)' }}>
-        atri
-        <span style={{ color: 'var(--peach)' }}>um</span>
-      </span>
-      <span className="wobble" style={{ display: 'inline-block' }}>
-        <Doodle kind="cross" size={size * 0.8} color="var(--rose)" />
-      </span>
+      <span style={{ color: '#000000' }}>atri</span>
+      <span style={{ color: '#FF8A5B' }}>um</span>
+      <span style={{ color: '#FF6B6B' }}>+</span>
     </div>
   );
 }
@@ -477,20 +479,20 @@ export function SpeechBubble({ children }: { children: ReactNode }) {
       style={{
         position: 'relative',
         background: '#ffffff',
-        border: '4px solid #151B3D',
+        border: '4px solid #000000',
         borderRadius: 'var(--r-md)',
         padding: '16px 20px',
         fontWeight: 700,
         fontSize: 15,
         lineHeight: 1.45,
         color: 'var(--ink)',
-        boxShadow: '4px 4px 0px #151B3D',
+        boxShadow: '4px 4px 0px #000000',
         fontFamily: "'Fredoka', sans-serif",
       }}
     >
       {children}
       <svg style={{ position: 'absolute', left: -18, top: 20 }} width="20" height="22" viewBox="0 0 20 22">
-        <path d="M 20 4 L 2 12 L 20 18 Z" fill="#ffffff" stroke="#151B3D" strokeWidth="4" strokeLinejoin="round" />
+        <path d="M 20 4 L 2 12 L 20 18 Z" fill="#ffffff" stroke="#000000" strokeWidth="4" strokeLinejoin="round" />
         <line x1="20" y1="4" x2="20" y2="18" stroke="#ffffff" strokeWidth="5" />
       </svg>
     </div>
