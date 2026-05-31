@@ -327,7 +327,7 @@ export function TopBar({
         justifyContent: 'space-between',
         padding: '16px 24px',
         borderBottom: '4px solid #151B3D',
-        background: '#FFF8EE',
+        background: 'var(--cream)',
         position: 'relative',
         zIndex: 10,
         boxShadow: '0 4px 0px rgba(21, 27, 61, 0.05)',

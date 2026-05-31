@@ -75,7 +75,7 @@ function CaseCard({ c, delay = 0 }: CaseCardProps) {
           top: -12,
           left: 16,
           zIndex: 10,
-          background: 'white',
+          background: '#ffffff',
           border: '3px solid #151B3D',
           borderRadius: 'var(--r-pill)',
           padding: '4px 12px',
@@ -143,20 +143,20 @@ function CaseCard({ c, delay = 0 }: CaseCardProps) {
           background: 'white',
           borderRadius: 'var(--r-xl)',
           border: '4px solid #151B3D',
-          boxShadow: '4px 4px 0px #151B3D',
+          boxShadow: '5px 5px 0px #151B3D',
           overflow: 'hidden',
           position: 'relative',
           zIndex: 1,
-          height: 380,
+          height: 415,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
         }}
       >
-        {/* Card Header */}
+        {/* Card Header (Increased to 165px) */}
         <div
           style={{
-            height: 150,
+            height: 165,
             background: accentColor,
             borderBottom: '4px solid #151B3D',
             display: 'flex',
@@ -166,35 +166,38 @@ function CaseCard({ c, delay = 0 }: CaseCardProps) {
             overflow: 'hidden',
           }}
         >
-          <div style={{ position: 'absolute', inset: 0, opacity: 0.15, backgroundImage: 'radial-gradient(#151B3D 1.5px, transparent 1.5px)', backgroundSize: '12px 12px' }} />
-          <div style={{ position: 'absolute', top: 18, left: 18, opacity: 0.85 }} className="wobble">
+          {/* Top accent line */}
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 10, background: 'rgba(21, 27, 61, 0.12)', borderBottom: '2.5px solid #151B3D', zIndex: 5 }} />
+
+          <div style={{ position: 'absolute', inset: 0, opacity: 0.15, backgroundImage: 'radial-gradient(var(--dots-color) 1.5px, transparent 1.5px)', backgroundSize: '12px 12px' }} />
+          <div style={{ position: 'absolute', top: 22, left: 22, opacity: 0.85 }} className="wobble">
             <Doodle kind="star" size={20} color="var(--butter)" />
           </div>
-          <div style={{ position: 'absolute', top: 12, right: 18, opacity: 0.85 }} className="floaty">
+          <div style={{ position: 'absolute', top: 16, right: 22, opacity: 0.85 }} className="floaty">
             <Doodle kind="sparkle" size={18} color="var(--sky)" />
           </div>
           <div className="floaty" style={{ marginBottom: -10 }}>
-            <Mascot name={patientMascot} size={130} mood={c.mood} />
+            <Mascot name={patientMascot} size={150} mood={c.mood} />
           </div>
         </div>
 
-        {/* Card Details Body */}
-        <div style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        {/* Card Details Body (Increased Breathing Room) */}
+        <div style={{ padding: '20px 18px 18px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-              <div style={{ fontWeight: 800, fontSize: 18, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+              <div style={{ fontWeight: 900, fontSize: 20, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
                 {c.name}
               </div>
               <div style={{ fontSize: 11 }} title={`Difficulty: ${starCount} stars`}>
                 {stars}
               </div>
             </div>
-            <div style={{ fontWeight: 800, fontSize: 12, color: '#151B3D', opacity: 0.85, marginBottom: 10, fontFamily: "'Fredoka', sans-serif" }}>
+            <div style={{ fontWeight: 800, fontSize: 13, color: '#151B3D', opacity: 0.85, marginBottom: 12, fontFamily: "'Fredoka', sans-serif" }}>
               {c.age} years old · {c.sex === 'F' ? 'Female' : 'Male'}
             </div>
             <div
               style={{
-                fontSize: 13,
+                fontSize: 14,
                 color: '#151B3D',
                 lineHeight: 1.45,
                 fontWeight: 700,
@@ -202,9 +205,9 @@ function CaseCard({ c, delay = 0 }: CaseCardProps) {
                 background: 'var(--bg)',
                 border: '2.5px solid #151B3D',
                 borderRadius: '16px',
-                padding: '8px 12px',
+                padding: '10px 14px',
                 position: 'relative',
-                marginBottom: 10,
+                marginBottom: 12,
               }}
             >
               "{c.complaint}"
@@ -212,11 +215,11 @@ function CaseCard({ c, delay = 0 }: CaseCardProps) {
           </div>
 
           {/* Specialty tag footer */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 10, fontWeight: 800, color: '#151B3D' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 11, fontWeight: 900, color: '#151B3D' }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
               📂 {c.guideline.toUpperCase()}
             </span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'var(--bg-soft)', border: '2px solid #151B3D', borderRadius: '999px', padding: '3px 8px', color: '#151B3D' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'var(--bg-soft)', border: '2px solid #151B3D', borderRadius: '999px', padding: '4px 10px', color: '#151B3D', boxShadow: '1px 1px 0px #151B3D' }}>
               {CLINIC_ICON[c.clinic]} {CLINIC_LABELS[c.clinic]}
             </span>
           </div>
@@ -279,57 +282,110 @@ export function CaseLibraryScreen() {
   ];
 
   return (
-    <div className="screen" style={{ background: 'var(--bg)', overflowY: 'auto' }}>
+    <div 
+      className="screen" 
+      style={{ 
+        background: 'var(--bg)', 
+        overflowY: 'auto',
+        backgroundImage: 'radial-gradient(var(--dots-color) 1.5px, transparent 1.5px)',
+        backgroundSize: '24px 24px',
+        position: 'relative',
+      }}
+    >
       <TopBar here={2} steps={['Polyclinic', 'GP', 'Case']} />
+
+      {/* Whimsical Low-Opacity Background Doodles */}
+      <div style={{ position: 'absolute', top: '6%', left: '4%', opacity: 0.25 }} className="drift-cloud">
+        <Doodle kind="cloud" size={110} color="var(--sky-lt)" />
+      </div>
+      <div style={{ position: 'absolute', top: '10%', right: '5%', opacity: 0.25 }} className="drift-cloud">
+        <Doodle kind="cloud" size={130} color="var(--mint-lt)" style={{ animationDelay: '1.5s' }} />
+      </div>
+      <div style={{ position: 'absolute', top: '26%', left: '3%', opacity: 0.4 }} className="wobble">
+        <Doodle kind="star" size={32} color="var(--butter)" />
+      </div>
+      <div style={{ position: 'absolute', top: '34%', right: '3%', opacity: 0.35 }} className="drift">
+        <Doodle kind="sparkle" size={28} color="var(--sky)" />
+      </div>
+      <div style={{ position: 'absolute', bottom: '15%', left: '4%', opacity: 0.35 }} className="wobble">
+        <Doodle kind="leaf" size={40} color="var(--green)" />
+      </div>
+      <div style={{ position: 'absolute', bottom: '20%', right: '5%', opacity: 0.35 }} className="floaty">
+        <Doodle kind="heart" size={32} color="var(--rose)" />
+      </div>
 
       {/* Header */}
       <div
         style={{
-          padding: '32px 36px 0',
+          padding: '40px 36px 0',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: 20,
+          gap: 24,
           maxWidth: 1240,
           margin: '0 auto',
           flexWrap: 'wrap',
+          position: 'relative',
+          zIndex: 5,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
           <button
             type="button"
             className="btn-plush ghost btn-toy"
-            style={{ fontSize: 13, padding: '10px 20px', fontFamily: "'Fredoka', sans-serif" }}
+            style={{ fontSize: 14, padding: '10px 22px', fontFamily: "'Fredoka', sans-serif", border: '3.5px solid #151B3D', boxShadow: '3px 3px 0px #151B3D' }}
             onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
             onClick={() => { soundSystem.playClick(); store.setScreen('gpRoom'); }}
           >
             ← Back
           </button>
           <div>
-            <div className="chip butter" style={{ marginBottom: 8, fontSize: 12, padding: '5px 14px', fontFamily: "'Fredoka', sans-serif" }}>
-              📚 COLLECTIBLE CASE CATALOGUE
+            <div 
+              className="chip butter" 
+              style={{ 
+                marginBottom: 10, 
+                fontSize: 12, 
+                padding: '6px 16px', 
+                fontFamily: "'Fredoka', sans-serif",
+                border: '3px solid #151B3D',
+                boxShadow: '2.5px 2.5px 0px #151B3D',
+                fontWeight: 800,
+              }}
+            >
+              ★ COLLECTIBLE CASE CATALOGUE
             </div>
             <h1
               style={{
-                fontSize: 'clamp(28px, 3.5vw, 42px)',
-                marginBottom: 4,
-                fontWeight: 800,
+                fontSize: 'clamp(32px, 4.5vw, 48px)',
+                marginBottom: 6,
+                fontWeight: 850,
                 fontFamily: "'Fredoka', sans-serif",
                 letterSpacing: '-0.02em',
                 color: '#151B3D',
+                textShadow: '2px 2px 0px rgba(21, 27, 61, 0.05)',
               }}
             >
               Case Library
             </h1>
-            <div style={{ fontWeight: 800, color: '#151B3D', fontSize: 14, fontFamily: "'Fredoka', sans-serif" }}>
+            <div style={{ fontWeight: 800, color: '#151B3D', fontSize: 15, fontFamily: "'Fredoka', sans-serif" }}>
               {totalVisible} character cards · specialty decks
             </div>
           </div>
         </div>
         <button
           type="button"
-          className="btn-plush mint btn-toy"
-          style={{ fontSize: 14, padding: '13px 24px', whiteSpace: 'nowrap', fontWeight: 800, fontFamily: "'Fredoka', sans-serif" }}
+          className="btn-plush primary btn-toy"
+          style={{ 
+            fontSize: 15, 
+            padding: '14px 28px', 
+            whiteSpace: 'nowrap', 
+            fontWeight: 800, 
+            fontFamily: "'Fredoka', sans-serif",
+            background: 'var(--butter)',
+            color: '#151B3D',
+            boxShadow: '0 5px 0px #151B3D !important',
+            border: '3.5px solid #151B3D',
+          }}
           onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
           onClick={shuffle}
         >
@@ -340,13 +396,15 @@ export function CaseLibraryScreen() {
       {/* Filter chips — ALL specialty pills get hover + click sounds */}
       <div
         style={{
-          padding: '24px 36px 12px',
+          padding: '28px 36px 16px',
           display: 'flex',
-          gap: 8,
+          gap: 10,
           flexWrap: 'wrap',
           alignItems: 'center',
           maxWidth: 1240,
           margin: '0 auto',
+          position: 'relative',
+          zIndex: 5,
         }}
       >
         {clinicChips.map((chip) => {
@@ -359,16 +417,16 @@ export function CaseLibraryScreen() {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 5,
+                gap: 6,
                 cursor: 'pointer',
-                padding: '8px 16px',
-                fontSize: 12,
+                padding: '10px 18px',
+                fontSize: 13,
                 fontWeight: 800,
                 borderRadius: 'var(--r-pill)',
                 border: '3px solid #151B3D',
                 background: isActive ? 'var(--mint-lt)' : 'white',
                 color: '#151B3D',
-                boxShadow: isActive ? '3px 3px 0px #151B3D' : '1.5px 1.5px 0px #151B3D',
+                boxShadow: isActive ? '4px 4px 0px #151B3D' : '2px 2px 0px #151B3D',
                 transition: 'all 0.15s ease',
                 fontFamily: "'Fredoka', sans-serif",
               }}
@@ -385,32 +443,34 @@ export function CaseLibraryScreen() {
       </div>
 
       {/* Grouped sections */}
-      <div style={{ padding: '12px 36px 48px', display: 'flex', flexDirection: 'column', gap: 36, maxWidth: 1240, margin: '0 auto' }}>
+      <div style={{ padding: '16px 36px 64px', display: 'flex', flexDirection: 'column', gap: 40, maxWidth: 1240, margin: '0 auto', position: 'relative', zIndex: 5 }}>
         {visibleGroups.map(([clinic, list]) => (
           <section key={clinic}>
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 12,
-                marginBottom: 20,
-                paddingBottom: 14,
+                gap: 14,
+                marginBottom: 24,
+                paddingBottom: 16,
                 borderBottom: '4px solid #151B3D',
               }}
             >
               <span
                 style={{
-                  width: 44, height: 44, borderRadius: '50%',
+                  width: 48, height: 48, borderRadius: '50%',
                   background: '#ffffff',
                   border: '3px solid #151B3D',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 22, flexShrink: 0,
-                  boxShadow: '2px 2px 0px #151B3D',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 24, flexShrink: 0,
+                  boxShadow: '2.5px 2.5px 0px #151B3D',
                 }}
               >
                 {CLINIC_ICON[clinic] ?? '🏥'}
               </span>
-              <h2 style={{ fontSize: 22, margin: 0, fontWeight: 800, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
+              <h2 style={{ fontSize: 24, margin: 0, fontWeight: 850, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
                 {CLINIC_LABELS[clinic]} Specialty Deck
               </h2>
               <span
@@ -418,12 +478,12 @@ export function CaseLibraryScreen() {
                   background: 'var(--mint-lt)',
                   border: '2.5px solid #151B3D',
                   borderRadius: 'var(--r-pill)',
-                  padding: '4px 12px',
-                  fontSize: 11,
+                  padding: '5px 14px',
+                  fontSize: 12,
                   fontWeight: 800,
                   color: '#151B3D',
                   fontFamily: "'Fredoka', sans-serif",
-                  boxShadow: '1.5px 1.5px 0px #151B3D',
+                  boxShadow: '2.5px 2.5px 0px #151B3D',
                 }}
               >
                 {list.length} card{list.length !== 1 ? 's' : ''}
@@ -432,8 +492,8 @@ export function CaseLibraryScreen() {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-                gap: 20,
+                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                gap: 24,
               }}
             >
               {list.map((c, i) => (
@@ -448,18 +508,20 @@ export function CaseLibraryScreen() {
             style={{
               background: 'white',
               borderRadius: 'var(--r-xl)',
-              padding: '48px 32px',
+              padding: '64px 32px',
               textAlign: 'center',
               color: 'var(--ink-2)',
-              fontWeight: 600,
-              border: '3px dashed #151B3D',
+              fontWeight: 700,
+              border: '4px dashed #151B3D',
+              boxShadow: '6px 6px 0px #151B3D',
             }}
           >
-            <div style={{ fontSize: 48, marginBottom: 12 }}>🔍</div>
-            <div style={{ fontWeight: 800, fontSize: 18, fontFamily: "'Fredoka', sans-serif" }}>No matching cards found!</div>
+            <div style={{ fontSize: 64, marginBottom: 16 }}>🔍</div>
+            <div style={{ fontWeight: 900, fontSize: 22, fontFamily: "'Fredoka', sans-serif", color: '#151B3D' }}>No matching cards found!</div>
           </div>
         )}
       </div>
     </div>
   );
 }
+

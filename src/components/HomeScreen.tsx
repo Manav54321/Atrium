@@ -1,601 +1,331 @@
-import { useEffect, useState } from 'react';
 import { TopBar, Doodle } from './primitives';
 import { Mascot } from './mascots';
 import { store } from '../game/store';
 import { soundSystem } from '../utils/audioSystem';
-import {
-  listEvalHistory,
-  deleteEvalHistory,
-  type EvalHistoryEntry,
-} from '../data/evalHistory';
 
-const VERDICT_COLOR: Record<EvalHistoryEntry['verdict'], string> = {
-  excellent: 'var(--mint)',
-  good: 'var(--mint)',
-  satisfactory: 'var(--butter)',
-  borderline: 'var(--peach)',
-  'clear-fail': 'var(--coral)',
-};
-
-const VERDICT_BG: Record<EvalHistoryEntry['verdict'], string> = {
-  excellent: 'var(--mint-lt)',
-  good: 'var(--mint-lt)',
-  satisfactory: 'var(--butter-lt)',
-  borderline: 'var(--peach-lt)',
-  'clear-fail': 'var(--coral-lt)',
-};
-
-const VERDICT_LABEL: Record<EvalHistoryEntry['verdict'], string> = {
-  excellent: 'Excellent',
-  good: 'Good',
-  satisfactory: 'Satisfactory',
-  borderline: 'Borderline',
-  'clear-fail': 'Clear fail',
-};
-
-function relativeDate(ms: number): string {
-  const diffMs = Date.now() - ms;
-  const minutes = Math.round(diffMs / 60000);
-  if (minutes < 1) return 'just now';
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.round(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Date(ms).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+interface FeatureCardProps {
+  icon: string;
+  title: string;
+  description: string;
+  accentColor: string;
+  accentLt: string;
 }
 
-const VERDICT_SCORE: Record<EvalHistoryEntry['verdict'], number> = {
-  'clear-fail': 1,
-  borderline: 2,
-  satisfactory: 3,
-  good: 4,
-  excellent: 5,
-};
-
-const DOMAIN_META = [
-  { key: 'data_gathering' as const,      label: 'Data Gathering',      color: 'var(--peach)',  lt: 'var(--peach-lt)',  emoji: '📋' },
-  { key: 'clinical_management' as const, label: 'Clinical Management', color: 'var(--mint)',   lt: 'var(--mint-lt)',   emoji: '🩺' },
-  { key: 'interpersonal' as const,       label: 'Interpersonal',       color: 'var(--lav)',    lt: 'var(--lav-lt)',    emoji: '💬' },
-];
-
-interface TrainingStats {
-  count: number;
-  avgRating: number;
-  domains: { key: 'data_gathering' | 'clinical_management' | 'interpersonal'; label: string; pct: number; color: string; lt: string; emoji: string }[];
-  weakest: { label: string; pct: number; color: string; emoji: string } | null;
-  streakDays: number;
-}
-
-function computeStats(history: EvalHistoryEntry[]): TrainingStats {
-  const count = history.length;
-  if (count === 0) {
-    return { count: 0, avgRating: 0, domains: DOMAIN_META.map((d) => ({ ...d, pct: 0 })), weakest: null, streakDays: 0 };
-  }
-  const avgRating = history.reduce((sum, e) => sum + (VERDICT_SCORE[e.verdict] ?? 0), 0) / count;
-  const domains = DOMAIN_META.map((d) => {
-    const ratios = history
-      .map((e) => { const ds = e.evaluation.domain_scores[d.key]; return ds && ds.max > 0 ? ds.raw / ds.max : null; })
-      .filter((r): r is number => r !== null);
-    const pct = ratios.length > 0 ? Math.round((ratios.reduce((a, b) => a + b, 0) / ratios.length) * 100) : 0;
-    return { ...d, pct };
-  });
-  const weakestDomain = domains.reduce((min, d) => (d.pct < min.pct ? d : min), domains[0]);
-  const weakest = { label: weakestDomain.label, pct: weakestDomain.pct, color: weakestDomain.color, emoji: weakestDomain.emoji };
-  const days = new Set(history.map((e) => new Date(e.savedAt).toISOString().slice(0, 10)));
-  let streakDays = 0;
-  const cursor = new Date();
-  for (;;) {
-    const key = cursor.toISOString().slice(0, 10);
-    if (days.has(key)) { streakDays += 1; cursor.setDate(cursor.getDate() - 1); }
-    else { break; }
-  }
-  return { count, avgRating, domains, weakest, streakDays };
-}
-
-function StatPill({ value, label, emoji }: { value: string; label: string; emoji: string }) {
+function FeatureCard({ icon, title, description, accentColor, accentLt }: FeatureCardProps) {
   return (
     <div
       style={{
+        flex: '1 1 300px',
+        maxWidth: 380,
         background: '#ffffff',
-        borderRadius: 'var(--r-md)',
-        padding: '16px 20px',
+        borderRadius: 'var(--r-xl)',
+        border: '4px solid #151B3D',
+        boxShadow: '8px 8px 0px #151B3D',
+        padding: '36px 28px 32px',
+        position: 'relative',
         display: 'flex',
         flexDirection: 'column',
-        gap: 6,
-        border: '4px solid #151B3D',
-        boxShadow: '4px 4px 0px #151B3D',
-        flex: 1,
-        minWidth: 0,
-        position: 'relative',
-        overflow: 'hidden',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        minHeight: 280,
+        overflow: 'visible',
       }}
     >
-      {/* Decorative top strip */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, background: 'var(--peach)' }} />
-      <div style={{ fontSize: 24, marginTop: 4 }}>{emoji}</div>
-      <div style={{ fontWeight: 800, fontSize: 32, lineHeight: 1, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
-        {value}
+      {/* Top accent badge */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: 14,
+        background: accentColor,
+        borderBottom: '4px solid #151B3D',
+        borderTopLeftRadius: '20px',
+        borderTopRightRadius: '20px',
+      }} />
+
+      {/* Big Icon area inside styled circle container */}
+      <div
+        className="floaty"
+        style={{
+          width: 90,
+          height: 90,
+          borderRadius: '50%',
+          background: accentLt,
+          border: '3.5px solid #151B3D',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 44,
+          boxShadow: '3px 3px 0px #151B3D',
+          marginTop: 8,
+          marginBottom: 16,
+        }}
+      >
+        {icon}
       </div>
-      <div style={{ fontSize: 11, fontWeight: 800, color: '#151B3D', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.85 }}>
-        {label}
+
+      <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 8, flex: 1, justifyContent: 'center' }}>
+        <h3 style={{
+          fontSize: 22,
+          fontWeight: 850,
+          color: '#151B3D',
+          fontFamily: "'Fredoka', sans-serif",
+          margin: 0,
+        }}>
+          {title}
+        </h3>
+        <p style={{
+          fontSize: 14.5,
+          color: '#151B3D',
+          lineHeight: 1.5,
+          fontWeight: 700,
+          margin: 0,
+          opacity: 0.9,
+        }}>
+          {description}
+        </p>
       </div>
     </div>
   );
 }
 
 export function HomeScreen() {
-  const [history, setHistory] = useState<EvalHistoryEntry[]>([]);
-
-  useEffect(() => {
-    setHistory(listEvalHistory());
-  }, []);
-
-  const refresh = () => setHistory(listEvalHistory());
-  const onDelete = (id: string) => {
-    deleteEvalHistory(id);
-    refresh();
-  };
-
-  const stats = computeStats(history);
-
   return (
-    <div className="screen" style={{ background: 'var(--bg)', overflowY: 'auto' }}>
+    <div
+      className="screen"
+      style={{
+        background: 'var(--bg)',
+        overflowY: 'auto',
+        backgroundImage: 'radial-gradient(var(--dots-color) 1.5px, transparent 1.5px)',
+        backgroundSize: '24px 24px',
+        position: 'relative',
+      }}
+    >
       <TopBar here={0} steps={['Profile']} />
+
+      {/* Whimsical Ambient Background World Elements */}
+      <div style={{ position: 'absolute', top: '8%', left: '4%', opacity: 0.25 }} className="drift-cloud">
+        <Doodle kind="cloud" size={130} color="var(--sky-lt)" />
+      </div>
+      <div style={{ position: 'absolute', top: '15%', right: '5%', opacity: 0.25 }} className="drift-cloud">
+        <Doodle kind="cloud" size={160} color="var(--mint-lt)" style={{ animationDelay: '2.5s' }} />
+      </div>
+      <div style={{ position: 'absolute', top: '45%', left: '3%', opacity: 0.5 }} className="drift">
+        <Doodle kind="sparkle" size={32} color="var(--butter)" />
+      </div>
+      <div style={{ position: 'absolute', top: '35%', right: '4%', opacity: 0.45 }} className="wobble">
+        <Doodle kind="star" size={36} color="var(--lav)" />
+      </div>
+      <div style={{ position: 'absolute', bottom: '8%', left: '4%', opacity: 0.45 }} className="floaty">
+        <Doodle kind="stetho" size={48} color="var(--mint)" />
+      </div>
+      <div style={{ position: 'absolute', bottom: '12%', right: '5%', opacity: 0.5 }} className="wobble">
+        <Doodle kind="heart" size={36} color="var(--rose)" />
+      </div>
+      <div style={{ position: 'absolute', top: '12%', left: '22%', opacity: 0.45 }} className="floaty">
+        <Doodle kind="bandage" size={54} color="var(--peach)" />
+      </div>
+      <div style={{ position: 'absolute', bottom: '45%', right: '3%', opacity: 0.45 }} className="drift">
+        <Doodle kind="leaf" size={40} color="var(--green)" />
+      </div>
 
       <div
         style={{
-          padding: '24px 24px 60px',
-          maxWidth: 1200,
+          padding: '48px 24px 80px',
+          maxWidth: 1140,
           margin: '0 auto',
           display: 'flex',
           flexDirection: 'column',
-          gap: 32,
+          alignItems: 'center',
+          position: 'relative',
+          zIndex: 5,
         }}
       >
-        {/* ─── REDESIGNED HERO: GAME WORLD CONSULTATION ROOM ─── */}
+        {/* ─── HERO ILLUSTRATION CARD ─── */}
         <div
           className="popin"
           style={{
-            background: 'var(--butter-lt)',
+            background: '#FFFDF9',
             border: '4px solid #151B3D',
             borderRadius: 'var(--r-xl)',
-            boxShadow: '6px 6px 0px #151B3D',
+            boxShadow: '8px 8px 0px #151B3D',
             position: 'relative',
-            padding: '40px 48px',
-            overflow: 'hidden',
+            padding: '40px 24px',
+            overflow: 'visible',
+            width: '100%',
+            maxWidth: 1000,
+            minHeight: 380,
             display: 'flex',
             alignItems: 'center',
-            minHeight: 340,
+            justifyContent: 'center',
+            marginBottom: 48,
           }}
         >
-          {/* Environment details (Clouds, trees, medical icons, clinic building) */}
-          <div style={{ position: 'absolute', top: '15%', left: '4%', opacity: 0.8 }} className="drift">
-            <Doodle kind="cloud" size={70} color="#ffffff" />
-          </div>
-          <div style={{ position: 'absolute', top: '22%', right: '35%', opacity: 0.6 }} className="drift">
-            <Doodle kind="cloud" size={54} color="#ffffff" />
-          </div>
-          <div style={{ position: 'absolute', bottom: '4%', left: '30%', opacity: 0.2 }}>
-            {/* Cute mini vector clinic building on base */}
-            <svg width="60" height="60" viewBox="0 0 100 100" fill="none">
-              <rect x="10" y="30" width="80" height="70" rx="10" fill="#ffffff" stroke="#151B3D" strokeWidth="4" />
-              <rect x="35" y="10" width="30" height="20" rx="5" fill="#4ECDC4" stroke="#151B3D" strokeWidth="4" />
-              <rect x="42" y="50" width="16" height="50" fill="#FF8A5B" stroke="#151B3D" strokeWidth="4" />
-            </svg>
-          </div>
-          
-          {/* Floating Game World Doodles */}
-          <div style={{ position: 'absolute', top: '12%', left: '42%', opacity: 0.85 }} className="wobble">
-            <Doodle kind="pill" size={40} color="var(--rose)" />
-          </div>
-          <div style={{ position: 'absolute', bottom: '15%', left: '5%', opacity: 0.85 }} className="floaty">
-            <Doodle kind="stetho" size={44} color="var(--mint)" />
-          </div>
-          <div style={{ position: 'absolute', top: '45%', right: '42%', opacity: 0.85 }} className="wobble">
-            <Doodle kind="heart" size={38} color="var(--coral)" />
-          </div>
-          <div style={{ position: 'absolute', top: '8%', right: '8%', opacity: 0.85 }} className="floaty">
-            <Doodle kind="star" size={36} color="var(--butter)" />
-          </div>
+          {/* Top accent badge */}
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 14, background: 'var(--mint)', borderBottom: '4px solid #151B3D', borderTopLeftRadius: '20px', borderTopRightRadius: '20px' }} />
 
-          <div
-            style={{
-              display: 'flex',
-              width: '100%',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              zIndex: 5,
-              flexWrap: 'wrap-reverse',
-              gap: 28,
-            }}
-          >
-            {/* Left side info */}
-            <div style={{ flex: '1.2', minWidth: 320 }}>
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  background: 'var(--peach)',
-                  border: '3px solid #151B3D',
-                  borderRadius: 'var(--r-pill)',
-                  padding: '6px 16px',
-                  fontFamily: "'Fredoka', sans-serif",
-                  fontWeight: 800,
-                  fontSize: 13,
-                  color: 'white',
-                  marginBottom: 16,
-                  boxShadow: '2px 2px 0px #151B3D',
-                }}
-              >
-                {stats.streakDays > 0 ? `🔥 ${stats.streakDays}-DAY CLINICAL STREAK!` : '👋 WELCOME TO THE CLINIC'}
-              </div>
-              
-              <h1
-                style={{
-                  fontSize: 'clamp(36px, 5vw, 48px)',
-                  lineHeight: 1.05,
-                  fontFamily: "'Fredoka', sans-serif",
-                  fontWeight: 850,
-                  color: '#151B3D',
-                  marginBottom: 14,
-                  textShadow: '1px 1px 0px #ffffff',
-                }}
-              >
-                {stats.count === 0 ? "Ready for your next patient?" : "Good to see you, Doctor!"}
-              </h1>
-              
-              <p
-                style={{
-                  fontSize: 16,
-                  color: '#151B3D',
-                  fontWeight: 750,
-                  lineHeight: 1.6,
-                  maxWidth: 440,
-                  margin: '0 0 24px',
-                }}
-              >
-                Step through the polyclinic doors to meet your simulated patient cases. You can talk to them out loud, order diagnostic tests, and get real Attending critiques!
-              </p>
-
-              <button
-                type="button"
-                className="btn-plush primary breathe btn-toy"
-                style={{ 
-                  fontSize: 18, 
-                  padding: '16px 40px', 
-                  fontFamily: "'Fredoka', sans-serif",
-                  background: 'var(--mint)',
-                  color: '#ffffff',
-                }}
-                onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
-                onClick={() => {
-                  soundSystem.playClick();
-                  store.setScreen('mode');
-                }}
-              >
-                🏥 Start Clinic
-              </button>
+          {/* Giant Hospital Illustration with GP & Child Mascots */}
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 36, flexWrap: 'wrap', position: 'relative', width: '100%', padding: '24px 0 12px' }}>
+            {/* GP Mascot */}
+            <div style={{ zIndex: 3, transform: 'scale(1.1) translateX(-10px)', transformOrigin: 'bottom center' }}>
+              <Mascot name="gp" size={190} />
             </div>
 
-            {/* Right side GP Doctor Mascot beside Patient (Occupies at least 60% of layout width in display spacing) */}
-            <div 
-              style={{ 
-                flex: '1.8', 
-                display: 'flex', 
-                alignItems: 'flex-end', 
-                justifyContent: 'center',
-                gap: 0,
-                position: 'relative',
-                height: 250,
-              }}
-            >
-              {/* Doctor speech bubble */}
-              <div 
-                style={{ 
-                  position: 'absolute', 
-                  top: -24, 
-                  right: '30%', 
-                  zIndex: 10,
-                  fontFamily: "'Fredoka', sans-serif",
-                  background: '#ffffff',
-                  border: '3px solid #151B3D',
-                  borderRadius: '20px',
-                  padding: '8px 16px',
-                  boxShadow: '3px 3px 0px #151B3D',
-                  fontWeight: 800,
-                  fontSize: 14,
-                  color: '#151B3D',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                Ready for your next patient?
-                <div style={{ position: 'absolute', bottom: -10, right: 30, width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderTop: '10px solid #151B3D' }} />
-                <div style={{ position: 'absolute', bottom: -7, right: 31, width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderTop: '8px solid #ffffff' }} />
-              </div>
+            {/* Giant Clinic building SVG */}
+            <div style={{ zIndex: 1, margin: '0 -20px' }} className="wobble">
+              <svg width="340" height="340" viewBox="0 0 100 100" style={{ filter: 'drop-shadow(6px 6px 0px #151B3D)' }}>
+                <rect x="5" y="86" width="90" height="10" rx="3" fill="#151B3D" />
+                
+                {/* Side foliage */}
+                <rect x="7" y="65" width="4" height="21" fill="#151B3D" rx="1" />
+                <circle cx="9" cy="62" r="9" fill="var(--green)" stroke="#151B3D" strokeWidth="3" />
+                <circle cx="15" cy="80" r="6" fill="var(--green-deep)" stroke="#151B3D" strokeWidth="3" />
+                
+                <rect x="89" y="65" width="4" height="21" fill="#151B3D" rx="1" />
+                <circle cx="91" cy="62" r="9" fill="var(--green)" stroke="#151B3D" strokeWidth="3" />
+                <circle cx="85" cy="80" r="6" fill="var(--green-deep)" stroke="#151B3D" strokeWidth="3" />
 
-              {/* GPMascot */}
-              <div style={{ transform: 'scale(1.25)', transformOrigin: 'bottom center', zIndex: 3 }}>
-                <Mascot name="gp" size={170} />
-              </div>
+                {/* Building */}
+                <rect x="15" y="32" width="70" height="54" rx="8" fill="#FFFEE8" stroke="#151B3D" strokeWidth="4" />
+                <path d="M 10 32 L 50 12 L 90 32 Z" fill="var(--mint)" stroke="#151B3D" strokeWidth="4" strokeLinejoin="round" />
+                
+                {/* Red cross crest */}
+                <circle cx="50" cy="24" r="5" fill="#ffffff" stroke="#151B3D" strokeWidth="3" />
+                <path d="M 48 21 H 52 V 27 H 48 Z M 46 23 H 54 V 25 H 46 Z" fill="var(--coral)" />
+                
+                {/* Windows (lit yellow) */}
+                <circle cx="32" cy="48" r="7" fill="#FFE599" stroke="#151B3D" strokeWidth="3" />
+                <line x1="25" y1="48" x2="39" y2="48" stroke="#151B3D" strokeWidth="1.5" />
+                <line x1="32" y1="41" x2="32" y2="55" stroke="#151B3D" strokeWidth="1.5" />
+                
+                <circle cx="68" cy="48" r="7" fill="#FFE599" stroke="#151B3D" strokeWidth="3" />
+                <line x1="61" y1="48" x2="75" y2="48" stroke="#151B3D" strokeWidth="1.5" />
+                <line x1="68" y1="41" x2="68" y2="55" stroke="#151B3D" strokeWidth="1.5" />
+                
+                {/* Door */}
+                <rect x="40" y="62" width="20" height="24" rx="2" fill="var(--peach)" stroke="#151B3D" strokeWidth="3" />
+                <line x1="50" y1="62" x2="50" y2="86" stroke="#151B3D" strokeWidth="3" />
+                <circle cx="46" cy="74" r="1.5" fill="#151B3D" />
+                <circle cx="54" cy="74" r="1.5" fill="#151B3D" />
+              </svg>
+            </div>
 
-              {/* Patient Mascot (Propeller-hat child is super cute!) */}
-              <div style={{ transform: 'scale(1.1) translateX(-20px)', transformOrigin: 'bottom center', zIndex: 2, filter: 'brightness(0.98)' }}>
-                <Mascot name="child" size={150} mood="happy" />
-              </div>
+            {/* Child Mascot */}
+            <div style={{ zIndex: 2, transform: 'scale(1.05) translateX(10px)', transformOrigin: 'bottom center' }}>
+              <Mascot name="child" size={170} mood="happy" />
             </div>
           </div>
         </div>
 
-        {/* ─── TWO COLUMN STATS & LOGS GRID ─── */}
+        {/* ─── HEADER & MISSION DOSSIER ─── */}
+        <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 10, maxWidth: 740, margin: '0 auto 48px' }}>
+          <div
+            className="chip orange"
+            style={{
+              marginBottom: 16,
+              fontSize: 13,
+              padding: '6px 18px',
+              fontFamily: "'Fredoka', sans-serif",
+              border: '3.5px solid #151B3D',
+              boxShadow: '3px 3px 0px #151B3D',
+              fontWeight: 800,
+              background: 'var(--peach)',
+              color: '#ffffff',
+            }}
+          >
+            ★ CLINICAL OUTPATIENT SIMULATOR
+          </div>
+
+          <h1
+            style={{
+              fontSize: 'clamp(44px, 6.5vw, 56px)',
+              lineHeight: 1.05,
+              fontFamily: "'Fredoka', sans-serif",
+              fontWeight: 850,
+              letterSpacing: '-0.02em',
+              background: 'linear-gradient(135deg, var(--peach) 0%, var(--coral) 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              marginBottom: 18,
+            }}
+          >
+            ATRIUM+
+          </h1>
+
+          <p
+            style={{
+              fontSize: 18.5,
+              fontWeight: 700,
+              color: 'var(--ink-2)',
+              lineHeight: 1.6,
+              margin: 0,
+            }}
+          >
+            Step through the clinic doors to meet your <span style={{ color: 'var(--mint-deep)' }}>simulated patient cases</span>. Converse with them <span style={{ color: 'var(--coral-deep)' }}>naturally out loud</span>, request diagnostic tests, and receive detailed <span style={{ color: 'var(--lav-deep)' }}>Attending feedback</span>!
+          </p>
+        </div>
+
+        {/* ─── FEATURE CARDS ─── */}
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: '1.25fr 1fr',
-            gap: 28,
-            alignItems: 'start',
+            display: 'flex',
+            justifyContent: 'center',
+            gap: 32,
+            flexWrap: 'wrap',
+            zIndex: 10,
+            width: '100%',
+            maxWidth: 1200,
+            margin: '0 auto 48px',
           }}
         >
-          {/* ── LEFT COLUMN: RECENT HISTORY ── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-            {/* Recent cases card */}
-            {/* Recent cases card */}
-            <div
-              style={{
-                background: 'white',
-                borderRadius: 'var(--r-xl)',
-                padding: '36px 28px 28px',
-                boxShadow: 'var(--shadow-md)',
-                border: '4px solid #151B3D',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              {/* Colorful top header strip */}
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 12, background: 'var(--peach)', borderBottom: '4px solid #151B3D' }} />
+          <FeatureCard
+            icon="🩺"
+            title="Clinical Rooms"
+            description="Outpatient consult rooms across 24 specialties including Cardiology, Neurology, and Pediatrics."
+            accentColor="var(--green)"
+            accentLt="var(--green-lt)"
+          />
+          <FeatureCard
+            icon="🎤"
+            title="Voice Recognition"
+            description="Converse with patients naturally using interactive speech to ask history questions."
+            accentColor="var(--sky)"
+            accentLt="var(--sky-lt)"
+          />
+          <FeatureCard
+            icon="📚"
+            title="Case Library"
+            description="Browse complete outpatient rosters, unlock case files, and review OSCE scorecards."
+            accentColor="var(--butter)"
+            accentLt="var(--butter-lt)"
+          />
+        </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, marginTop: 8 }}>
-                <div style={{ fontWeight: 850, fontSize: 18, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
-                  📚 Your Case Portfolio
-                </div>
-                <span
-                  style={{ fontSize: 14, fontWeight: 800, color: 'var(--mint-deep)', cursor: 'pointer', fontFamily: "'Fredoka', sans-serif" }}
-                  onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
-                  onClick={() => {
-                    soundSystem.playClick();
-                    store.setScreen('history');
-                  }}
-                >
-                  See all →
-                </span>
-              </div>
-
-              {history.length === 0 ? (
-                <div
-                  style={{
-                    background: 'var(--bg-soft)',
-                    borderRadius: 24,
-                    padding: '40px 24px',
-                    textAlign: 'center',
-                    border: '3px dashed #151B3D',
-                  }}
-                >
-                  <div style={{ fontSize: 48, marginBottom: 12 }}>🩺</div>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
-                    No reviews in your locker yet!
-                  </div>
-                  <p style={{ fontSize: 14, color: '#151B3D', margin: '6px 0 0', fontWeight: 700 }}>
-                    Your clinical scorecard will be saved here after your first consultation!
-                  </p>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {history.slice(0, 5).map((r) => {
-                    const color = VERDICT_COLOR[r.verdict];
-                    const bg = VERDICT_BG[r.verdict];
-                    return (
-                      <div
-                        key={r.id}
-                        className="tap"
-                        onMouseEnter={(e) => soundSystem.playCardHover(e.currentTarget)}
-                        onClick={() => {
-                          soundSystem.playClick();
-                          store.viewEvalHistory(r.id);
-                        }}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 14,
-                          padding: '14px 18px',
-                          background: '#ffffff',
-                          border: '3px solid #151B3D',
-                          borderRadius: 'var(--r-md)',
-                          cursor: 'pointer',
-                          boxShadow: '3px 3px 0px #151B3D',
-                          transition: 'all 150ms ease',
-                        }}
-                      >
-                        <div style={{
-                          width: 14, height: 14, borderRadius: '50%',
-                          background: color, flexShrink: 0,
-                          border: '2.5px solid #151B3D',
-                        }} />
-                        
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontWeight: 800, fontSize: 16, color: '#151B3D', fontFamily: "'Fredoka', sans-serif", whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {r.caseName} <span style={{ fontWeight: 800, color: '#151B3D', opacity: 0.8, fontSize: 13 }}>· {r.caseAge}{r.caseGender}</span>
-                          </div>
-                          <div style={{ fontSize: 13, color: '#151B3D', opacity: 0.85, fontWeight: 800 }}>{r.diagnosisLabel}</div>
-                        </div>
-
-                        <span 
-                          style={{ 
-                            background: bg, 
-                            border: `2.5px solid #151B3D`, 
-                            borderRadius: 'var(--r-pill)', 
-                            padding: '4px 12px', 
-                            fontSize: 13, 
-                            fontWeight: 800, 
-                            color: '#151B3D', 
-                            whiteSpace: 'nowrap',
-                            boxShadow: '1.5px 1.5px 0px #151B3D',
-                            fontFamily: "'Fredoka', sans-serif",
-                          }}
-                        >
-                          {VERDICT_LABEL[r.verdict]}
-                        </span>
-                        
-                        <span style={{ fontSize: 13, color: '#151B3D', opacity: 0.8, fontWeight: 800, whiteSpace: 'nowrap' }}>
-                          {relativeDate(r.savedAt)}
-                        </span>
-                        
-                        <button
-                          type="button"
-                          onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            soundSystem.playClick();
-                            if (window.confirm(`Delete review for ${r.caseName}?`)) onDelete(r.id);
-                          }}
-                          style={{
-                            background: 'transparent', 
-                            border: 'none',
-                            fontSize: 16, 
-                            fontWeight: 900, 
-                            color: '#151B3D',
-                            cursor: 'pointer', 
-                            padding: 4, 
-                            fontFamily: 'inherit',
-                            flexShrink: 0,
-                          }}
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* ── RIGHT COLUMN: STATS PANELS ── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-            {/* Stats block */}
-            <div
-              style={{
-                background: 'white',
-                borderRadius: 'var(--r-xl)',
-                padding: '36px 24px 24px',
-                boxShadow: 'var(--shadow-md)',
-                border: '4px solid #151B3D',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              {/* Colorful top header strip */}
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 12, background: 'var(--lav)', borderBottom: '4px solid #151B3D' }} />
-
-              <div style={{ fontWeight: 850, fontSize: 18, color: '#151B3D', marginBottom: 18, marginTop: 8, fontFamily: "'Fredoka', sans-serif" }}>
-                📊 Clinician Report Card
-              </div>
-              <div style={{ display: 'flex', gap: 14, marginBottom: 18 }}>
-                <StatPill
-                  value={stats.count > 0 ? String(stats.count) : '—'}
-                  label="Cases Managed"
-                  emoji="🏥"
-                />
-                <StatPill
-                  value={stats.count > 0 ? stats.avgRating.toFixed(1) : '—'}
-                  label="Attending Score"
-                  emoji="⭐"
-                />
-              </div>
-
-              {/* Weakest domain highlight */}
-              <div
-                style={{
-                  background: stats.weakest ? 'var(--bg-soft)' : 'var(--cream)',
-                  borderRadius: 'var(--r-md)',
-                  padding: '16px 20px',
-                  border: '3px solid #151B3D',
-                  boxShadow: '3px 3px 0px #151B3D',
-                }}
-              >
-                <div style={{ fontSize: 11, fontWeight: 900, color: '#151B3D', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8, fontFamily: "'Fredoka', sans-serif" }}>
-                  Focus Area Required
-                </div>
-                <div style={{ fontWeight: 800, fontSize: 18, color: '#151B3D', marginBottom: 12, fontFamily: "'Fredoka', sans-serif" }}>
-                  {stats.weakest ? `${stats.weakest.emoji} ${stats.weakest.label}` : '— Portfolio Empty'}
-                </div>
-                {stats.weakest && (
-                  <>
-                    <div style={{
-                      height: 16, background: '#ffffff',
-                      borderRadius: 'var(--r-pill)', overflow: 'hidden', marginBottom: 8,
-                      border: '3px solid #151B3D',
-                    }}>
-                      <div style={{
-                        height: '100%', width: `${stats.weakest.pct}%`,
-                        background: stats.weakest.color,
-                        borderRadius: 'var(--r-pill)',
-                        borderRight: '2px solid #151B3D',
-                      }} />
-                    </div>
-                    <div style={{ fontSize: 13, fontWeight: 800, color: '#151B3D', opacity: 0.8, fontFamily: "'Fredoka', sans-serif" }}>
-                      {stats.weakest.pct}% average performance · needs practice
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Domain progress */}
-            <div
-              style={{
-                background: 'white',
-                borderRadius: 'var(--r-xl)',
-                padding: '36px 24px 24px',
-                boxShadow: 'var(--shadow-md)',
-                border: '4px solid #151B3D',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              {/* Colorful top header strip */}
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 12, background: 'var(--butter)', borderBottom: '4px solid #151B3D' }} />
-
-              <div style={{ fontWeight: 850, fontSize: 18, color: '#151B3D', marginBottom: 18, marginTop: 8, fontFamily: "'Fredoka', sans-serif" }}>
-                🎯 Core Skill Metrics
-              </div>
-
-              {stats.count === 0 ? (
-                <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink-soft)', fontStyle: 'italic', textAlign: 'center', padding: '12px 0' }}>
-                  Clinical skill meters will unlock after your first Attending review.
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  {stats.domains.map((d) => (
-                    <div key={d.label}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 800, marginBottom: 6, fontFamily: "'Fredoka', sans-serif" }}>
-                        <span style={{ color: 'var(--ink)' }}>{d.emoji} {d.label}</span>
-                        <span style={{ color: d.color, fontWeight: 800 }}>{d.pct}%</span>
-                      </div>
-                      <div style={{ height: 16, background: '#ffffff', borderRadius: 'var(--r-pill)', overflow: 'hidden', border: '3px solid #151B3D' }}>
-                        <div style={{
-                          height: '100%', width: `${d.pct}%`,
-                          background: d.color,
-                          borderRadius: 'var(--r-pill)',
-                          borderRight: '2px solid #151B3D',
-                        }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+        {/* ─── HUGE NINTENDO START BUTTON ─── */}
+        <div style={{ display: 'flex', justifyContent: 'center', width: '100%', zIndex: 10, marginBottom: 20 }}>
+          <button
+            type="button"
+            className="btn-plush primary breathe btn-toy"
+            style={{
+              fontSize: 24,
+              padding: '22px 64px',
+              fontFamily: "'Fredoka', sans-serif",
+              background: 'var(--peach)',
+              color: '#ffffff',
+              boxShadow: '0 8px 0px #151B3D !important',
+              borderRadius: 'var(--r-pill)',
+              border: '4px solid #151B3D',
+              letterSpacing: '0.04em',
+              fontWeight: 900,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+            onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
+            onClick={() => {
+              soundSystem.playClick();
+              store.beginFromSplash();
+            }}
+          >
+            🏥 ENTER SIMULATION →
+          </button>
         </div>
       </div>
     </div>

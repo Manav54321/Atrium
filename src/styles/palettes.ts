@@ -2,8 +2,8 @@ export type PaletteName = 'sunshine' | 'candy' | 'forest';
 
 const PALETTES: Record<PaletteName, Record<string, string>> = {
   sunshine: {
-    '--cream': '#FFF8EE',
-    '--cream-2': '#FFF0E8',
+    '--cream': '#EFFAFF',
+    '--cream-2': '#DDF3FF',
     '--paper': '#FFFFFF',
     
     '--peach': '#FF8A5B',

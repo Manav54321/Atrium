@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useScreen, useTweaks } from './game/store';
 import { applyIntensity, applyPalette } from './styles/palettes';
-import { SplashScreen } from './components/SplashScreen';
 import { OnboardingScreen } from './components/OnboardingScreen';
 import { HomeScreen } from './components/HomeScreen';
 import { ModeSelectScreen } from './components/ModeSelectScreen';
@@ -28,7 +27,7 @@ export default function App() {
 
   return (
     <div className="app">
-      {screen === 'splash' && <SplashScreen />}
+      {screen === 'splash' && <HomeScreen />}
       {screen === 'onboarding' && <OnboardingScreen />}
       {screen === 'home' && <HomeScreen />}
       {screen === 'mode' && <ModeSelectScreen />}

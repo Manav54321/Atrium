@@ -23,7 +23,7 @@ function WingCard({ kind, label, sub, tags, available, accentColor, accentLt, on
 
   return (
     <div
-      className={available ? 'tap' : ''}
+      className={available ? 'active-wing-card tap' : 'locked-wing-card'}
       onMouseEnter={(e) => {
         if (available) soundSystem.playCardHover(e.currentTarget);
       }}
@@ -32,10 +32,9 @@ function WingCard({ kind, label, sub, tags, available, accentColor, accentLt, on
         if (onOpen) onOpen();
       } : undefined}
       style={{
-        width: 320,
+        width: 380,
         position: 'relative',
         cursor: available ? 'pointer' : 'default',
-        transition: 'transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1)',
       }}
     >
       <div
@@ -44,22 +43,20 @@ function WingCard({ kind, label, sub, tags, available, accentColor, accentLt, on
           borderRadius: 'var(--r-xl)',
           border: '4px solid #151B3D',
           boxShadow: available
-            ? '6px 6px 0px #151B3D'
-            : '3px 3px 0px #151B3D',
-          padding: 24,
+            ? '8px 8px 0px #151B3D'
+            : '4px 4px 0px #151B3D',
+          padding: 28,
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          gap: 16,
           position: 'relative',
           overflow: 'hidden',
-          height: 490,
+          height: 580,
           justifyContent: 'space-between',
         }}
       >
         {/* Top accent badge */}
         <div style={{
-          position: 'absolute', top: 0, left: 0, right: 0, height: 12,
+          position: 'absolute', top: 0, left: 0, right: 0, height: 14,
           background: accentColor,
           borderBottom: '4px solid #151B3D',
         }} />
@@ -68,32 +65,33 @@ function WingCard({ kind, label, sub, tags, available, accentColor, accentLt, on
         <div
           style={{
             width: '100%',
-            height: 190,
-            background: available ? accentLt : '#E8E8EE',
+            height: 260,
+            background: accentLt,
             borderRadius: 'var(--r-md)',
             border: '3px solid #151B3D',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             position: 'relative',
-            marginTop: 10,
+            marginTop: 12,
             overflow: 'hidden',
-            boxShadow: 'inset 0 0 12px rgba(21, 27, 61, 0.08)',
+            boxShadow: 'inset 0 0 16px rgba(21, 27, 61, 0.08)',
           }}
         >
-          <div className={available ? 'floaty' : ''}>
-            <Mascot name={mascotName} size={150} mood={kind === 'emergency' ? 'shocked' : 'happy'} />
+          <div className={available ? 'floaty' : ''} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Mascot name={mascotName} size={225} mood={kind === 'emergency' ? 'shocked' : 'happy'} />
           </div>
           {!available && (
             <div style={{
               position: 'absolute', top: 12, right: 12,
-              background: '#ffffff',
-              border: '2px solid #151B3D',
+              background: '#EAEAEA',
+              border: '2.5px solid #151B3D',
               borderRadius: 'var(--r-pill)',
-              padding: '4px 12px',
+              padding: '5px 14px',
               fontSize: 13, fontWeight: 800, color: '#151B3D',
               fontFamily: "'Fredoka', sans-serif",
-              boxShadow: '1.5px 1.5px 0px #151B3D',
+              boxShadow: '2px 2px 0px #151B3D',
+              zIndex: 2,
             }}>
               🔒 Locked
             </div>
@@ -104,29 +102,53 @@ function WingCard({ kind, label, sub, tags, available, accentColor, accentLt, on
               background: 'var(--butter)',
               border: `2.5px solid #151B3D`,
               borderRadius: 'var(--r-pill)',
-              padding: '4px 12px',
+              padding: '5px 14px',
               fontSize: 13, fontWeight: 800,
               color: '#151B3D',
               fontFamily: "'Fredoka', sans-serif",
-              boxShadow: '1.5px 1.5px 0px #151B3D',
+              boxShadow: '2px 2px 0px #151B3D',
+              zIndex: 2,
             }}>
               ⭐ ACTIVE
             </div>
           )}
         </div>
 
-        {/* Info */}
-        <div style={{ textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '100%', marginTop: 8 }}>
-          <div>
-            <h3 style={{ fontSize: 24, fontWeight: 850, marginBottom: 8, color: available ? '#151B3D' : '#151B3D', opacity: available ? 1 : 0.65, fontFamily: "'Fredoka', sans-serif" }}>
+        {/* Info & Description */}
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          justifyContent: 'space-between', 
+          flex: 1, 
+          width: '100%', 
+          marginTop: 20 
+        }}>
+          {/* Text content area */}
+          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 10, padding: '0 8px' }}>
+            <h3 style={{ 
+              fontSize: 26, 
+              fontWeight: 850, 
+              color: '#151B3D', 
+              fontFamily: "'Fredoka', sans-serif",
+              letterSpacing: '-0.01em',
+              margin: 0
+            }}>
               {label}
             </h3>
-            <p style={{ fontSize: 14, color: '#151B3D', lineHeight: 1.5, fontWeight: 700, margin: 0 }}>
+            <p style={{ 
+              fontSize: 15, 
+              color: '#151B3D', 
+              lineHeight: 1.5, 
+              fontWeight: 700, 
+              margin: 0,
+              opacity: available ? 0.85 : 0.7
+            }}>
               {sub}
             </p>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
+          {/* Tags & Action CTA Area */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 20 }}>
             {/* Tags */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: 6, flexWrap: 'wrap' }}>
               {tags.map((t, i) => (
@@ -136,11 +158,11 @@ function WingCard({ kind, label, sub, tags, available, accentColor, accentLt, on
                     background: available ? '#ffffff' : '#E8E8EE',
                     border: '2px solid #151B3D',
                     borderRadius: 'var(--r-pill)',
-                    padding: '4px 10px',
-                    fontSize: 13, fontWeight: 800,
+                    padding: '4px 12px',
+                    fontSize: 12, fontWeight: 800,
                     color: '#151B3D',
                     fontFamily: "'Fredoka', sans-serif",
-                    boxShadow: '1.5px 1.5px 0px #151B3D',
+                    boxShadow: '2px 2px 0px #151B3D',
                   }}
                 >
                   {t}
@@ -154,12 +176,14 @@ function WingCard({ kind, label, sub, tags, available, accentColor, accentLt, on
                 background: accentColor,
                 border: '3px solid #151B3D',
                 borderRadius: 'var(--r-pill)',
-                padding: '10px 20px',
-                fontSize: 14, fontWeight: 800,
+                padding: '12px 24px',
+                fontSize: 15, fontWeight: 800,
                 color: 'white',
                 fontFamily: "'Fredoka', sans-serif",
                 boxShadow: '3px 3px 0px #151B3D',
-                marginTop: 4,
+                textAlign: 'center',
+                letterSpacing: '0.04em',
+                transition: 'all 0.15s ease',
               }}>
                 PLAY LEVEL →
               </div>
@@ -168,13 +192,14 @@ function WingCard({ kind, label, sub, tags, available, accentColor, accentLt, on
                 background: '#E8E8EE',
                 border: '3px solid #151B3D',
                 borderRadius: 'var(--r-pill)',
-                padding: '10px 20px',
-                fontSize: 13, fontWeight: 800,
+                padding: '12px 24px',
+                fontSize: 14, fontWeight: 800,
                 color: '#151B3D',
                 opacity: 0.65,
                 fontFamily: "'Fredoka', sans-serif",
-                boxShadow: '1.5px 1.5px 0px #151B3D',
-                marginTop: 4,
+                boxShadow: '2px 2px 0px #151B3D',
+                textAlign: 'center',
+                letterSpacing: '0.02em',
               }}>
                 🔒 COMING SOON
               </div>
@@ -188,7 +213,15 @@ function WingCard({ kind, label, sub, tags, available, accentColor, accentLt, on
 
 export function ModeSelectScreen() {
   return (
-    <div className="screen" style={{ background: 'var(--bg)', overflowY: 'auto' }}>
+    <div 
+      className="screen" 
+      style={{ 
+        background: 'var(--bg)', 
+        overflowY: 'auto',
+        backgroundImage: 'radial-gradient(var(--dots-color) 1.5px, transparent 1.5px)',
+        backgroundSize: '24px 24px',
+      }}
+    >
       <TopBar here={0} showProfile />
 
       <div
@@ -197,27 +230,48 @@ export function ModeSelectScreen() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 40,
+          gap: 48,
           position: 'relative',
           minHeight: 'calc(100vh - 58px)',
         }}
       >
-        {/* Ambient background vector doodles */}
-        <div style={{ position: 'absolute', bottom: '15%', left: '5%' }} className="wobble">
-          <Doodle kind="pill" size={54} color="var(--coral)" style={{ opacity: 0.5 }} />
+        {/* Whimsical Ambient World-Building Elements */}
+        
+        {/* Clouds */}
+        <div style={{ position: 'absolute', top: '8%', left: '6%', opacity: 0.25 }} className="drift-cloud">
+          <Doodle kind="cloud" size={120} color="var(--sky-lt)" />
         </div>
-        <div style={{ position: 'absolute', bottom: '20%', right: '5%', animationDelay: '1s', opacity: 0.4 }} className="floaty">
-          <Doodle kind="stetho" size={50} color="var(--mint)" />
+        <div style={{ position: 'absolute', top: '14%', right: '5%', opacity: 0.25 }} className="drift-cloud">
+          <Doodle kind="cloud" size={150} color="var(--mint-lt)" style={{ animationDelay: '2s' }} />
         </div>
-        <div style={{ position: 'absolute', top: '15%', left: '3%', opacity: 0.35 }} className="drift">
-          <Doodle kind="sparkle" size={32} color="var(--butter)" />
+
+        {/* Stars & Sparkles */}
+        <div style={{ position: 'absolute', top: '35%', left: '4%', opacity: 0.5 }} className="wobble">
+          <Doodle kind="star" size={38} color="var(--butter)" />
         </div>
-        <div style={{ position: 'absolute', top: '22%', right: '4%', animationDelay: '2s', opacity: 0.4 }} className="wobble">
-          <Doodle kind="heart" size={38} color="var(--rose)" />
+        <div style={{ position: 'absolute', top: '42%', right: '6%', opacity: 0.45 }} className="drift">
+          <Doodle kind="sparkle" size={32} color="var(--sky)" />
+        </div>
+        <div style={{ position: 'absolute', top: '22%', left: '20%', opacity: 0.45 }} className="floaty">
+          <Doodle kind="pill" size={48} color="var(--peach)" />
+        </div>
+        <div style={{ position: 'absolute', top: '55%', right: '12%', opacity: 0.45 }} className="wobble">
+          <Doodle kind="heart" size={34} color="var(--rose)" />
+        </div>
+        <div style={{ position: 'absolute', top: '65%', left: '11%', opacity: 0.45 }} className="floaty">
+          <Doodle kind="bandage" size={54} color="var(--lav)" />
+        </div>
+        
+        {/* Plants & Medical Signs */}
+        <div style={{ position: 'absolute', bottom: '12%', left: '5%', opacity: 0.5 }} className="wobble">
+          <Doodle kind="leaf" size={44} color="var(--green)" />
+        </div>
+        <div style={{ position: 'absolute', bottom: '16%', right: '7%', opacity: 0.45 }} className="floaty">
+          <Doodle kind="stetho" size={48} color="var(--mint)" />
         </div>
 
         {/* Header */}
-        <div style={{ textAlign: 'center', maxWidth: 640 }}>
+        <div style={{ textAlign: 'center', maxWidth: 680, zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div 
             className="chip butter" 
             style={{ 
@@ -227,6 +281,7 @@ export function ModeSelectScreen() {
               fontFamily: "'Fredoka', sans-serif",
               border: '3.5px solid #151B3D',
               boxShadow: '3px 3px 0px #151B3D',
+              fontWeight: 800,
             }}
           >
             ★ CLINICAL MAP LEVELS
@@ -234,19 +289,20 @@ export function ModeSelectScreen() {
           
           <h1
             style={{
-              fontSize: 'clamp(36px, 5vw, 52px)',
+              fontSize: 'clamp(40px, 6vw, 54px)',
               lineHeight: 1.05,
               fontFamily: "'Fredoka', sans-serif",
-              fontWeight: 700,
+              fontWeight: 800,
               letterSpacing: '-0.02em',
               color: '#151B3D',
-              marginBottom: 14,
+              marginBottom: 16,
+              textShadow: '2px 2px 0px rgba(21, 27, 61, 0.05)',
             }}
           >
-            Choose your training wing
+            Choose your Training Wing
           </h1>
-          <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink-2)', lineHeight: 1.55, margin: 0 }}>
-            Step through a polyclinic door and meet your next patient. Each wing brings a different clinical simulation environment.
+          <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink-2)', lineHeight: 1.6, margin: 0, opacity: 0.9 }}>
+            Step through a clinic door and meet your next patient. Each wing brings a different clinical simulation environment.
           </p>
         </div>
 
@@ -255,11 +311,13 @@ export function ModeSelectScreen() {
           style={{
             display: 'flex',
             justifyContent: 'center',
-            gap: 28,
+            gap: 40,
             flexWrap: 'wrap',
             zIndex: 10,
             width: '100%',
-            maxWidth: 1060,
+            maxWidth: 1300,
+            marginTop: 10,
+            paddingBottom: 40,
           }}
         >
           <WingCard
@@ -284,8 +342,8 @@ export function ModeSelectScreen() {
             kind="emergency"
             label="Emergency Wing"
             sub="ED Triage, Resuscitation Bays & Critical Care — high-stakes scenarios"
-            accentColor="var(--coral)"
-            accentLt="var(--peach-lt)"
+            accentColor="var(--peach)"
+            accentLt="var(--coral-lt)"
             tags={['Coming soon']}
           />
         </div>
@@ -293,3 +351,4 @@ export function ModeSelectScreen() {
     </div>
   );
 }
+

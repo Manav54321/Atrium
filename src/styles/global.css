@@ -41,17 +41,18 @@
   --green-deep: #41A84D;
 
   /* ALIAS — kept for legacy code compatibility */
-  --cream-2: #FFF0E8;
+  --cream-2: #DDF3FF;
   --paper: #FFFFFF;
-  --cream: #FFF8EE;
+  --cream: #EFFAFF;
 
   /* BACKGROUNDS */
-  --bg:         #FFF8EE;   /* warm cream white */
+  --bg:         var(--cream);   /* very soft blue tint */
   --bg-card:    #FFFFFF;
-  --bg-soft:    #FFF0E8;   /* peachy tinted panel */
+  --bg-soft:    #DDF3FF;   /* soft blue tinted panel */
   --bg-mint:    #F0FDFB;
   --bg-sky:     #F0FAFD;
   --bg-lav:     #F5F3FF;
+  --dots-color: rgba(21, 27, 61, 0.12);
 
   /* INK — deep navy outlines and black ink */
   --ink:        #151B3D;
@@ -110,7 +111,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  background-image: radial-gradient(#151B3D 1.5px, transparent 1.5px);
+  background-image: radial-gradient(var(--dots-color) 1.5px, transparent 1.5px);
   background-size: 24px 24px;
   background-color: var(--bg);
 }
@@ -362,7 +363,7 @@ h4 { font-weight: 600; font-family: 'Fredoka', sans-serif; }
   background: var(--bg);
 }
 .dots-bg {
-  background-image: radial-gradient(var(--line) 2px, transparent 2px);
+  background-image: radial-gradient(var(--dots-color) 2px, transparent 2px);
   background-size: 20px 20px;
 }
 .stripes {
@@ -661,4 +662,43 @@ h4 { font-weight: 600; font-family: 'Fredoka', sans-serif; }
 .bubble-breathe {
   animation: breathe 3.2s ease-in-out infinite;
 }
+
+/* ── Training Wings Redesign Additions ────────────────────────────── */
+@keyframes active-wing-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+@keyframes drift-cloud {
+  0%   { transform: translateX(0) translateY(0); }
+  50%  { transform: translateX(15px) translateY(-5px); }
+  100% { transform: translateX(0) translateY(0); }
+}
+
+.active-wing-card {
+  animation: active-wing-float 4.5s ease-in-out infinite;
+  transition: transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 250ms ease !important;
+}
+
+.active-wing-card:hover {
+  transform: scale(1.03) translateY(-10px) !important;
+  box-shadow: 10px 10px 0px #151B3D !important;
+}
+
+.locked-wing-card {
+  filter: saturate(0.7) brightness(0.97);
+  opacity: 0.9;
+  transition: transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1), filter 250ms ease, opacity 250ms ease !important;
+}
+
+.locked-wing-card:hover {
+  filter: saturate(0.85) brightness(1);
+  opacity: 0.98;
+  transform: translateY(-4px) scale(1.01) !important;
+}
+
+.drift-cloud {
+  animation: drift-cloud 18s ease-in-out infinite;
+}
+
 

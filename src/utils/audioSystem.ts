@@ -19,63 +19,224 @@ export function getAudioContext(): AudioContext {
 }
 
 // ─── BACKGROUND MUSIC SYNTHESIZER ────────────────────────────────────
+export type MusicTrackName = 'Cozy Town' | 'Sunny Valley' | 'Bouncy Arcade' | 'Jazzy Cafe';
+
+export interface TrackDefinition {
+  name: MusicTrackName;
+  stepIntervalMs: number;
+  chords: number[][];
+  melodySeq: number[];
+  melodyProbability: number;
+  leadWaveform: OscillatorType;
+  backingWaveform: OscillatorType;
+  leadGain: number;
+  backingGain: number;
+  leadDuration: number;
+  backingDuration1: number;
+  backingDuration2: number;
+  addVibrato: boolean;
+}
+
+export const MUSIC_TRACKS: MusicTrackName[] = ['Cozy Town', 'Sunny Valley', 'Bouncy Arcade', 'Jazzy Cafe'];
+
+const TRACK_DEFINITIONS: Record<MusicTrackName, TrackDefinition> = {
+  'Cozy Town': {
+    name: 'Cozy Town',
+    stepIntervalMs: 280,
+    chords: [
+      [53, 57, 60, 64], // F3, A3, C4, E4 (Fmaj7)
+      [55, 59, 62, 64], // G3, B3, D4, E4 (G6)
+      [52, 55, 59, 62], // E3, G3, B3, D4 (Em7)
+      [57, 60, 64, 67], // A3, C4, E4, G4 (Am7)
+    ],
+    melodySeq: [
+      64, 0, 67, 69, 72, 0, 69, 67,
+      0, 64, 62, 0, 60, 64, 67, 0,
+      69, 0, 72, 74, 76, 0, 74, 72,
+      0, 74, 76, 79, 76, 72, 69, 0,
+    ],
+    melodyProbability: 0.85,
+    leadWaveform: 'sine',
+    backingWaveform: 'triangle',
+    leadGain: 0.16,
+    backingGain: 0.22,
+    leadDuration: 0.55,
+    backingDuration1: 0.45,
+    backingDuration2: 0.28,
+    addVibrato: true,
+  },
+  'Sunny Valley': {
+    name: 'Sunny Valley',
+    stepIntervalMs: 240,
+    chords: [
+      [48, 52, 55, 59], // C3, E3, G3, B3 (Cmaj7)
+      [53, 57, 60, 64], // F3, A3, C4, E4 (Fmaj7)
+      [55, 59, 62, 65], // G3, B3, D4, F4 (G7)
+      [48, 52, 55, 60], // C3, E3, G3, C4 (C)
+    ],
+    melodySeq: [
+      60, 64, 67, 72, 67, 64, 67, 0,
+      69, 72, 76, 72, 69, 72, 69, 0,
+      67, 64, 60, 64, 67, 72, 67, 0,
+      72, 74, 76, 79, 76, 72, 67, 0,
+    ],
+    melodyProbability: 0.9,
+    leadWaveform: 'triangle',
+    backingWaveform: 'triangle',
+    leadGain: 0.13,
+    backingGain: 0.19,
+    leadDuration: 0.25,
+    backingDuration1: 0.35,
+    backingDuration2: 0.22,
+    addVibrato: false,
+  },
+  'Bouncy Arcade': {
+    name: 'Bouncy Arcade',
+    stepIntervalMs: 200,
+    chords: [
+      [57, 60, 64, 67], // Am7
+      [50, 54, 57, 60], // D7
+      [55, 59, 62, 66], // Gmaj7
+      [48, 52, 55, 59], // Cmaj7
+    ],
+    melodySeq: [
+      60, 67, 64, 72, 62, 69, 67, 74,
+      59, 67, 64, 71, 57, 64, 60, 67,
+      64, 72, 67, 76, 66, 74, 69, 78,
+      67, 74, 71, 79, 69, 76, 72, 81,
+    ],
+    melodyProbability: 0.95,
+    leadWaveform: 'triangle',
+    backingWaveform: 'sine',
+    leadGain: 0.11,
+    backingGain: 0.16,
+    leadDuration: 0.18,
+    backingDuration1: 0.20,
+    backingDuration2: 0.15,
+    addVibrato: false,
+  },
+  'Jazzy Cafe': {
+    name: 'Jazzy Cafe',
+    stepIntervalMs: 320,
+    chords: [
+      [53, 57, 60, 64, 67], // Fmaj9
+      [52, 55, 59, 62, 66], // Em9
+      [50, 53, 57, 60, 64], // Dm9
+      [55, 59, 62, 65, 69], // G9
+    ],
+    melodySeq: [
+      67, 0, 71, 72, 76, 0, 72, 71,
+      0, 66, 64, 0, 62, 66, 69, 0,
+      64, 0, 69, 71, 74, 0, 71, 69,
+      0, 71, 74, 77, 74, 69, 67, 0,
+    ],
+    melodyProbability: 0.8,
+    leadWaveform: 'sine',
+    backingWaveform: 'triangle',
+    leadGain: 0.11,
+    backingGain: 0.20,
+    leadDuration: 0.75,
+    backingDuration1: 0.52,
+    backingDuration2: 0.32,
+    addVibrato: true,
+  },
+};
+
+const TRACK_KEY = 'atrium:music-track';
+
+function readSavedTrack(): MusicTrackName {
+  try {
+    if (typeof window !== 'undefined') {
+      const saved = window.localStorage.getItem(TRACK_KEY) as MusicTrackName;
+      if (MUSIC_TRACKS.includes(saved)) {
+        return saved;
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return 'Cozy Town';
+}
+
+function writeSavedTrack(track: MusicTrackName) {
+  try {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(TRACK_KEY, track);
+    }
+  } catch {
+    // ignore
+  }
+}
+
 class PlayfulSequencer {
   private ctx: AudioContext;
   private isPlaying = false;
   private timerId: any = null;
-  private stepIntervalMs = 280; // Eighth note at ~107 BPM
   private currentStep = 0;
   private masterGain: GainNode;
-
-  // Progression: Fmaj7 → G6 → Em7 → Am7
-  private chords = [
-    [53, 57, 60, 64], // F3, A3, C4, E4
-    [55, 59, 62, 64], // G3, B3, D4, E4
-    [52, 55, 59, 62], // E3, G3, B3, D4
-    [57, 60, 64, 67], // A3, C4, E4, G4
-  ];
-
-  // Cute, warm Animal Crossing / Pokémon pentatonic melody loop
-  private melodySeq = [
-    64, 0, 67, 69, 72, 0, 69, 67,
-    0, 64, 62, 0, 60, 64, 67, 0,
-    69, 0, 72, 74, 76, 0, 74, 72,
-    0, 74, 76, 79, 76, 72, 69, 0,
-  ];
+  private currentTrackName: MusicTrackName = 'Cozy Town';
 
   constructor(ctx: AudioContext) {
     this.ctx = ctx;
     this.masterGain = ctx.createGain();
     this.masterGain.gain.value = 0.0; // Start faded out
     this.masterGain.connect(ctx.destination);
+    this.currentTrackName = readSavedTrack();
+  }
+
+  public getTrack(): MusicTrackName {
+    return this.currentTrackName;
+  }
+
+  public setTrack(trackName: MusicTrackName) {
+    if (!MUSIC_TRACKS.includes(trackName)) return;
+    this.currentTrackName = trackName;
+    writeSavedTrack(trackName);
+
+    // If the interval is actively running, restart it to apply the new BPM immediately.
+    // If it's starting (timerId is null), the start() promise callback will pick up the new BPM.
+    if (this.timerId) {
+      clearInterval(this.timerId);
+      const track = TRACK_DEFINITIONS[this.currentTrackName];
+      this.timerId = setInterval(() => this.scheduleNextStep(), track.stepIntervalMs);
+    }
   }
 
   public start() {
     if (this.isPlaying) return;
     this.isPlaying = true;
     this.ctx.resume().then(() => {
+      // Guard against stop() being called while resuming
+      if (!this.isPlaying) return;
+      
       this.currentStep = 0;
-      // Smooth fade in — volume raised for richer presence
+      // Smooth fade in
       this.masterGain.gain.cancelScheduledValues(this.ctx.currentTime);
       this.masterGain.gain.setValueAtTime(0, this.ctx.currentTime);
       this.masterGain.gain.linearRampToValueAtTime(0.26, this.ctx.currentTime + 1.2);
-      this.timerId = setInterval(() => this.scheduleNextStep(), this.stepIntervalMs);
+      
+      if (this.timerId) {
+        clearInterval(this.timerId);
+      }
+      const track = TRACK_DEFINITIONS[this.currentTrackName];
+      this.timerId = setInterval(() => this.scheduleNextStep(), track.stepIntervalMs);
     });
   }
 
   public stop() {
     if (!this.isPlaying) return;
     this.isPlaying = false;
+    
+    // Clear interval immediately to stop scheduling new notes
+    if (this.timerId) {
+      clearInterval(this.timerId);
+      this.timerId = null;
+    }
+
     // Smooth fade out
     this.masterGain.gain.cancelScheduledValues(this.ctx.currentTime);
     this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.ctx.currentTime);
     this.masterGain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.35);
-    setTimeout(() => {
-      if (this.timerId) {
-        clearInterval(this.timerId);
-        this.timerId = null;
-      }
-    }, 400);
   }
 
   public setVolume(vol: number) {
@@ -86,23 +247,24 @@ class PlayfulSequencer {
 
   private scheduleNextStep() {
     const time = this.ctx.currentTime;
-    const chordIndex = Math.floor(this.currentStep / 8) % this.chords.length;
-    const chord = this.chords[chordIndex];
+    const track = TRACK_DEFINITIONS[this.currentTrackName];
+    const chordIndex = Math.floor(this.currentStep / 8) % track.chords.length;
+    const chord = track.chords[chordIndex];
     const stepInChord = this.currentStep % 8;
 
-    // 1. Backing arpeggios (warm triangle wave = soft marimba)
+    // 1. Backing arpeggios
     if (stepInChord % 2 === 0) {
-      const arpeggioNote = chord[stepInChord / 2 % chord.length];
-      this.playSynthNote(arpeggioNote - 12, time, 0.45, 'triangle', 0.22);
+      const arpeggioNote = chord[Math.floor(stepInChord / 2) % chord.length];
+      this.playSynthNote(arpeggioNote - 12, time, track.backingDuration1, track.backingWaveform, track.backingGain);
     } else {
       const arpeggioNote = chord[stepInChord % chord.length];
-      this.playSynthNote(arpeggioNote, time, 0.28, 'triangle', 0.15);
+      this.playSynthNote(arpeggioNote, time, track.backingDuration2, track.backingWaveform, track.backingGain * 0.68);
     }
 
-    // 2. Lead melody (sine = cozy flute/bells) with occasional rests
-    const melodyNote = this.melodySeq[this.currentStep % this.melodySeq.length];
-    if (melodyNote > 0 && Math.random() < 0.85) {
-      this.playSynthNote(melodyNote, time, 0.55, 'sine', 0.16, true);
+    // 2. Lead melody with track-specific probability
+    const melodyNote = track.melodySeq[this.currentStep % track.melodySeq.length];
+    if (melodyNote > 0 && Math.random() < track.melodyProbability) {
+      this.playSynthNote(melodyNote, time, track.leadDuration, track.leadWaveform, track.leadGain, track.addVibrato);
     }
 
     this.currentStep += 1;
@@ -363,6 +525,25 @@ export function stopBackgroundMusic() {
 export function setBackgroundMusicVolume(vol: number) {
   if (musicSequencer) {
     musicSequencer.setVolume(vol);
+  }
+}
+
+export function getBackgroundMusicTrack(): MusicTrackName {
+  if (!musicSequencer) {
+    return readSavedTrack();
+  }
+  return musicSequencer.getTrack();
+}
+
+export function setBackgroundMusicTrack(track: MusicTrackName) {
+  try {
+    const ctx = getAudioContext();
+    if (!musicSequencer) {
+      musicSequencer = new PlayfulSequencer(ctx);
+    }
+    musicSequencer.setTrack(track);
+  } catch {
+    /* ignore */
   }
 }
 

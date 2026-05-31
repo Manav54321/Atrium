@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { TopBar } from './primitives';
+import { TopBar, Doodle } from './primitives';
 import { Mascot } from './mascots';
 import { store, useGameState } from '../game/store';
 import { soundSystem } from '../utils/audioSystem';
@@ -560,10 +560,39 @@ export function DebriefScreen() {
   }, []);
 
   return (
-    <div className="screen paper" style={{ overflowY: 'auto' }}>
+    <div
+      className="screen"
+      style={{
+        background: 'var(--bg)',
+        position: 'relative',
+        overflowY: 'auto',
+        backgroundImage: 'radial-gradient(var(--dots-color) 1.5px, transparent 1.5px)',
+        backgroundSize: '24px 24px',
+      }}
+    >
       <TopBar here={5} steps={['Polyclinic', 'GP', 'Case', 'Brief', 'Encounter', 'Debrief']} />
 
-      <div style={{ padding: '40px 24px 60px', maxWidth: 1080, margin: '0 auto' }}>
+      {/* Whimsical Ambient World Decorations */}
+      <div style={{ position: 'absolute', top: '6%', left: '4%', opacity: 0.25, zIndex: 0 }} className="drift-cloud">
+        <Doodle kind="cloud" size={110} color="var(--sky-lt)" />
+      </div>
+      <div style={{ position: 'absolute', top: '15%', right: '7%', opacity: 0.25, zIndex: 0 }} className="drift-cloud">
+        <Doodle kind="cloud" size={120} color="var(--mint-lt)" style={{ animationDelay: '1s' }} />
+      </div>
+      <div style={{ position: 'absolute', top: '45%', left: '3%', opacity: 0.45, zIndex: 0 }} className="wobble">
+        <Doodle kind="star" size={30} color="var(--butter)" />
+      </div>
+      <div style={{ position: 'absolute', top: '65%', right: '4%', opacity: 0.4, zIndex: 0 }} className="drift">
+        <Doodle kind="sparkle" size={28} color="var(--sky)" />
+      </div>
+      <div style={{ position: 'absolute', bottom: '15%', left: '5%', opacity: 0.45, zIndex: 0 }} className="wobble">
+        <Doodle kind="heart" size={32} color="var(--rose)" />
+      </div>
+      <div style={{ position: 'absolute', bottom: '25%', right: '6%', opacity: 0.4, zIndex: 0 }} className="floaty">
+        <Doodle kind="stetho" size={40} color="var(--mint)" />
+      </div>
+
+      <div style={{ padding: '40px 24px 60px', maxWidth: 1080, margin: '0 auto', position: 'relative', zIndex: 1 }}>
         {!c || !patient ? (
           <StatusBanner
             title="No active case to debrief"
@@ -594,31 +623,57 @@ export function DebriefScreen() {
           />
         )}
 
-        <div style={{ display: 'flex', gap: 16, marginTop: 28 }}>
+        <div style={{ display: 'flex', gap: 20, marginTop: 32, alignItems: 'center' }}>
           <button
             type="button"
             className="btn-plush ghost btn-toy"
-            style={{ flex: 1, color: '#151B3D' }}
+            style={{
+              flex: 1,
+              color: '#151B3D',
+              border: '3px solid #151B3D',
+              borderRadius: 'var(--r-pill)',
+              boxShadow: '0 6px 0px #151B3D !important',
+              fontSize: 16,
+              fontWeight: 800,
+              padding: '18px 0',
+              fontFamily: "'Fredoka', sans-serif",
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
             onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
             onClick={() => {
               soundSystem.playClick();
               store.endSessionCleanly();
             }}
           >
-            {'Exit Consultation'}
+            Exit Consultation
           </button>
-          
+
           <button
             type="button"
-            className="btn-plush primary btn-toy"
-            style={{ flex: 1.6, background: 'var(--green)', color: '#ffffff' }}
+            className="btn-plush primary breathe btn-toy"
+            style={{
+              flex: 1.6,
+              background: 'var(--green)',
+              color: '#ffffff',
+              border: '4px solid #151B3D',
+              borderRadius: 'var(--r-pill)',
+              boxShadow: '0 8px 0px #151B3D !important',
+              fontSize: 20,
+              fontWeight: 900,
+              padding: '20px 0',
+              fontFamily: "'Fredoka', sans-serif",
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+              letterSpacing: '0.04em',
+            }}
             onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
             onClick={() => {
               soundSystem.playClick();
               store.transitionToNextPatient();
             }}
           >
-            {'Next Patient →'}
+            Next Patient →
           </button>
         </div>
       </div>
@@ -725,39 +780,56 @@ function EvaluationBody({ evaluation, patient, c }: BodyProps) {
       <div
         className="popin"
         style={{
-          background: '#ffffff',
+          background: 'linear-gradient(180deg, #FFFFFF 0%, #FFFDF5 100%)',
           border: '4px solid #151B3D',
+          borderTop: '14px solid var(--butter)',
           borderRadius: 'var(--r-xl)',
           padding: 32,
           position: 'relative',
           marginBottom: 28,
-          boxShadow: '6px 6px 0px #151B3D',
+          boxShadow: '8px 8px 0px #151B3D',
         }}
       >
-        <div 
-          style={{ 
-            position: 'absolute', 
-            top: -16, 
+        <div
+          style={{
+            position: 'absolute',
+            top: -24,
             left: 24,
             fontFamily: "'Fredoka', sans-serif",
             border: '3.5px solid #151B3D',
             boxShadow: '2.5px 2.5px 0px #151B3D',
-          }} 
-          className="chip peach"
+          }}
+          className="chip butter"
         >
-          OSCE REPORT SCORECARD
+          🏆 OSCE REPORT SCORECARD
         </div>
-        
-        <div style={{ display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap' }}>
-          <div className="floaty" style={{ flexShrink: 0, margin: '0 auto' }}>
-            <Mascot name="nurse" size={130} />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap', marginTop: 8 }}>
+          <div
+            className="floaty"
+            style={{
+              width: 160,
+              height: 160,
+              borderRadius: '50%',
+              background: '#ffffff',
+              border: '4px solid #151B3D',
+              boxShadow: '4px 4px 0px #151B3D',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              overflow: 'hidden',
+              margin: '0 auto',
+            }}
+          >
+            <Mascot name="nurse" size={150} />
           </div>
-          
+
           <div style={{ flex: 1, minWidth: 280 }}>
             <div
               style={{
                 fontSize: 13,
-                fontWeight: 800,
+                fontWeight: 900,
                 color: 'var(--ink-soft)',
                 textTransform: 'uppercase',
                 letterSpacing: '.12em',
@@ -766,24 +838,24 @@ function EvaluationBody({ evaluation, patient, c }: BodyProps) {
             >
               GLOBAL CLINICAL SCORE:
             </div>
-            
-            <h1 
-              style={{ 
-                fontSize: 32, 
-                lineHeight: 1.1, 
-                margin: '6px 0 12px', 
-                fontWeight: 800,
+
+            <h1
+              style={{
+                fontSize: 34,
+                lineHeight: 1.1,
+                margin: '6px 0 12px',
+                fontWeight: 900,
                 color: '#151B3D',
                 fontFamily: "'Fredoka', sans-serif",
               }}
             >
               {GLOBAL_HEADLINE[verdict].split(' — ')[0].toUpperCase()}{' '}
-              <span style={{ fontSize: 18, color: GLOBAL_DEEP[verdict] }}>
+              <span style={{ fontSize: 20, color: GLOBAL_DEEP[verdict] }}>
                 {' · ' + (GLOBAL_HEADLINE[verdict].split(' — ')[1]?.toUpperCase() ?? '')}
               </span>
             </h1>
-            
-            <div style={{ fontSize: 16, lineHeight: 1.6, fontWeight: 600, color: 'var(--ink-2)' }}>
+
+            <div style={{ fontSize: 16, lineHeight: 1.6, fontWeight: 700, color: '#151B3D' }}>
               {evaluation.narrative}
             </div>
           </div>
@@ -791,12 +863,13 @@ function EvaluationBody({ evaluation, patient, c }: BodyProps) {
       </div>
 
       {/* Domain Performance Rings */}
-      <div 
-        style={{ 
-          padding: 24, 
-          marginBottom: 28, 
-          background: 'var(--bg-soft)',
+      <div
+        style={{
+          padding: 24,
+          marginBottom: 28,
+          background: '#ffffff',
           border: '4px solid #151B3D',
+          borderTop: '10px solid var(--sky)',
           borderRadius: 'var(--r-xl)',
           boxShadow: '4px 4px 0px #151B3D',
         }}
@@ -811,12 +884,13 @@ function EvaluationBody({ evaluation, patient, c }: BodyProps) {
 
       {/* Specific Rubric Targets */}
       {(dgItems.length + cmItems.length + ipItems.length) > 0 && (
-        <div 
-          style={{ 
-            padding: 24, 
-            marginBottom: 28, 
-            background: 'var(--bg-soft)',
+        <div
+          style={{
+            padding: 24,
+            marginBottom: 28,
+            background: '#ffffff',
             border: '4px solid #151B3D',
+            borderTop: '10px solid var(--rose)',
             borderRadius: 'var(--r-xl)',
             boxShadow: '4px 4px 0px #151B3D',
           }}
@@ -837,75 +911,80 @@ function EvaluationBody({ evaluation, patient, c }: BodyProps) {
       )}
 
       {/* Strengths & Improvements */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, marginBottom: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24, marginBottom: 28 }}>
         {evaluation.highlights.length > 0 && (
-          <div 
-            style={{ 
-              background: 'var(--green-lt)', 
-              borderColor: '#151B3D', 
+          <div
+            style={{
+              background: 'var(--green-lt)',
+              borderColor: '#151B3D',
               borderWidth: '4px',
               borderStyle: 'solid',
               borderRadius: 'var(--r-xl)',
-              padding: 24,
-              boxShadow: '4px 4px 0px #151B3D',
+              padding: '28px 24px',
+              boxShadow: '6px 6px 0px #151B3D',
             }}
           >
-            <div 
-              className="chip green" 
-              style={{ 
-                marginBottom: 14,
+            <div
+              className="chip green"
+              style={{
+                marginBottom: 16,
                 border: '2.5px solid #151B3D',
                 boxShadow: '1.5px 1.5px 0px #151B3D',
                 background: 'var(--green)',
                 color: '#ffffff',
+                fontFamily: "'Fredoka', sans-serif",
+                fontSize: 13,
               }}
             >
               ✓ OSCE HIGHLIGHTS / STRENGTHS
             </div>
-            <ul style={{ margin: 0, paddingLeft: 18, fontWeight: 700, fontSize: 16, lineHeight: 1.65, color: '#151B3D' }}>
-              {evaluation.highlights.map((h, i) => <li key={i} style={{ marginBottom: 8 }}>{h}</li>)}
+            <ul style={{ margin: 0, paddingLeft: 18, fontWeight: 800, fontSize: 17, lineHeight: 1.65, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
+              {evaluation.highlights.map((h, i) => <li key={i} style={{ marginBottom: 10 }}>{h}</li>)}
             </ul>
           </div>
         )}
-        
+
         {evaluation.improvements.length > 0 && (
-          <div 
-            style={{ 
-              background: 'var(--peach-lt)', 
-              borderColor: '#151B3D', 
+          <div
+            style={{
+              background: 'var(--peach-lt)',
+              borderColor: '#151B3D',
               borderWidth: '4px',
               borderStyle: 'solid',
               borderRadius: 'var(--r-xl)',
-              padding: 24,
-              boxShadow: '4px 4px 0px #151B3D',
+              padding: '28px 24px',
+              boxShadow: '6px 6px 0px #151B3D',
             }}
           >
-            <div 
-              className="chip peach" 
-              style={{ 
-                marginBottom: 14,
+            <div
+              className="chip peach"
+              style={{
+                marginBottom: 16,
                 border: '2.5px solid #151B3D',
                 boxShadow: '1.5px 1.5px 0px #151B3D',
                 background: 'var(--peach)',
                 color: '#ffffff',
+                fontFamily: "'Fredoka', sans-serif",
+                fontSize: 13,
               }}
             >
               ↑ FOCUS TARGETS FOR NEXT OSCE
             </div>
-            <ul style={{ margin: 0, paddingLeft: 18, fontWeight: 700, fontSize: 16, lineHeight: 1.65, color: '#151B3D' }}>
-              {evaluation.improvements.map((h, i) => <li key={i} style={{ marginBottom: 8 }}>{h}</li>)}
+            <ul style={{ margin: 0, paddingLeft: 18, fontWeight: 800, fontSize: 17, lineHeight: 1.65, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
+              {evaluation.improvements.map((h, i) => <li key={i} style={{ marginBottom: 10 }}>{h}</li>)}
             </ul>
           </div>
         )}
       </div>
 
       {/* Actions Summary */}
-      <div 
-        style={{ 
-          padding: 24, 
-          marginBottom: 28, 
-          background: 'var(--bg-soft)',
+      <div
+        style={{
+          padding: 24,
+          marginBottom: 28,
+          background: '#ffffff',
           border: '4px solid #151B3D',
+          borderTop: '10px solid var(--mint)',
           borderRadius: 'var(--r-xl)',
           boxShadow: '4px 4px 0px #151B3D',
         }}
@@ -922,8 +1001,9 @@ function EvaluationBody({ evaluation, patient, c }: BodyProps) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          background: 'var(--bg-soft)',
+          background: '#ffffff',
           border: '4px solid #151B3D',
+          borderLeft: '12px solid var(--sky)',
           borderRadius: 'var(--r-xl)',
           boxShadow: '4px 4px 0px #151B3D',
         }}
