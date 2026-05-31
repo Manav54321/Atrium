@@ -56,3 +56,4 @@ tsconfig.tsbuildinfo
 # Database files
 *.db
 
+.vercel
