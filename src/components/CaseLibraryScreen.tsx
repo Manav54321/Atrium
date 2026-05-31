@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
-import { PatientFace, TopBar } from './primitives';
+import { TopBar, Doodle } from './primitives';
+import { Mascot, getPatientMascot } from './mascots';
 import { CASES, CONDITION_COLORS, type Case } from '../data/cases';
 import { CLINIC_IDS, CLINIC_LABELS, type ClinicId } from '../game/clinic';
-import { store, useTweaks } from '../game/store';
+import { store } from '../game/store';
+import { soundSystem } from '../utils/audioSystem';
 
 const CLINIC_ICON: Record<ClinicId, string> = {
   'all-specialties': '🌈',
@@ -35,106 +37,128 @@ const CLINIC_ICON: Record<ClinicId, string> = {
 interface CaseCardProps {
   c: Case;
   delay?: number;
-  avatarStyle: ReturnType<typeof useTweaks>['avatarStyle'];
 }
 
-function CaseCard({ c, delay = 0, avatarStyle }: CaseCardProps) {
+function CaseCard({ c, delay = 0 }: CaseCardProps) {
   const accentColor = CONDITION_COLORS[c.cond] ?? 'var(--butter)';
   const isRedFlag = c.tags.some((t) => t.toLowerCase().includes('red flag'));
+
+  const patientMascot = getPatientMascot({
+    id: c.id,
+    age: c.age,
+    sex: c.sex,
+    complaint: c.complaint,
+    cond: c.cond,
+  });
+
+  const starCount = (c.id.charCodeAt(c.id.length - 1) % 3) + 1;
+  const stars = '⭐'.repeat(starCount);
 
   return (
     <div
       className="tap popin"
-      onClick={() => store.selectCase(c.id)}
-      style={{ animationDelay: `${delay}s`, position: 'relative' }}
+      onMouseEnter={(e) => soundSystem.playCardHover(e.currentTarget)}
+      onClick={() => {
+        soundSystem.playClick();
+        store.selectCase(c.id);
+      }}
+      style={{
+        animationDelay: `${delay}s`,
+        position: 'relative',
+        transition: 'transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 200ms ease',
+      }}
     >
-      {/* Condition badge */}
+      {/* Condition / Diagnosis Badge */}
       <div
         style={{
           position: 'absolute',
-          top: -10,
-          left: 14,
+          top: -12,
+          left: 16,
           zIndex: 10,
           background: 'white',
-          border: `2px solid ${accentColor}`,
+          border: '3px solid #151B3D',
           borderRadius: 'var(--r-pill)',
-          padding: '3px 10px',
-          fontSize: 9,
+          padding: '4px 12px',
+          fontSize: 10,
           fontWeight: 900,
           color: 'var(--ink)',
-          fontFamily: "'Nunito', sans-serif",
-          letterSpacing: '0.06em',
+          fontFamily: "'Fredoka', sans-serif",
+          letterSpacing: '0.04em',
           textTransform: 'uppercase',
-          boxShadow: 'var(--shadow-xs)',
+          boxShadow: '2px 2px 0px #151B3D',
         }}
       >
         {c.cond}
       </div>
 
-      {/* Attempted score */}
+      {/* Attempted Checkmark Tag */}
       {c.attempted && c.score && (
         <div
           style={{
             position: 'absolute',
-            top: -10,
-            right: 14,
+            top: -12,
+            right: 16,
             zIndex: 10,
-            background: 'var(--mint-lt)',
-            border: '1.5px solid var(--mint)',
+            background: 'var(--green-lt)',
+            border: '2px solid #151B3D',
             borderRadius: 'var(--r-pill)',
             padding: '3px 10px',
-            fontSize: 9,
+            fontSize: 10,
             fontWeight: 900,
-            color: 'var(--mint-deep)',
-            fontFamily: "'Nunito', sans-serif",
-            boxShadow: 'var(--shadow-xs)',
+            color: 'var(--green-deep)',
+            fontFamily: "'Fredoka', sans-serif",
+            boxShadow: '2px 2px 0px #151B3D',
           }}
         >
           ✓ {c.score}
         </div>
       )}
 
-      {/* Red flag marker */}
-      {isRedFlag && (
+      {/* Red flag indicator badge */}
+      {isRedFlag && !c.attempted && (
         <div
           style={{
             position: 'absolute',
-            top: -10,
-            right: c.attempted && c.score ? 66 : 14,
+            top: -12,
+            right: 16,
             zIndex: 10,
             background: 'var(--coral-lt)',
-            border: '1.5px solid var(--coral)',
+            border: '2.5px solid #151B3D',
             borderRadius: 'var(--r-pill)',
             padding: '3px 10px',
-            fontSize: 9,
+            fontSize: 10,
             fontWeight: 900,
             color: 'var(--coral-deep)',
-            fontFamily: "'Nunito', sans-serif",
-            boxShadow: 'var(--shadow-xs)',
+            fontFamily: "'Fredoka', sans-serif",
+            boxShadow: '2px 2px 0px #151B3D',
           }}
         >
-          🚩
+          🚩 RED FLAG
         </div>
       )}
 
+      {/* COLLECTIBLE TRADING CARD BODY */}
       <div
         style={{
           background: 'white',
-          borderRadius: 24,
-          border: '1.5px solid var(--line)',
-          boxShadow: '0 4px 20px rgba(26,26,46,0.06)',
+          borderRadius: 'var(--r-xl)',
+          border: '4px solid #151B3D',
+          boxShadow: '4px 4px 0px #151B3D',
           overflow: 'hidden',
           position: 'relative',
           zIndex: 1,
-          transition: 'all 300ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+          height: 380,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
         }}
       >
-        {/* Colorful header zone */}
+        {/* Card Header */}
         <div
           style={{
-            height: 140,
-            background: `linear-gradient(160deg, ${accentColor}22 0%, ${accentColor}10 100%)`,
-            borderBottom: `2.5px solid ${accentColor}`,
+            height: 150,
+            background: accentColor,
+            borderBottom: '4px solid #151B3D',
             display: 'flex',
             alignItems: 'flex-end',
             justifyContent: 'center',
@@ -142,60 +166,59 @@ function CaseCard({ c, delay = 0, avatarStyle }: CaseCardProps) {
             overflow: 'hidden',
           }}
         >
-          <div className="floaty" style={{ marginBottom: -6 }}>
-            <PatientFace
-              name={c.name}
-              style={avatarStyle}
-              skin={c.skin}
-              hair={c.hair}
-              size={100}
-              mood={c.mood}
-              accessory={c.accessory}
-              gender={c.sex}
-              age={c.age}
-            />
+          <div style={{ position: 'absolute', inset: 0, opacity: 0.15, backgroundImage: 'radial-gradient(#151B3D 1.5px, transparent 1.5px)', backgroundSize: '12px 12px' }} />
+          <div style={{ position: 'absolute', top: 18, left: 18, opacity: 0.85 }} className="wobble">
+            <Doodle kind="star" size={20} color="var(--butter)" />
+          </div>
+          <div style={{ position: 'absolute', top: 12, right: 18, opacity: 0.85 }} className="floaty">
+            <Doodle kind="sparkle" size={18} color="var(--sky)" />
+          </div>
+          <div className="floaty" style={{ marginBottom: -10 }}>
+            <Mascot name={patientMascot} size={130} mood={c.mood} />
           </div>
         </div>
 
-        {/* Card body */}
-        <div style={{ padding: '14px 16px 16px' }}>
-          <div style={{ fontWeight: 900, fontSize: 17, lineHeight: 1.2, color: 'var(--ink)', marginBottom: 4, fontFamily: "'Nunito', sans-serif" }}>
-            {c.name}
-          </div>
-          <div style={{ fontWeight: 700, fontSize: 11, color: 'var(--ink-soft)', marginBottom: 10 }}>
-            {c.age}Y · {c.sex === 'F' ? 'Female' : 'Male'}
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--ink-2)', minHeight: 38, lineHeight: 1.5, fontWeight: 600, fontStyle: 'italic', marginBottom: 12 }}>
-            "{c.complaint}"
-          </div>
-
-          {/* Tags */}
-          <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 8 }}>
-            {c.tags.slice(0, 2).map((t) => {
-              const rf = t.toLowerCase().includes('red flag');
-              return (
-                <span
-                  key={t}
-                  style={{
-                    background: rf ? 'var(--coral-lt)' : 'var(--bg-soft)',
-                    border: `1.5px solid ${rf ? 'var(--coral)' : 'var(--line)'}`,
-                    borderRadius: 'var(--r-pill)',
-                    padding: '3px 8px',
-                    fontSize: 9,
-                    fontWeight: 800,
-                    color: rf ? 'var(--coral-deep)' : 'var(--ink-2)',
-                    fontFamily: "'Nunito', sans-serif",
-                    letterSpacing: '0.03em',
-                  }}
-                >
-                  {t.toUpperCase()}
-                </span>
-              );
-            })}
+        {/* Card Details Body */}
+        <div style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+              <div style={{ fontWeight: 800, fontSize: 18, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
+                {c.name}
+              </div>
+              <div style={{ fontSize: 11 }} title={`Difficulty: ${starCount} stars`}>
+                {stars}
+              </div>
+            </div>
+            <div style={{ fontWeight: 800, fontSize: 12, color: '#151B3D', opacity: 0.85, marginBottom: 10, fontFamily: "'Fredoka', sans-serif" }}>
+              {c.age} years old · {c.sex === 'F' ? 'Female' : 'Male'}
+            </div>
+            <div
+              style={{
+                fontSize: 13,
+                color: '#151B3D',
+                lineHeight: 1.45,
+                fontWeight: 700,
+                fontStyle: 'italic',
+                background: 'var(--bg)',
+                border: '2.5px solid #151B3D',
+                borderRadius: '16px',
+                padding: '8px 12px',
+                position: 'relative',
+                marginBottom: 10,
+              }}
+            >
+              "{c.complaint}"
+            </div>
           </div>
 
-          <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--ink-soft)', display: 'flex', alignItems: 'center', gap: 4 }}>
-            📖 {c.guideline.toUpperCase()}
+          {/* Specialty tag footer */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 10, fontWeight: 800, color: '#151B3D' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              📂 {c.guideline.toUpperCase()}
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'var(--bg-soft)', border: '2px solid #151B3D', borderRadius: '999px', padding: '3px 8px', color: '#151B3D' }}>
+              {CLINIC_ICON[c.clinic]} {CLINIC_LABELS[c.clinic]}
+            </span>
           </div>
         </div>
       </div>
@@ -206,7 +229,6 @@ function CaseCard({ c, delay = 0, avatarStyle }: CaseCardProps) {
 type ClinicFilter = ClinicId | 'all' | 'red-flag';
 
 export function CaseLibraryScreen() {
-  const tweaks = useTweaks();
   const [filter, setFilter] = useState<ClinicFilter>('all');
 
   const grouped = useMemo(() => {
@@ -241,6 +263,7 @@ export function CaseLibraryScreen() {
   const totalVisible = visibleGroups.reduce((n, [, list]) => n + list.length, 0);
 
   const shuffle = () => {
+    soundSystem.playClick();
     const pool = visibleGroups.flatMap(([, list]) => list);
     const fallback = pool.length > 0 ? pool : CASES;
     const pick = fallback[Math.floor(Math.random() * fallback.length)];
@@ -262,9 +285,9 @@ export function CaseLibraryScreen() {
       {/* Header */}
       <div
         style={{
-          padding: '28px 36px 0',
+          padding: '32px 36px 0',
           display: 'flex',
-          alignItems: 'flex-start',
+          alignItems: 'center',
           justifyContent: 'space-between',
           gap: 20,
           maxWidth: 1240,
@@ -275,46 +298,49 @@ export function CaseLibraryScreen() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
           <button
             type="button"
-            className="btn-plush ghost"
-            style={{ fontSize: 13, padding: '10px 20px', fontFamily: "'Nunito', sans-serif" }}
-            onClick={() => store.setScreen('gpRoom')}
+            className="btn-plush ghost btn-toy"
+            style={{ fontSize: 13, padding: '10px 20px', fontFamily: "'Fredoka', sans-serif" }}
+            onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
+            onClick={() => { soundSystem.playClick(); store.setScreen('gpRoom'); }}
           >
             ← Back
           </button>
           <div>
-            <div className="chip butter" style={{ marginBottom: 8, fontSize: 12, padding: '5px 14px', fontFamily: "'Nunito', sans-serif" }}>
-              📚 Case Archive
+            <div className="chip butter" style={{ marginBottom: 8, fontSize: 12, padding: '5px 14px', fontFamily: "'Fredoka', sans-serif" }}>
+              📚 COLLECTIBLE CASE CATALOGUE
             </div>
             <h1
               style={{
                 fontSize: 'clamp(28px, 3.5vw, 42px)',
                 marginBottom: 4,
-                fontWeight: 900,
-                fontFamily: "'Nunito', sans-serif",
+                fontWeight: 800,
+                fontFamily: "'Fredoka', sans-serif",
                 letterSpacing: '-0.02em',
+                color: '#151B3D',
               }}
             >
-              Clinical Catalogue
+              Case Library
             </h1>
-            <div style={{ fontWeight: 600, color: 'var(--ink-2)', fontSize: 14 }}>
-              {totalVisible} case{totalVisible !== 1 ? 's' : ''} · grouped by specialty
+            <div style={{ fontWeight: 800, color: '#151B3D', fontSize: 14, fontFamily: "'Fredoka', sans-serif" }}>
+              {totalVisible} character cards · specialty decks
             </div>
           </div>
         </div>
         <button
           type="button"
-          className="btn-plush mint"
-          style={{ fontSize: 14, padding: '13px 24px', whiteSpace: 'nowrap', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}
+          className="btn-plush mint btn-toy"
+          style={{ fontSize: 14, padding: '13px 24px', whiteSpace: 'nowrap', fontWeight: 800, fontFamily: "'Fredoka', sans-serif" }}
+          onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
           onClick={shuffle}
         >
-          🔀 Random Case
+          🔀 Pick Random Case
         </button>
       </div>
 
-      {/* Filter chips */}
+      {/* Filter chips — ALL specialty pills get hover + click sounds */}
       <div
         style={{
-          padding: '20px 36px 10px',
+          padding: '24px 36px 12px',
           display: 'flex',
           gap: 8,
           flexWrap: 'wrap',
@@ -329,6 +355,7 @@ export function CaseLibraryScreen() {
             <span
               key={chip.id}
               className="tap"
+              onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -338,14 +365,17 @@ export function CaseLibraryScreen() {
                 fontSize: 12,
                 fontWeight: 800,
                 borderRadius: 'var(--r-pill)',
-                border: `2px solid ${isActive ? 'var(--mint)' : 'var(--line)'}`,
+                border: '3px solid #151B3D',
                 background: isActive ? 'var(--mint-lt)' : 'white',
-                color: isActive ? 'var(--mint-deep)' : 'var(--ink-2)',
-                boxShadow: isActive ? '0 4px 14px rgba(78,205,196,0.2)' : 'var(--shadow-xs)',
-                transition: 'all 0.2s ease',
-                fontFamily: "'Nunito', sans-serif",
+                color: '#151B3D',
+                boxShadow: isActive ? '3px 3px 0px #151B3D' : '1.5px 1.5px 0px #151B3D',
+                transition: 'all 0.15s ease',
+                fontFamily: "'Fredoka', sans-serif",
               }}
-              onClick={() => setFilter(chip.id)}
+              onClick={() => {
+                soundSystem.playClick();
+                setFilter(chip.id);
+              }}
             >
               {chip.icon && <span>{chip.icon}</span>}
               {chip.label}
@@ -363,49 +393,51 @@ export function CaseLibraryScreen() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 12,
-                marginBottom: 18,
+                marginBottom: 20,
                 paddingBottom: 14,
-                borderBottom: '2px solid var(--line)',
+                borderBottom: '4px solid #151B3D',
               }}
             >
               <span
                 style={{
-                  width: 42, height: 42, borderRadius: '50%',
-                  background: 'var(--bg-soft)',
-                  border: '2px solid var(--line)',
+                  width: 44, height: 44, borderRadius: '50%',
+                  background: '#ffffff',
+                  border: '3px solid #151B3D',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 22, flexShrink: 0,
+                  boxShadow: '2px 2px 0px #151B3D',
                 }}
               >
                 {CLINIC_ICON[clinic] ?? '🏥'}
               </span>
-              <h2 style={{ fontSize: 20, margin: 0, fontWeight: 900, color: 'var(--ink)', fontFamily: "'Nunito', sans-serif" }}>
-                {CLINIC_LABELS[clinic]}
+              <h2 style={{ fontSize: 22, margin: 0, fontWeight: 800, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
+                {CLINIC_LABELS[clinic]} Specialty Deck
               </h2>
               <span
                 style={{
                   background: 'var(--mint-lt)',
-                  border: '1.5px solid var(--mint)',
+                  border: '2.5px solid #151B3D',
                   borderRadius: 'var(--r-pill)',
                   padding: '4px 12px',
                   fontSize: 11,
                   fontWeight: 800,
-                  color: 'var(--mint-deep)',
-                  fontFamily: "'Nunito', sans-serif",
+                  color: '#151B3D',
+                  fontFamily: "'Fredoka', sans-serif",
+                  boxShadow: '1.5px 1.5px 0px #151B3D',
                 }}
               >
-                {list.length} case{list.length !== 1 ? 's' : ''}
+                {list.length} card{list.length !== 1 ? 's' : ''}
               </span>
             </div>
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))',
-                gap: 18,
+                gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+                gap: 20,
               }}
             >
               {list.map((c, i) => (
-                <CaseCard key={c.id} c={c} delay={(i % 8) * 0.04} avatarStyle={tweaks.avatarStyle} />
+                <CaseCard key={c.id} c={c} delay={(i % 8) * 0.04} />
               ))}
             </div>
           </section>
@@ -416,15 +448,15 @@ export function CaseLibraryScreen() {
             style={{
               background: 'white',
               borderRadius: 'var(--r-xl)',
-              padding: '40px 32px',
+              padding: '48px 32px',
               textAlign: 'center',
               color: 'var(--ink-2)',
               fontWeight: 600,
-              border: '2px dashed var(--line)',
+              border: '3px dashed #151B3D',
             }}
           >
-            <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
-            <div style={{ fontWeight: 800, fontSize: 16 }}>No cases match this filter.</div>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>🔍</div>
+            <div style={{ fontWeight: 800, fontSize: 18, fontFamily: "'Fredoka', sans-serif" }}>No matching cards found!</div>
           </div>
         )}
       </div>

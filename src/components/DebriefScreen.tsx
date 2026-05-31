@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Doodle, TopBar } from './primitives';
+import { useEffect, useMemo, useState } from 'react';
+import { TopBar } from './primitives';
+import { Mascot } from './mascots';
 import { store, useGameState } from '../game/store';
+import { soundSystem } from '../utils/audioSystem';
 import { getPatientCase } from '../data/cases';
 import { TESTS } from '../data/tests';
 import { TREATMENTS } from '../data/treatments';
@@ -27,13 +29,7 @@ const GLOBAL_HEADLINE: Record<VerdictBand, string> = {
   'clear-fail': 'Clear fail — let\u2019s restart',
 };
 
-const GLOBAL_BG: Record<VerdictBand, string> = {
-  excellent: 'var(--mint)',
-  good: 'var(--mint)',
-  satisfactory: 'var(--butter)',
-  borderline: 'var(--peach)',
-  'clear-fail': 'var(--rose)',
-};
+
 
 const GLOBAL_DEEP: Record<VerdictBand, string> = {
   excellent: 'var(--mint-deep)',
@@ -51,7 +47,7 @@ const RING_COLOR: Record<VerdictBand, string> = {
   'clear-fail': 'var(--rose-deep)',
 };
 
-// ── DomainRing — adapted to take real data + verdict ──────────────
+// ── DomainRing — redesigned into flat cartoon progress rings ────────
 
 interface DomainRingProps {
   label: string;
@@ -69,19 +65,22 @@ function DomainRing({ label, score }: DomainRingProps) {
     'WORK NEEDED';
   return (
     <div
+      onMouseEnter={(e) => soundSystem.playCardHover(e.currentTarget)}
       style={{
-        background: 'var(--paper)',
-        border: 'var(--stroke) solid var(--line)',
-        borderRadius: 16,
+        background: '#ffffff',
+        border: '3px solid #151B3D',
+        borderRadius: 'var(--r-md)',
         padding: '16px 20px',
-        boxShadow: 'var(--plush-sm)',
+        boxShadow: '3px 3px 0px #151B3D',
         display: 'flex',
         alignItems: 'center',
         gap: 16,
+        transition: 'transform 0.1s ease',
       }}
+      className="btn-toy"
     >
-      <svg width="84" height="84" viewBox="0 0 84 84">
-        <circle cx="42" cy="42" r={r} fill="none" stroke="var(--cream-2)" strokeWidth="8" />
+      <svg width="84" height="84" viewBox="0 0 84 84" style={{ overflow: 'visible' }}>
+        <circle cx="42" cy="42" r={r} fill="none" stroke="var(--cream)" strokeWidth="8" />
         <circle
           cx="42"
           cy="42"
@@ -92,28 +91,31 @@ function DomainRing({ label, score }: DomainRingProps) {
           strokeLinecap="round"
           strokeDasharray={`${c * pct} ${c}`}
           transform="rotate(-90 42 42)"
+          style={{ transition: 'stroke-dasharray 0.5s ease' }}
         />
+        {/* Outline for the progress stroke */}
+        <circle cx="42" cy="42" r={r} fill="none" stroke="#151B3D" strokeWidth="1" strokeDasharray={`${c * pct} ${c}`} transform="rotate(-90 42 42)" />
         <text
           x="42"
           y="48"
           textAnchor="middle"
-          fontFamily="Outfit, sans-serif"
-          fontWeight="900"
+          fontFamily="Fredoka, sans-serif"
+          fontWeight="800"
           fontSize="15"
-          fill="var(--ink)"
+          fill="#151B3D"
         >
           {formatScore(score.raw)}/{score.max}
         </text>
       </svg>
       <div>
-        <div style={{ fontWeight: 800, fontSize: 14, lineHeight: 1.2, color: 'var(--ink)' }}>{label}</div>
+        <div style={{ fontWeight: 800, fontSize: 16, lineHeight: 1.2, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>{label}</div>
         <div
           style={{
-            fontSize: 10,
+            fontSize: 13,
             fontWeight: 800,
             color: color,
             marginTop: 4,
-            fontFamily: 'Outfit, sans-serif',
+            fontFamily: 'Fredoka, sans-serif',
             letterSpacing: '0.05em',
           }}
         >
@@ -128,7 +130,7 @@ function formatScore(n: number): string {
   return Number.isInteger(n) ? String(n) : n.toFixed(1);
 }
 
-// ── Criterion ──────────────────────────────────────────────────────
+// ── Criterion — transformed into a collectible sticker row ────────
 
 interface Cite {
   title: string;
@@ -146,42 +148,46 @@ interface CriterionProps {
 
 const CRITERION_STYLES: Record<
   CriterionProps['status'],
-  { icon: string; color: string; label: string; iconColor: string }
+  { icon: string; color: string; label: string; iconColor: string; bg: string }
 > = {
-  met: { icon: '✓', color: 'var(--mint)', label: 'MET', iconColor: 'var(--mint-deep)' },
-  'partially-met': { icon: '~', color: 'var(--butter)', label: 'PARTIAL', iconColor: 'var(--butter-deep)' },
-  missed: { icon: '✕', color: 'var(--rose)', label: 'MISSED', iconColor: 'var(--rose-deep)' },
+  met: { icon: '✓', color: 'var(--mint)', label: 'MET', iconColor: 'var(--mint-deep)', bg: 'var(--mint-lt)' },
+  'partially-met': { icon: '~', color: 'var(--butter)', label: 'PARTIAL', iconColor: 'var(--butter-deep)', bg: 'var(--butter-lt)' },
+  missed: { icon: '✕', color: 'var(--rose)', label: 'MISSED', iconColor: 'var(--rose-deep)', bg: 'var(--rose-lt)' },
 };
 
 function Criterion({ status, text, evidence, cite }: CriterionProps) {
   const styles = CRITERION_STYLES[status];
   return (
     <div
+      onMouseEnter={(e) => soundSystem.playCardHover(e.currentTarget)}
       style={{
         display: 'flex',
         gap: 14,
         alignItems: 'flex-start',
         padding: 16,
-        background: 'var(--paper)',
-        border: 'var(--stroke) solid var(--line)',
-        borderRadius: 14,
-        boxShadow: 'var(--plush-tiny)',
+        background: '#ffffff',
+        border: '3px solid #151B3D',
+        borderRadius: 'var(--r-md)',
+        boxShadow: '3px 3px 0px #151B3D',
+        transition: 'transform 0.15s ease',
       }}
+      className="tap btn-toy"
     >
       <div
         style={{
           width: 32,
           height: 32,
           borderRadius: '50%',
-          background: `${styles.color}20`,
-          border: `var(--stroke) solid ${styles.color}`,
+          background: styles.bg,
+          border: `2.5px solid #151B3D`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontWeight: 900,
+          fontWeight: 950,
           fontSize: 16,
-          color: styles.iconColor,
+          color: '#151B3D',
           flexShrink: 0,
+          boxShadow: '1.5px 1.5px 0px #151B3D',
         }}
       >
         {styles.icon}
@@ -191,42 +197,45 @@ function Criterion({ status, text, evidence, cite }: CriterionProps) {
           <span
             className="chip"
             style={{
-              fontSize: 9,
+              fontSize: 13,
               fontWeight: 800,
-              padding: '2px 8px',
-              borderColor: `${styles.color}50`,
-              color: styles.iconColor,
-              background: `${styles.color}15`,
+              padding: '3px 10px',
+              border: '2px solid #151B3D',
+              color: '#151B3D',
+              background: styles.bg,
+              boxShadow: '1px 1px 0px #151B3D',
+              fontFamily: "'Fredoka', sans-serif",
             }}
           >
             {styles.label}
           </span>
-          <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--ink)' }}>{text}</span>
+          <span style={{ fontWeight: 800, fontSize: 16, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>{text}</span>
         </div>
-        <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink-2)', fontStyle: 'italic', lineHeight: 1.4 }}>
+        <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink-2)', fontStyle: 'italic', lineHeight: 1.45 }}>
           {evidence}
         </div>
         {cite && (
           <div
             style={{
-              marginTop: 8,
-              background: 'var(--cream-2)',
-              border: 'var(--stroke) dashed var(--line)',
-              borderRadius: 10,
-              padding: '8px 10px',
+              marginTop: 10,
+              background: 'var(--bg)',
+              border: '2.5px solid #151B3D',
+              borderRadius: 'var(--r-sm)',
+              padding: '10px 12px',
+              boxShadow: '2px 2px 0px #151B3D',
             }}
           >
-            <div style={{ fontSize: 11, fontWeight: 900, color: 'var(--ink)' }}>
-              {'\uD83D\uDCD6 '}{cite.title}
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
+              📖 {cite.title}
             </div>
-            <div style={{ fontSize: 12, fontWeight: 600, marginTop: 2 }}>{cite.rec}</div>
-            <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--peach)', marginTop: 4, fontFamily: 'Outfit, sans-serif' }}>
+            <div style={{ fontSize: 16, fontWeight: 600, marginTop: 4, color: 'var(--ink-2)' }}>{cite.rec}</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--peach-deep)', marginTop: 6, fontFamily: 'Fredoka, sans-serif' }}>
               {cite.loE}
               {cite.url && (
                 <>
-                  {' \u00B7 '}
-                  <a href={cite.url} target="_blank" rel="noreferrer" style={{ color: 'var(--ink-2)' }}>
-                    open
+                  {' · '}
+                  <a href={cite.url} target="_blank" rel="noreferrer" style={{ color: 'var(--ink-2)', textDecoration: 'underline' }}>
+                    open guideline
                   </a>
                 </>
               )}
@@ -248,14 +257,14 @@ function buildCite(guidelineRef: string | null | undefined): Cite | undefined {
   if (r.rec.gradeStrength) {
     tags.push(
       r.rec.gradeCertainty
-        ? `${r.rec.gradeStrength} \u00B7 ${r.rec.gradeCertainty}`
+        ? `${r.rec.gradeStrength} · ${r.rec.gradeCertainty}`
         : r.rec.gradeStrength,
     );
   }
   return {
-    title: `${r.guideline.body} ${r.guideline.year} \u00B7 ${r.guideline.title.split(/[\u2014:(]/)[0].trim()}`,
+    title: `${r.guideline.body} ${r.guideline.year} · ${r.guideline.title.split(/[\u2014:(]/)[0].trim()}`,
     rec: r.rec.text,
-    loE: tags.length > 0 ? tags.join(' \u00B7 ') : `${r.guideline.body} ${r.guideline.year}`,
+    loE: tags.length > 0 ? tags.join(' · ') : `${r.guideline.body} ${r.guideline.year}`,
     url: r.guideline.url,
   };
 }
@@ -268,19 +277,19 @@ function ActionChips({ patient, c }: { patient: ActivePatient; c: PatientCase })
   const chips: Array<{ key: string; label: string; tone: 'butter' | 'peach' | 'mint' | 'sky' | 'plain' }> = [];
   for (const tid of patient.orderedTestIds) {
     const name = testById.get(tid)?.name ?? tid;
-    chips.push({ key: `test-${tid}`, label: `\uD83E\uDDEA ${name}`, tone: 'butter' });
+    chips.push({ key: `test-${tid}`, label: `🧪 ${name}`, tone: 'butter' });
   }
   for (const tid of patient.givenTreatmentIds) {
     const name = treatmentById.get(tid)?.name ?? tid;
     const tone = c.criticalTreatmentIds.includes(tid) ? 'mint' : 'peach';
-    const icon = treatmentById.get(tid)?.category === 'medication' ? '\uD83D\uDC8A' :
-      treatmentById.get(tid)?.category === 'disposition' ? '\u2197' : '\uD83E\uDE7A';
+    const icon = treatmentById.get(tid)?.category === 'medication' ? '💊' :
+      treatmentById.get(tid)?.category === 'disposition' ? '↗' : '🩺';
     chips.push({ key: `tx-${tid}`, label: `${icon} ${name}`, tone });
   }
   for (const p of patient.prescriptions ?? []) {
     chips.push({
       key: `rx-${p.medicationId}`,
-      label: `\uD83D\uDC8A ${p.medicationId} ${p.dose} ${p.duration}`,
+      label: `💊 ${p.medicationId} ${p.dose} ${p.duration}`,
       tone: 'peach',
     });
   }
@@ -290,7 +299,7 @@ function ActionChips({ patient, c }: { patient: ActivePatient; c: PatientCase })
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
       {chips.map((c) => (
-        <span key={c.key} className={c.tone === 'plain' ? 'chip' : `chip ${c.tone}`}>
+        <span key={c.key} className={c.tone === 'plain' ? 'chip' : `chip ${c.tone}`} style={{ border: '2px solid #151B3D', boxShadow: '1.5px 1.5px 0px #151B3D' }}>
           {c.label}
         </span>
       ))}
@@ -311,36 +320,40 @@ function StatusBanner({
 }) {
   return (
     <div
-      className="plush-lg popin"
+      className="popin"
       style={{
         background: bg,
-        padding: 24,
+        padding: '32px 28px',
         position: 'relative',
-        marginBottom: 22,
+        marginBottom: 24,
+        border: '4px solid #151B3D',
+        borderRadius: 'var(--r-xl)',
+        boxShadow: '6px 6px 0px #151B3D',
       }}
     >
-      <div style={{ position: 'absolute', top: -14, left: 24 }} className="chip butter">
-        ATTENDING
+      <div 
+        style={{ 
+          position: 'absolute', 
+          top: -16, 
+          left: 24,
+          fontFamily: "'Fredoka', sans-serif",
+          border: '3px solid #151B3D',
+          boxShadow: '2px 2px 0px #151B3D',
+        }} 
+        className="chip butter"
+      >
+        🎓 ATTENDING
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
-        <div className="floaty">
-          <div
-            className="plush"
-            style={{
-              width: 110,
-              height: 110,
-              background: 'white',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Doodle kind="star" size={86} color="#FFD86B" />
-          </div>
+      
+      <div style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
+        <div className="floaty" style={{ flexShrink: 0 }}>
+          <Mascot name="nurse" size={110} />
         </div>
-        <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: 32, lineHeight: 1.05, margin: '4px 0 8px' }}>{title}</h1>
-          <div style={{ fontSize: 15, lineHeight: 1.5, fontWeight: 600, color: 'var(--ink)' }}>
+        <div style={{ flex: 1, minWidth: 280 }}>
+          <h1 style={{ fontSize: 30, lineHeight: 1.05, margin: '4px 0 10px', color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
+            {title}
+          </h1>
+          <div style={{ fontSize: 15, lineHeight: 1.5, fontWeight: 700, color: 'var(--ink)' }}>
             {body}
           </div>
         </div>
@@ -366,58 +379,60 @@ function GradingProgress({ partialNarration }: { partialNarration: string }) {
   const [step, setStep] = useState(0);
 
   useEffect(() => {
-    if (partialNarration.length > 0) return; // stop ticking once narration arrives
+    if (partialNarration.length > 0) return;
     const id = window.setInterval(() => {
       setStep((s) => Math.min(s + 1, GRADING_STEPS.length - 1));
     }, 1400);
     return () => window.clearInterval(id);
   }, [partialNarration.length > 0]);
 
-  // Once narration arrives, dump it into the banner instead of the steps.
   if (partialNarration.length > 0) {
     return (
       <StatusBanner
-        title={'The attending is grading\u2026'}
+        title={'The attending is grading...'}
         body={truncate(partialNarration, 320)}
-        bg="var(--sky)"
+        bg="var(--sky-lt)"
       />
     );
   }
 
   return (
     <div
-      className="plush-lg popin"
+      className="popin"
       style={{
-        background: 'var(--sky)',
-        padding: 24,
+        background: 'var(--sky-lt)',
+        padding: 32,
         position: 'relative',
-        marginBottom: 22,
+        marginBottom: 24,
+        border: '4px solid #151B3D',
+        borderRadius: 'var(--r-xl)',
+        boxShadow: '6px 6px 0px #151B3D',
       }}
     >
-      <div style={{ position: 'absolute', top: -14, left: 24 }} className="chip butter">
-        ATTENDING
+      <div 
+        style={{ 
+          position: 'absolute', 
+          top: -16, 
+          left: 24,
+          fontFamily: "'Fredoka', sans-serif",
+          border: '3px solid #151B3D',
+          boxShadow: '2px 2px 0px #151B3D',
+        }} 
+        className="chip butter"
+      >
+        🎓 ATTENDING EVALUATING
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
-        <div className="floaty">
-          <div
-            className="plush"
-            style={{
-              width: 110,
-              height: 110,
-              background: 'white',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Doodle kind="star" size={86} color="#FFD86B" />
-          </div>
+      
+      <div style={{ display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap' }}>
+        <div className="floaty" style={{ flexShrink: 0, margin: '0 auto' }}>
+          <Mascot name="nurse" size={130} />
         </div>
-        <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: 32, lineHeight: 1.05, margin: '4px 0 12px' }}>
-            The attending is grading{'\u2026'}
+        
+        <div style={{ flex: 1, minWidth: 320 }}>
+          <h1 style={{ fontSize: 28, lineHeight: 1.1, margin: '4px 0 16px', color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
+            Attending is grading your OSCE...
           </h1>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
             {GRADING_STEPS.map((label, i) => {
               const state = i < step ? 'done' : i === step ? 'active' : 'pending';
               const icon =
@@ -431,9 +446,9 @@ function GradingProgress({ partialNarration }: { partialNarration: string }) {
                       width: 12,
                       height: 12,
                       borderRadius: '50%',
-                      border: '2px solid rgba(43,30,22,0.25)',
-                      borderTopColor: 'var(--ink)',
-                      animation: 'gr-spin 0.7s linear infinite',
+                      border: '2px solid rgba(21, 27, 61, 0.25)',
+                      borderTopColor: '#151B3D',
+                      animation: 'blink 0.7s linear infinite',
                     }}
                   />
                 ) : (
@@ -441,7 +456,7 @@ function GradingProgress({ partialNarration }: { partialNarration: string }) {
                 );
               const opacity = state === 'pending' ? 0.4 : 1;
               const fontWeight = state === 'active' ? 800 : 700;
-              const bg = state === 'done' ? 'rgba(255,255,255,0.55)' : state === 'active' ? 'white' : 'transparent';
+              const bg = state === 'done' ? '#ffffff' : state === 'active' ? 'var(--butter)' : 'transparent';
               return (
                 <li
                   key={i}
@@ -449,15 +464,16 @@ function GradingProgress({ partialNarration }: { partialNarration: string }) {
                     display: 'flex',
                     alignItems: 'center',
                     gap: 10,
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight,
                     color: 'var(--ink)',
                     opacity,
                     background: bg,
-                    border: state === 'pending' ? '2px dashed rgba(43,30,22,0.18)' : '2.5px solid var(--line)',
-                    borderRadius: 10,
-                    padding: '6px 10px',
+                    border: state === 'pending' ? '2px dashed rgba(21,27,61,0.2)' : '2.5px solid #151B3D',
+                    borderRadius: 12,
+                    padding: '6px 12px',
                     transition: 'opacity 0.3s, background 0.3s',
+                    boxShadow: state !== 'pending' ? '2px 2px 0px #151B3D' : 'none',
                   }}
                 >
                   <span
@@ -469,15 +485,16 @@ function GradingProgress({ partialNarration }: { partialNarration: string }) {
                       width: 22,
                       height: 22,
                       borderRadius: '50%',
-                      background: state === 'done' ? 'var(--mint)' : state === 'active' ? 'var(--butter)' : 'var(--cream)',
-                      border: '2px solid var(--line)',
+                      background: state === 'done' ? 'var(--green)' : state === 'active' ? 'var(--butter)' : 'var(--cream)',
+                      border: '2px solid #151B3D',
                       fontSize: 13,
                       fontWeight: 900,
+                      color: 'var(--ink)',
                     }}
                   >
                     {icon}
                   </span>
-                  <span>{label}</span>
+                  <span style={{ fontFamily: "'Fredoka', sans-serif" }}>{label}</span>
                 </li>
               );
             })}
@@ -493,22 +510,15 @@ function GradingProgress({ partialNarration }: { partialNarration: string }) {
 export function DebriefScreen() {
   const state = useGameState();
 
-  // Review-mode: when viewedEvalHistoryId is set, render a saved evaluation
-  // from localStorage instead of running the agent against a fresh request.
   const reviewed = useMemo<EvalHistoryEntry | null>(() => {
     return state.viewedEvalHistoryId ? getEvalHistory(state.viewedEvalHistoryId) : null;
   }, [state.viewedEvalHistoryId]);
 
-  // Prefer the snapshot captured by `finishPolyclinicCase` — by the time we
-  // mount, the live patient slot has been cleared so the 3D scene can play
-  // the walk-out animation. Fall back to a still-seated patient (rare:
-  // the screen was opened directly without ending the encounter).
   const patient = reviewed?.patientSnapshot ?? state.lastEncounter ?? state.polyclinic.patient;
   const c = useMemo<PatientCase | null>(() => {
     return patient?.case ?? (state.selectedCaseId ? getPatientCase(state.selectedCaseId) : null) ?? null;
   }, [patient, state.selectedCaseId]);
 
-  // In review mode, skip the agent — we already have the evaluation.
   const debriefRequest = useMemo(() => {
     if (reviewed) return null;
     if (!c || !patient) return null;
@@ -521,13 +531,9 @@ export function DebriefScreen() {
   const error = live.error;
   const partialNarration = live.partialNarration;
 
-  // Persist the evaluation the FIRST time it arrives in this session.
-  const savedRef = useRef(false);
   useEffect(() => {
     if (reviewed) return;
-    if (savedRef.current) return;
     if (!evaluation || !patient || !c) return;
-    savedRef.current = true;
     const dxId = patient.submittedDiagnosisId ?? c.correctDiagnosisId;
     saveEvalHistory({
       caseId: c.id,
@@ -541,65 +547,78 @@ export function DebriefScreen() {
     });
   }, [evaluation, patient, c, reviewed]);
 
-  // Clear review mode when the user navigates away from this screen.
+  useEffect(() => {
+    if (evaluation) {
+      soundSystem.playSuccess();
+    }
+  }, [evaluation]);
+
   useEffect(() => {
     return () => {
       if (state.viewedEvalHistoryId) store.clearViewedEval();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div className="screen paper" style={{ overflowY: 'auto' }}>
       <TopBar here={5} steps={['Polyclinic', 'GP', 'Case', 'Brief', 'Encounter', 'Debrief']} />
 
-      <div style={{ padding: '28px 36px 60px', maxWidth: 1080, margin: '0 auto' }}>
+      <div style={{ padding: '40px 24px 60px', maxWidth: 1080, margin: '0 auto' }}>
         {!c || !patient ? (
           <StatusBanner
             title="No active case to debrief"
             body="The encounter has already been cleared. Pick a new case from the library to start fresh."
-            bg="var(--cream-2)"
+            bg="var(--bg-soft)"
           />
         ) : status === 'starting' || status === 'idle' ? (
           <StatusBanner
-            title={'Preparing your debrief\u2026'}
-            body={`Packaging the encounter and the rubric (${summarise(debriefRequest)}). The attending will start grading in a moment.`}
-            bg="var(--sky)"
+            title={'Preparing your OSCE critique...'}
+            body={`Packaging the encounter details and rubric criteria (${summarise(debriefRequest)}). Your tutor is getting ready.`}
+            bg="var(--sky-lt)"
           />
         ) : status === 'streaming' && !evaluation ? (
           <GradingProgress partialNarration={partialNarration} />
         ) : status === 'error' ? (
           <StatusBanner
-            title={'We couldn\u2019t generate your debrief'}
-            body={error ?? 'Unknown error. The encounter is still saved \u2014 try again from the home screen.'}
-            bg="var(--rose)"
+            title={'OSCE Grading failed'}
+            body={error ?? 'Attending failed to reach grading desk. The patient dossier is saved - try again from profile.'}
+            bg="var(--rose-lt)"
           />
         ) : evaluation ? (
           <EvaluationBody evaluation={evaluation} patient={patient} c={c} />
         ) : (
           <StatusBanner
-            title="No evaluation yet"
-            body={'The attending hasn\u2019t emitted a result. If this persists, restart the encounter.'}
-            bg="var(--cream-2)"
+            title="Awaiting Evaluation"
+            body={'Grade is pending. If loading hangs, please restart this encounter session.'}
+            bg="var(--bg-soft)"
           />
         )}
 
-        <div style={{ display: 'flex', gap: 12, marginTop: 22 }}>
+        <div style={{ display: 'flex', gap: 16, marginTop: 28 }}>
           <button
             type="button"
-            className="btn-plush ghost"
-            style={{ flex: 1 }}
-            onClick={() => store.endSessionCleanly()}
+            className="btn-plush ghost btn-toy"
+            style={{ flex: 1, color: '#151B3D' }}
+            onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
+            onClick={() => {
+              soundSystem.playClick();
+              store.endSessionCleanly();
+            }}
           >
             {'Exit Consultation'}
           </button>
+          
           <button
             type="button"
-            className="btn-plush primary"
-            style={{ flex: 1.6 }}
-            onClick={() => store.transitionToNextPatient()}
+            className="btn-plush primary btn-toy"
+            style={{ flex: 1.6, background: 'var(--green)', color: '#ffffff' }}
+            onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
+            onClick={() => {
+              soundSystem.playClick();
+              store.transitionToNextPatient();
+            }}
           >
-            {'Next Patient \u2192'}
+            {'Next Patient →'}
           </button>
         </div>
       </div>
@@ -610,12 +629,12 @@ export function DebriefScreen() {
 function summarise(req: ReturnType<typeof buildDebriefRequest> | null): string {
   if (!req) return 'no data';
   const s = summariseRequest(req);
-  return `${s.criterion_count} criteria \u00B7 ${s.guideline_count} guideline${s.guideline_count === 1 ? '' : 's'} \u00B7 ${s.rec_count} recs`;
+  return `${s.criterion_count} criteria · ${s.guideline_count} guidelines`;
 }
 
 function truncate(s: string, n: number): string {
   if (s.length <= n) return s;
-  return s.slice(0, n) + '\u2026';
+  return s.slice(0, n) + '...';
 }
 
 // ── EvaluationBody — renders the full cozy debrief from real data ──
@@ -653,19 +672,29 @@ function EvaluationBody({ evaluation, patient, c }: BodyProps) {
     <>
       {evaluation.safety_breach && (
         <div
-          className="plush-lg popin"
+          className="popin"
           style={{
-            background: 'var(--rose-deep)',
-            padding: 20,
-            marginBottom: 20,
-            border: 'var(--stroke-thick) solid var(--rose)',
-            boxShadow: 'var(--plush)',
+            background: 'var(--rose-lt)',
+            padding: 24,
+            marginBottom: 24,
+            border: '4px solid #151B3D',
+            boxShadow: '6px 6px 0px #151B3D',
+            borderRadius: 'var(--r-xl)',
           }}
         >
-          <div className="chip rose" style={{ marginBottom: 10 }}>
-            ⚠ SAFETY BREACH
+          <div 
+            className="chip rose" 
+            style={{ 
+              marginBottom: 12, 
+              border: '2.5px solid #151B3D', 
+              boxShadow: '1.5px 1.5px 0px #151B3D',
+              background: 'var(--coral)',
+              color: '#ffffff',
+            }}
+          >
+            ⚠ SAFETY CRITICAL WARNING
           </div>
-          <div style={{ fontWeight: 800, fontSize: 16, lineHeight: 1.4, color: 'var(--ink)' }}>
+          <div style={{ fontWeight: 800, fontSize: 16, lineHeight: 1.5, color: 'var(--ink)' }}>
             {evaluation.safety_breach.what}
           </div>
           {evaluation.safety_breach.guideline_ref && (() => {
@@ -673,16 +702,17 @@ function EvaluationBody({ evaluation, patient, c }: BodyProps) {
             return cite ? (
               <div
                 style={{
-                  marginTop: 12,
-                  background: 'var(--paper)',
-                  border: 'var(--stroke) dashed var(--line)',
-                  borderRadius: 10,
+                  marginTop: 14,
+                  background: '#ffffff',
+                  border: '3px solid #151B3D',
+                  borderRadius: 'var(--r-sm)',
                   padding: '12px 14px',
+                  boxShadow: '3px 3px 0px #151B3D',
                 }}
               >
-                <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--ink)' }}>📖 {cite.title}</div>
-                <div style={{ fontSize: 13, fontWeight: 500, marginTop: 4, color: 'var(--ink-2)' }}>{cite.rec}</div>
-                <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--peach)', marginTop: 6, fontFamily: 'Outfit, sans-serif' }}>
+                <div style={{ fontSize: 13, fontWeight: 800, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>📖 {cite.title}</div>
+                <div style={{ fontSize: 16, fontWeight: 600, marginTop: 4, color: 'var(--ink-2)' }}>{cite.rec}</div>
+                <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--peach-deep)', marginTop: 6, fontFamily: 'Fredoka, sans-serif' }}>
                   {cite.loE.toUpperCase()}
                 </div>
               </div>
@@ -691,80 +721,108 @@ function EvaluationBody({ evaluation, patient, c }: BodyProps) {
         </div>
       )}
 
-      {/* Main Verdict Card */}
+      {/* Main Attending Verdict Card */}
       <div
-        className="plush-lg popin"
+        className="popin"
         style={{
-          background: 'var(--paper)',
-          border: `var(--stroke-thick) solid ${GLOBAL_BG[verdict]}`,
-          padding: 28,
+          background: '#ffffff',
+          border: '4px solid #151B3D',
+          borderRadius: 'var(--r-xl)',
+          padding: 32,
           position: 'relative',
-          marginBottom: 24,
-          boxShadow: 'var(--plush)',
+          marginBottom: 28,
+          boxShadow: '6px 6px 0px #151B3D',
         }}
       >
-        <div style={{ position: 'absolute', top: -14, left: 24 }} className="chip peach">
-          SIMULATION VERDICT
+        <div 
+          style={{ 
+            position: 'absolute', 
+            top: -16, 
+            left: 24,
+            fontFamily: "'Fredoka', sans-serif",
+            border: '3.5px solid #151B3D',
+            boxShadow: '2.5px 2.5px 0px #151B3D',
+          }} 
+          className="chip peach"
+        >
+          OSCE REPORT SCORECARD
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
-          <div className="floaty" style={{ flexShrink: 0 }}>
-            <div
-              className="plush"
-              style={{
-                width: 100,
-                height: 100,
-                background: 'var(--cream-2)',
-                borderColor: 'var(--line)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '50%',
-              }}
-            >
-              <Doodle kind="star" size={64} color={GLOBAL_DEEP[verdict]} />
-            </div>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap' }}>
+          <div className="floaty" style={{ flexShrink: 0, margin: '0 auto' }}>
+            <Mascot name="nurse" size={130} />
           </div>
+          
           <div style={{ flex: 1, minWidth: 280 }}>
             <div
               style={{
-                fontSize: 10,
+                fontSize: 13,
                 fontWeight: 800,
                 color: 'var(--ink-soft)',
                 textTransform: 'uppercase',
                 letterSpacing: '.12em',
-                fontFamily: 'Outfit, sans-serif',
+                fontFamily: 'Fredoka, sans-serif',
               }}
             >
-              GRADE RECORDED:
+              GLOBAL CLINICAL SCORE:
             </div>
-            <h1 style={{ fontSize: 32, lineHeight: 1.1, margin: '6px 0 10px', fontWeight: 900 }}>
+            
+            <h1 
+              style={{ 
+                fontSize: 32, 
+                lineHeight: 1.1, 
+                margin: '6px 0 12px', 
+                fontWeight: 800,
+                color: '#151B3D',
+                fontFamily: "'Fredoka', sans-serif",
+              }}
+            >
               {GLOBAL_HEADLINE[verdict].split(' — ')[0].toUpperCase()}{' '}
               <span style={{ fontSize: 18, color: GLOBAL_DEEP[verdict] }}>
                 {' · ' + (GLOBAL_HEADLINE[verdict].split(' — ')[1]?.toUpperCase() ?? '')}
               </span>
             </h1>
-            <div style={{ fontSize: 15, lineHeight: 1.6, fontWeight: 500, color: 'var(--ink-2)' }}>
+            
+            <div style={{ fontSize: 16, lineHeight: 1.6, fontWeight: 600, color: 'var(--ink-2)' }}>
               {evaluation.narrative}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Domain Rings Panel */}
-      <div className="plush" style={{ padding: 20, marginBottom: 24, background: 'var(--cream-2)' }}>
-        <SectionLabel>DOMAIN PERFORMANCE INDEX</SectionLabel>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+      {/* Domain Performance Rings */}
+      <div 
+        style={{ 
+          padding: 24, 
+          marginBottom: 28, 
+          background: 'var(--bg-soft)',
+          border: '4px solid #151B3D',
+          borderRadius: 'var(--r-xl)',
+          boxShadow: '4px 4px 0px #151B3D',
+        }}
+      >
+        <SectionLabel>DOMAIN PERFORMANCE GAUGES</SectionLabel>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
           <DomainRing label="Data Gathering" score={evaluation.domain_scores.data_gathering} />
           <DomainRing label="Clinical Management" score={evaluation.domain_scores.clinical_management} />
           <DomainRing label="Interpersonal Skills" score={evaluation.domain_scores.interpersonal} />
         </div>
       </div>
 
-      {/* Criteria Breakdown Panel */}
+      {/* Specific Rubric Targets */}
       {(dgItems.length + cmItems.length + ipItems.length) > 0 && (
-        <div className="plush" style={{ padding: 20, marginBottom: 24, background: 'var(--cream-2)' }}>
-          <SectionLabel>SPECIFIC RUBRIC TARGETS</SectionLabel>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div 
+          style={{ 
+            padding: 24, 
+            marginBottom: 28, 
+            background: 'var(--bg-soft)',
+            border: '4px solid #151B3D',
+            borderRadius: 'var(--r-xl)',
+            boxShadow: '4px 4px 0px #151B3D',
+          }}
+        >
+          <SectionLabel>QUEST MILESTONE CHECKPOINTS</SectionLabel>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             {dgItems.length > 0 && (
               <CriterionGroup title="Data Gathering Criteria" items={dgItems} labelMap={labelByCriterionId} />
             )}
@@ -778,51 +836,101 @@ function EvaluationBody({ evaluation, patient, c }: BodyProps) {
         </div>
       )}
 
-      {/* Highlights & Improvements Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 24 }}>
+      {/* Strengths & Improvements */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, marginBottom: 28 }}>
         {evaluation.highlights.length > 0 && (
-          <div className="plush" style={{ background: 'rgba(132, 210, 196, 0.05)', borderColor: 'var(--line)', padding: 20 }}>
-            <div className="chip mint" style={{ marginBottom: 12 }}>
-              ✓ STRENGTHS / HIGHLIGHTS
+          <div 
+            style={{ 
+              background: 'var(--green-lt)', 
+              borderColor: '#151B3D', 
+              borderWidth: '4px',
+              borderStyle: 'solid',
+              borderRadius: 'var(--r-xl)',
+              padding: 24,
+              boxShadow: '4px 4px 0px #151B3D',
+            }}
+          >
+            <div 
+              className="chip green" 
+              style={{ 
+                marginBottom: 14,
+                border: '2.5px solid #151B3D',
+                boxShadow: '1.5px 1.5px 0px #151B3D',
+                background: 'var(--green)',
+                color: '#ffffff',
+              }}
+            >
+              ✓ OSCE HIGHLIGHTS / STRENGTHS
             </div>
-            <ul style={{ margin: 0, paddingLeft: 18, fontWeight: 500, fontSize: 14, lineHeight: 1.6, color: 'var(--ink)' }}>
-              {evaluation.highlights.map((h, i) => <li key={i} style={{ marginBottom: 6 }}>{h}</li>)}
+            <ul style={{ margin: 0, paddingLeft: 18, fontWeight: 700, fontSize: 16, lineHeight: 1.65, color: '#151B3D' }}>
+              {evaluation.highlights.map((h, i) => <li key={i} style={{ marginBottom: 8 }}>{h}</li>)}
             </ul>
           </div>
         )}
+        
         {evaluation.improvements.length > 0 && (
-          <div className="plush" style={{ background: 'rgba(255, 178, 107, 0.05)', borderColor: 'var(--line)', padding: 20 }}>
-            <div className="chip peach" style={{ marginBottom: 12 }}>
-              ↑ FOCUS AREAS / NEXT TIME
+          <div 
+            style={{ 
+              background: 'var(--peach-lt)', 
+              borderColor: '#151B3D', 
+              borderWidth: '4px',
+              borderStyle: 'solid',
+              borderRadius: 'var(--r-xl)',
+              padding: 24,
+              boxShadow: '4px 4px 0px #151B3D',
+            }}
+          >
+            <div 
+              className="chip peach" 
+              style={{ 
+                marginBottom: 14,
+                border: '2.5px solid #151B3D',
+                boxShadow: '1.5px 1.5px 0px #151B3D',
+                background: 'var(--peach)',
+                color: '#ffffff',
+              }}
+            >
+              ↑ FOCUS TARGETS FOR NEXT OSCE
             </div>
-            <ul style={{ margin: 0, paddingLeft: 18, fontWeight: 500, fontSize: 14, lineHeight: 1.6, color: 'var(--ink)' }}>
-              {evaluation.improvements.map((h, i) => <li key={i} style={{ marginBottom: 6 }}>{h}</li>)}
+            <ul style={{ margin: 0, paddingLeft: 18, fontWeight: 700, fontSize: 16, lineHeight: 1.65, color: '#151B3D' }}>
+              {evaluation.improvements.map((h, i) => <li key={i} style={{ marginBottom: 8 }}>{h}</li>)}
             </ul>
           </div>
         )}
       </div>
 
       {/* Actions Summary */}
-      <div className="plush" style={{ padding: 20, marginBottom: 24, background: 'var(--cream-2)' }}>
+      <div 
+        style={{ 
+          padding: 24, 
+          marginBottom: 28, 
+          background: 'var(--bg-soft)',
+          border: '4px solid #151B3D',
+          borderRadius: 'var(--r-xl)',
+          boxShadow: '4px 4px 0px #151B3D',
+        }}
+      >
         <SectionLabel>PHYSIOLOGICAL DIAGNOSTICS & RX ADMINISTERED</SectionLabel>
         <ActionChips patient={patient} c={c} />
       </div>
 
-      {/* Triage Info */}
+      {/* Telemetry Summary */}
       <div
-        className="plush"
         style={{
           padding: 20,
-          marginBottom: 24,
+          marginBottom: 28,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          background: 'var(--cream-2)',
+          background: 'var(--bg-soft)',
+          border: '4px solid #151B3D',
+          borderRadius: 'var(--r-xl)',
+          boxShadow: '4px 4px 0px #151B3D',
         }}
       >
         <div>
-          <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--ink)' }}>Encounter Telemetry Summary</div>
-          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-2)', marginTop: 4, fontFamily: 'Outfit, sans-serif' }}>
+          <div style={{ fontWeight: 800, fontSize: 16, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>Encounter Telemetry Summary</div>
+          <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--ink-soft)', marginTop: 4, fontFamily: 'Fredoka, sans-serif' }}>
             {`${elapsedLabel.toUpperCase()} · ${qLabel.toUpperCase()} · ${patient.orderedTestIds.length} TESTS · ${patient.givenTreatmentIds.length} TREATMENTS`}
           </div>
         </div>
@@ -836,11 +944,12 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
     <div
       style={{
         fontWeight: 800,
-        fontSize: 11,
-        color: 'var(--ink-2)',
+        fontSize: 13,
+        color: 'var(--ink-soft)',
         letterSpacing: '.06em',
         textTransform: 'uppercase',
-        marginBottom: 14,
+        marginBottom: 16,
+        fontFamily: "'Fredoka', sans-serif",
       }}
     >
       {children}
@@ -861,17 +970,18 @@ function CriterionGroup({
     <div>
       <div
         style={{
-          fontSize: 11,
+          fontSize: 13,
           fontWeight: 900,
-          color: 'var(--ink-2)',
-          marginBottom: 8,
+          color: '#151B3D',
+          marginBottom: 10,
           textTransform: 'uppercase',
           letterSpacing: '.05em',
+          fontFamily: "'Fredoka', sans-serif",
         }}
       >
         {title}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {items.map((cr) => {
           const label = labelMap.get(cr.criterion_id) ?? cr.criterion_id;
           const cite = buildCite(cr.guideline_ref);

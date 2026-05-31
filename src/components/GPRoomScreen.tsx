@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react';
-import { PatientFace, TopBar } from './primitives';
+import { TopBar } from './primitives';
+import { Mascot, getPatientMascot } from './mascots';
 import { CASES, getCase } from '../data/cases';
 import { CLINIC_IDS, CLINIC_LABELS, type ClinicId } from '../game/clinic';
-import { store, useGameState, useTweaks } from '../game/store';
+import { store, useGameState } from '../game/store';
+import { soundSystem } from '../utils/audioSystem';
 
 const CLINIC_ICON: Record<ClinicId, string> = {
   'all-specialties': '🌈',
@@ -35,31 +37,19 @@ const CLINIC_ICON: Record<ClinicId, string> = {
 function IllustratedFolder() {
   return (
     <svg width="130" height="130" viewBox="0 0 130 130">
-      <defs>
-        <linearGradient id="folderGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#FFF0B3" />
-          <stop offset="100%" stopColor="#FFD166" />
-        </linearGradient>
-      </defs>
-      {/* Folder tab */}
-      <rect x="14" y="20" width="42" height="16" rx="5" fill="url(#folderGrad)" stroke="rgba(74,74,106,0.15)" strokeWidth="2" />
-      {/* Main folder body */}
-      <rect x="10" y="28" width="110" height="86" rx="12" fill="url(#folderGrad)" stroke="rgba(74,74,106,0.15)" strokeWidth="2.5" />
-      {/* Paper inside */}
-      <rect x="22" y="40" width="86" height="64" rx="6" fill="white" stroke="rgba(74,74,106,0.1)" strokeWidth="2" />
-      {/* Lines on paper */}
-      <line x1="32" y1="56" x2="98" y2="56" stroke="rgba(74,74,106,0.15)" strokeWidth="2.5" strokeLinecap="round" />
-      <line x1="32" y1="68" x2="90" y2="68" stroke="rgba(74,74,106,0.15)" strokeWidth="2.5" strokeLinecap="round" />
-      <line x1="32" y1="80" x2="82" y2="80" stroke="rgba(74,74,106,0.15)" strokeWidth="2.5" strokeLinecap="round" />
-      {/* Stethoscope icon accent */}
-      <circle cx="98" cy="88" r="12" fill="var(--coral)" />
-      <text x="98" y="92" textAnchor="middle" fontFamily="Nunito" fontWeight="900" fontSize="12" fill="white">🩺</text>
+      {/* Cartoon folder body */}
+      <rect x="10" y="24" width="110" height="90" rx="16" fill="var(--butter)" stroke="#151B3D" strokeWidth="4" />
+      <path d="M10 40 H120" stroke="#151B3D" strokeWidth="4" />
+      <rect x="25" y="48" width="80" height="52" rx="10" fill="white" stroke="#151B3D" strokeWidth="3" />
+      <line x1="38" y1="64" x2="92" y2="64" stroke="#151B3D" strokeWidth="3" strokeLinecap="round" />
+      <line x1="38" y1="76" x2="80" y2="76" stroke="#151B3D" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="94" cy="84" r="10" fill="var(--coral)" stroke="#151B3D" strokeWidth="3" />
+      <text x="94" y="88" textAnchor="middle" fontFamily="Fredoka" fontWeight="900" fontSize="10" fill="white">🩺</text>
     </svg>
   );
 }
 
 export function GPRoomScreen() {
-  const tweaks = useTweaks();
   const state = useGameState();
   const activeClinic = state.polyclinic.clinic;
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -70,7 +60,6 @@ export function GPRoomScreen() {
   }, [activeClinic]);
 
   const totalAll = CASES.length;
-  const queueAhead = clinicCases.length;
   const nextId = store.pickNextCaseId() ?? clinicCases[0]?.id ?? CASES[0]?.id;
   const next = nextId ? getCase(nextId) : null;
 
@@ -80,14 +69,19 @@ export function GPRoomScreen() {
     );
   }, []);
 
+  // Map incoming patient to their correct cartoon mascot
+  const incomingMascot = next 
+    ? getPatientMascot({ id: next.id, age: next.age, sex: next.sex, complaint: next.complaint, cond: next.cond })
+    : 'officeWorker';
+
   return (
     <div className="screen" style={{ background: 'var(--bg)', position: 'relative', overflowY: 'auto' }}>
       <TopBar here={1} steps={['Polyclinic', 'GP']} />
 
       <div
         style={{
-          padding: '40px 36px 56px',
-          maxWidth: 980,
+          padding: '32px 24px 56px',
+          maxWidth: 1040,
           margin: '0 auto',
           display: 'flex',
           flexDirection: 'column',
@@ -96,42 +90,56 @@ export function GPRoomScreen() {
       >
         {/* Header */}
         <div style={{ textAlign: 'center' }}>
-          <div className="chip mint" style={{ marginBottom: 14, fontSize: 12, padding: '6px 18px', fontFamily: "'Nunito', sans-serif" }}>
-            🏥 Patient Reception
+          <div 
+            className="chip mint" 
+            style={{ 
+              marginBottom: 14, 
+              fontSize: 13, 
+              padding: '6px 18px', 
+              fontFamily: "'Fredoka', sans-serif",
+              border: '3.5px solid #151B3D',
+              boxShadow: '3px 3px 0px #151B3D',
+            }}
+          >
+            🏥 PATIENT RECEPTION
           </div>
           <h1
             style={{
-              fontSize: 'clamp(32px, 4.5vw, 50px)',
+              fontSize: 'clamp(32px, 4.5vw, 48px)',
               lineHeight: 1.05,
-              fontFamily: "'Nunito', sans-serif",
-              fontWeight: 900,
-              letterSpacing: '-0.02em',
-              marginBottom: 12,
+              fontFamily: "'Fredoka', sans-serif",
+              fontWeight: 700,
+              color: '#151B3D',
+              marginBottom: 10,
             }}
           >
             Who's next? 👨‍⚕️
           </h1>
           <p style={{ fontSize: 16, color: 'var(--ink-2)', fontWeight: 600, maxWidth: 520, margin: '0 auto', lineHeight: 1.55 }}>
-            Select a specialty clinic to meet your next patient, or browse the full case library.
+            Welcome patients into your consult room, select a clinic department, or browse the case library.
           </p>
         </div>
 
-        {/* Specialty picker */}
+        {/* Specialty picker in bold cartoon folder format */}
         <div
           style={{
             background: 'white',
             borderRadius: 'var(--r-xl)',
-            border: `2px solid ${pickerOpen ? 'var(--mint)' : 'var(--line)'}`,
+            border: pickerOpen ? '4px solid var(--mint)' : '4px solid #151B3D',
             boxShadow: pickerOpen
-              ? '0 8px 32px rgba(78,205,196,0.18)'
-              : '0 4px 16px rgba(26,26,46,0.06)',
+              ? '6px 6px 0px var(--mint)'
+              : '4px 4px 0px #151B3D',
             overflow: 'hidden',
-            transition: 'all 0.25s ease',
+            transition: 'all 0.2s ease',
           }}
         >
           <button
             type="button"
-            onClick={() => setPickerOpen((v) => !v)}
+            onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
+            onClick={() => {
+              soundSystem.playClick();
+              setPickerOpen((v) => !v);
+            }}
             style={{
               width: '100%',
               padding: '18px 24px',
@@ -141,16 +149,16 @@ export function GPRoomScreen() {
               background: 'transparent',
               border: 'none',
               cursor: 'pointer',
-              fontFamily: "'Nunito', sans-serif",
+              fontFamily: "'Fredoka', sans-serif",
             }}
           >
             <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{ fontSize: 22 }}>{CLINIC_ICON[activeClinic]}</span>
-              <span>
-                <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--ink-soft)', display: 'block', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>
-                  Active Department
+              <span style={{ fontSize: 26 }}>{CLINIC_ICON[activeClinic]}</span>
+              <span style={{ textAlign: 'left' }}>
+                <span style={{ fontSize: 13, fontWeight: 800, color: '#151B3D', opacity: 0.8, display: 'block', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>
+                  Selected Department
                 </span>
-                <span style={{ fontSize: 17, fontWeight: 900, color: 'var(--ink)' }}>
+                <span style={{ fontSize: 18, fontWeight: 850, color: '#151B3D' }}>
                   {CLINIC_LABELS[activeClinic]}
                 </span>
               </span>
@@ -158,15 +166,15 @@ export function GPRoomScreen() {
             <span
               style={{
                 width: 34, height: 34, borderRadius: '50%',
-                background: pickerOpen ? 'var(--mint-lt)' : 'var(--bg-soft)',
-                border: `1.5px solid ${pickerOpen ? 'var(--mint)' : 'var(--line)'}`,
+                background: pickerOpen ? 'var(--mint-lt)' : 'var(--cream)',
+                border: '3px solid #151B3D',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontWeight: 900, fontSize: 16, color: pickerOpen ? 'var(--mint-deep)' : 'var(--ink-2)',
-                transition: 'all 0.2s ease',
+                fontWeight: 900, fontSize: 16, color: '#151B3D',
                 transform: pickerOpen ? 'rotate(180deg)' : 'none',
+                boxShadow: '1.5px 1.5px 0px #151B3D',
               }}
             >
-              ▾
+              ▼
             </span>
           </button>
 
@@ -178,8 +186,9 @@ export function GPRoomScreen() {
                 display: 'flex',
                 gap: 8,
                 flexWrap: 'wrap',
-                borderTop: '1.5px solid var(--line)',
+                borderTop: '3px solid #151B3D',
                 paddingTop: 16,
+                background: 'var(--bg)',
               }}
             >
               {availableClinics.map((id) => {
@@ -188,7 +197,9 @@ export function GPRoomScreen() {
                   <span
                     key={id}
                     className="tap"
+                    onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
                     onClick={() => {
+                      soundSystem.playClick();
                       store.setPolyclinicClinic(id);
                       setPickerOpen(false);
                     }}
@@ -198,14 +209,14 @@ export function GPRoomScreen() {
                       gap: 6,
                       padding: '8px 14px',
                       borderRadius: 'var(--r-pill)',
-                      border: `2px solid ${isActive ? 'var(--mint)' : 'var(--line)'}`,
-                      background: isActive ? 'var(--mint-lt)' : 'var(--bg)',
+                      border: '3px solid #151B3D',
+                      background: isActive ? 'var(--mint-lt)' : '#ffffff',
                       fontSize: 13,
                       fontWeight: 800,
-                      color: isActive ? 'var(--mint-deep)' : 'var(--ink-2)',
+                      color: '#151B3D',
                       cursor: 'pointer',
-                      transition: 'all 0.18s ease',
-                      fontFamily: "'Nunito', sans-serif",
+                      boxShadow: isActive ? '3px 3px 0px #151B3D' : '1.5px 1.5px 0px #151B3D',
+                      fontFamily: "'Fredoka', sans-serif",
                     }}
                   >
                     {CLINIC_ICON[id]} {CLINIC_LABELS[id]}
@@ -216,241 +227,247 @@ export function GPRoomScreen() {
           )}
         </div>
 
-        {/* Two action cards */}
+        {/* Two main options (Spotlight patient quest vs Browse archive) */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: 24,
+            gridTemplateColumns: '1.25fr 1fr',
+            gap: 28,
+            alignItems: 'start',
           }}
         >
-          {/* LEFT: Accept next patient */}
+          {/* LEFT COLUMN: HERO INTRO INCOMING PATIENT CASE */}
           <div
-            className={`tap popin ${next ? 'breathe' : ''}`}
-            onClick={() => next && store.acceptNextPatient()}
+            className={`popin ${next ? 'breathe' : ''}`}
             style={{
-              background: 'white',
+              background: '#ffffff',
               borderRadius: 'var(--r-xl)',
-              border: `2.5px solid ${next ? 'var(--coral)' : 'rgba(74,74,106,0.1)'}`,
-              boxShadow: next
-                ? '0 12px 40px rgba(255,107,107,0.18), 0 4px 12px rgba(26,26,46,0.06)'
-                : '0 4px 16px rgba(26,26,46,0.05)',
-              padding: 28,
+              border: '4px solid #151B3D',
+              boxShadow: next ? '6px 6px 0px #151B3D' : '3px 3px 0px #151B3D',
+              padding: '32px 32px 28px',
               position: 'relative',
-              cursor: next ? 'pointer' : 'not-allowed',
-              opacity: next ? 1 : 0.55,
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'center',
               justifyContent: 'space-between',
+              minHeight: 450,
               overflow: 'hidden',
-              minHeight: 400,
             }}
           >
-            {/* Top accent */}
-            {next && (
-              <div style={{
-                position: 'absolute', top: 0, left: 0, right: 0, height: 5,
-                background: 'linear-gradient(90deg, var(--coral) 0%, var(--peach) 100%)',
-                borderRadius: '32px 32px 0 0',
-              }} />
-            )}
+            {/* Colorful top header strip */}
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 12, background: 'var(--rose)', borderBottom: '4px solid #151B3D' }} />
 
-            {/* Floating badge */}
-            <div style={{ position: 'absolute', top: 18, left: 20 }}>
-              <span className="chip coral" style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11 }}>
-                Patient Intake
+            {/* Header Tag */}
+            <div style={{ position: 'absolute', top: -14, left: 24, zIndex: 5 }}>
+              <span 
+                className="chip coral" 
+                style={{ 
+                  fontFamily: "'Fredoka', sans-serif", 
+                  fontSize: 12,
+                  border: '3.5px solid #151B3D',
+                  boxShadow: '3px 3px 0px #151B3D',
+                  background: 'var(--coral)',
+                  color: '#ffffff',
+                }}
+              >
+                PATIENT QUEST
               </span>
             </div>
 
-            {/* Avatar area */}
-            <div style={{ marginTop: 36, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, flex: 1 }}>
-              <div
-                className="floaty"
-                style={{
-                  width: 160,
-                  height: 160,
-                  borderRadius: '50%',
-                  background: next
-                    ? 'linear-gradient(135deg, rgba(255,160,122,0.12) 0%, rgba(255,107,107,0.08) 100%)'
-                    : 'var(--bg-soft)',
-                  border: `2.5px solid ${next ? 'var(--coral)' : 'rgba(74,74,106,0.1)'}`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: next ? '0 12px 36px rgba(255,107,107,0.18)' : 'none',
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                {next && (
-                  <div style={{
-                    position: 'absolute', inset: 0,
-                    background: 'radial-gradient(circle, rgba(255,213,107,0.18) 0%, transparent 70%)',
-                    pointerEvents: 'none', zIndex: 2,
-                  }} />
-                )}
-                {next ? (
-                  <PatientFace
-                    style={tweaks.avatarStyle}
-                    skin={next.skin}
-                    hair={next.hair}
-                    size={130}
-                    mood={next.mood}
-                    accessory={next.accessory}
-                    gender={next.sex}
-                    age={next.age}
-                  />
-                ) : (
-                  <span style={{ fontSize: 52 }}>{CLINIC_ICON[activeClinic]}</span>
-                )}
-              </div>
-
-              <div style={{ textAlign: 'center', width: '100%' }}>
-                <h2 style={{ fontSize: 22, fontWeight: 900, marginBottom: 8, color: 'var(--ink)', fontFamily: "'Nunito', sans-serif" }}>
-                  {next ? 'Invite Patient In' : 'Queue Empty'}
-                </h2>
-                <p style={{ fontSize: 14, color: 'var(--ink-2)', fontWeight: 600, lineHeight: 1.5, marginBottom: 16, maxWidth: 260, margin: '0 auto 16px' }}>
-                  {next
-                    ? `Ready to welcome ${next.name} into the consultation room.`
-                    : `No simulation cases queued in ${CLINIC_LABELS[activeClinic]}.`}
-                </p>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: 6, flexWrap: 'wrap' }}>
-                  {next && (
-                    <>
-                      <span className="chip sky" style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11 }}>
-                        {next.name.split(' ')[0]} · {next.age}Y · {next.sex === 'F' ? 'F' : 'M'}
-                      </span>
-                      <span className="chip coral" style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11 }}>
-                        {next.cond}
-                      </span>
-                    </>
-                  )}
-                  <span className="chip butter" style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11 }}>
-                    {queueAhead} in roster
-                  </span>
+            {next ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'center', width: '100%', marginTop: 8 }}>
+                
+                {/* Speech Bubble */}
+                <div 
+                  className="popin"
+                  style={{
+                    position: 'relative',
+                    background: 'var(--cream-2)',
+                    border: '3.5px solid #151B3D',
+                    borderRadius: '24px',
+                    padding: '16px 20px',
+                    fontWeight: 800,
+                    fontSize: 16,
+                    lineHeight: 1.5,
+                    color: '#151B3D',
+                    boxShadow: '4px 4px 0px #151B3D',
+                    fontFamily: "'Fredoka', sans-serif",
+                    fontStyle: 'italic',
+                    width: '100%',
+                    textAlign: 'center',
+                    marginTop: 8,
+                  }}
+                >
+                  "I've been feeling {next.complaint.toLowerCase()} lately..."
+                  <div style={{ position: 'absolute', bottom: -10, left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '12px solid #151B3D' }} />
+                  <div style={{ position: 'absolute', bottom: -6, left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '9px solid transparent', borderRight: '9px solid transparent', borderTop: '10px solid var(--cream-2)' }} />
                 </div>
-              </div>
-            </div>
 
-            {/* CTA */}
-            {next && (
-              <div
-                style={{
-                  width: '100%', marginTop: 20,
-                  background: 'linear-gradient(135deg, var(--coral) 0%, var(--peach) 100%)',
-                  borderRadius: 'var(--r-pill)',
-                  padding: '14px 0',
-                  textAlign: 'center',
-                  fontWeight: 900,
-                  fontSize: 16,
-                  color: 'white',
-                  fontFamily: "'Nunito', sans-serif",
-                  boxShadow: '0 6px 20px rgba(255,107,107,0.35)',
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                🚪 Welcome Patient →
+                {/* Massive Patient Portrait Mascot */}
+                <div 
+                  className="floaty"
+                  style={{ 
+                    transform: 'scale(1.25)', 
+                    height: 180, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    margin: '16px 0 8px' 
+                  }}
+                >
+                  <Mascot name={incomingMascot} size={150} mood={next.mood} />
+                </div>
+
+                {/* Character Name & Stats */}
+                <div style={{ textAlign: 'center', width: '100%' }}>
+                  <h2 style={{ fontSize: 28, fontWeight: 850, color: '#151B3D', fontFamily: "'Fredoka', sans-serif", marginBottom: 6 }}>
+                    {next.name}
+                  </h2>
+                  
+                  {/* Collectible Stats pills */}
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap', marginTop: 10 }}>
+                    <span className="chip sky" style={{ fontFamily: "'Fredoka', sans-serif", border: '2.5px solid #151B3D', boxShadow: '2px 2px 0px #151B3D', color: '#151B3D', fontWeight: 800 }}>
+                      👤 {next.age} years old
+                    </span>
+                    <span className="chip lav" style={{ fontFamily: "'Fredoka', sans-serif", border: '2.5px solid #151B3D', boxShadow: '2px 2px 0px #151B3D', color: '#151B3D', fontWeight: 800 }}>
+                      🧬 {next.sex === 'F' ? 'Female' : 'Male'}
+                    </span>
+                    <span className="chip coral" style={{ fontFamily: "'Fredoka', sans-serif", border: '2.5px solid #151B3D', boxShadow: '2px 2px 0px #151B3D', color: '#151B3D', fontWeight: 800 }}>
+                      🚩 {next.cond}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Chunky Invite Button */}
+                <button
+                  type="button"
+                  className="btn-plush primary breathe btn-toy"
+                  style={{
+                    width: '100%',
+                    background: 'var(--peach)',
+                    color: '#ffffff',
+                    fontSize: 18,
+                    padding: '16px 0',
+                    fontFamily: "'Fredoka', sans-serif",
+                    marginTop: 10,
+                  }}
+                  onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
+                  onClick={() => {
+                    soundSystem.playClick();
+                    store.acceptNextPatient();
+                  }}
+                >
+                  🚪 Invite Patient In →
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                <span style={{ fontSize: 48 }}>🌈</span>
+                <h2 style={{ fontSize: 22, fontWeight: 850, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
+                  Queue Empty
+                </h2>
+                <p style={{ fontSize: 16, color: '#151B3D', textAlign: 'center', maxWidth: 280, fontWeight: 700 }}>
+                  No active simulation cases remaining in this specialty roster.
+                </p>
               </div>
             )}
           </div>
 
-          {/* RIGHT: Case library */}
+          {/* RIGHT COLUMN: CASE LIBRARY NAVIGATION */}
           <div
             className="tap popin"
-            onClick={() => store.setScreen('library')}
+            onMouseEnter={(e) => soundSystem.playCardHover(e.currentTarget)}
+            onClick={() => {
+              soundSystem.playClick();
+              store.setScreen('library');
+            }}
             style={{
               background: 'white',
               borderRadius: 'var(--r-xl)',
-              border: '2px solid var(--line)',
-              boxShadow: '0 8px 28px rgba(26,26,46,0.07)',
-              padding: 28,
+              border: '4px solid #151B3D',
+              boxShadow: '4px 4px 0px #151B3D',
+              padding: '32px 28px 24px',
               position: 'relative',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'space-between',
-              overflow: 'hidden',
-              minHeight: 400,
+              minHeight: 450,
               cursor: 'pointer',
-              transition: 'all 300ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+              overflow: 'hidden',
             }}
           >
-            {/* Top accent */}
-            <div style={{
-              position: 'absolute', top: 0, left: 0, right: 0, height: 5,
-              background: 'linear-gradient(90deg, var(--butter) 0%, var(--peach) 100%)',
-              borderRadius: '32px 32px 0 0',
-            }} />
+            {/* Colorful top header strip */}
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 12, background: 'var(--butter)', borderBottom: '4px solid #151B3D' }} />
 
-            <div style={{ position: 'absolute', top: 18, left: 20 }}>
-              <span className="chip butter" style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11 }}>
-                Case Archive
+            {/* Header tag */}
+            <div style={{ position: 'absolute', top: -14, left: 24 }}>
+              <span 
+                className="chip butter" 
+                style={{ 
+                  fontFamily: "'Fredoka', sans-serif", 
+                  fontSize: 12,
+                  border: '3.5px solid #151B3D',
+                  boxShadow: '3px 3px 0px #151B3D',
+                  background: 'var(--butter)',
+                  color: '#151B3D',
+                  fontWeight: 800,
+                }}
+              >
+                CASE ARCHIVE
               </span>
             </div>
 
-            <div style={{ marginTop: 36, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, flex: 1 }}>
-              <div
-                className="floaty"
-                style={{
-                  width: 160,
-                  height: 160,
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, var(--butter-lt) 0%, rgba(255,160,122,0.1) 100%)',
-                  border: '2px solid var(--line)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, width: '100%', flex: 1, justifyContent: 'center', marginTop: 8 }}>
+              <div className="floaty">
                 <IllustratedFolder />
               </div>
 
-              <div style={{ textAlign: 'center', width: '100%' }}>
-                <h2 style={{ fontSize: 22, fontWeight: 900, marginBottom: 8, color: 'var(--ink)', fontFamily: "'Nunito', sans-serif" }}>
+              <div style={{ textAlign: 'center', width: '100%', marginTop: 8 }}>
+                <h2 style={{ fontSize: 24, fontWeight: 850, color: '#151B3D', fontFamily: "'Fredoka', sans-serif", marginBottom: 6 }}>
                   Case Library
                 </h2>
-                <p style={{ fontSize: 14, color: 'var(--ink-2)', fontWeight: 600, lineHeight: 1.5, marginBottom: 16, maxWidth: 260, margin: '0 auto 16px' }}>
-                  Browse clinical cases, pick a specific scenario, and practice on your own terms.
+                <p style={{ fontSize: 14, color: '#151B3D', fontWeight: 700, lineHeight: 1.5, marginBottom: 12, maxWidth: 220, margin: '0 auto' }}>
+                  Browse our complete clinic vault, choose a patient case, and manage them.
                 </p>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: 6, flexWrap: 'wrap' }}>
-                  <span className="chip sky" style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11 }}>
-                    📁 {totalAll} Cases
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 6, flexWrap: 'wrap', marginTop: 12 }}>
+                  <span className="chip sky" style={{ fontFamily: "'Fredoka', sans-serif", border: '2.5px solid #151B3D', boxShadow: '2px 2px 0px #151B3D', color: '#151B3D', fontWeight: 800 }}>
+                    📁 {totalAll} Total Cases
                   </span>
-                  <span className="chip lav" style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11 }}>
-                    24 Specialties
+                  <span className="chip lav" style={{ fontFamily: "'Fredoka', sans-serif", border: '2.5px solid #151B3D', boxShadow: '2px 2px 0px #151B3D', color: '#151B3D', fontWeight: 800 }}>
+                    🩺 24 Specialties
                   </span>
                 </div>
               </div>
             </div>
 
-            <div
+            <button
+              type="button"
+              className="btn-plush primary btn-toy"
               style={{
-                width: '100%', marginTop: 20,
-                background: 'linear-gradient(135deg, var(--butter) 0%, var(--peach) 100%)',
-                borderRadius: 'var(--r-pill)',
-                padding: '14px 0',
-                textAlign: 'center',
-                fontWeight: 900,
+                width: '100%',
+                background: 'var(--butter)',
+                color: '#151B3D',
                 fontSize: 16,
-                color: 'var(--ink)',
-                fontFamily: "'Nunito', sans-serif",
-                boxShadow: '0 6px 20px rgba(255,209,102,0.35)',
-                letterSpacing: '-0.01em',
+                padding: '14px 0',
+                fontFamily: "'Fredoka', sans-serif",
               }}
             >
-              📚 Browse Cases →
-            </div>
+              📚 Browse Library →
+            </button>
           </div>
         </div>
 
         {/* Back button */}
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
           <button
             type="button"
-            className="btn-plush ghost"
-            style={{ fontSize: 14, padding: '12px 28px', fontFamily: "'Nunito', sans-serif" }}
-            onClick={() => store.setScreen('mode')}
+            className="btn-plush ghost btn-toy"
+            style={{ fontSize: 14, padding: '12px 28px', fontFamily: "'Fredoka', sans-serif" }}
+            onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
+            onClick={() => {
+              soundSystem.playClick();
+              store.setScreen('mode');
+            }}
           >
             ← Back to Wings
           </button>

@@ -1,6 +1,8 @@
-import { PatientFace, TopBar } from './primitives';
+import { TopBar } from './primitives';
+import { Mascot, getPatientMascot } from './mascots';
 import { getCase, getPatientCase } from '../data/cases';
-import { store, useStore, useTweaks } from '../game/store';
+import { store, useStore } from '../game/store';
+import { soundSystem } from '../utils/audioSystem';
 
 interface VitalCard {
   label: string;
@@ -22,7 +24,6 @@ function buildVitals(p?: { hr: number; bp: string; spo2: number; temp: number; r
 }
 
 export function BriefScreen() {
-  const tweaks = useTweaks();
   const caseId = useStore((s) => s.selectedCaseId);
   const c = getCase(caseId);
   const patient = getPatientCase(caseId);
@@ -36,141 +37,165 @@ export function BriefScreen() {
         ? { label: 'Urgent', tone: 'peach', color: 'var(--peach)', lt: 'var(--peach-lt)' }
         : { label: 'Routine', tone: 'mint', color: 'var(--mint)', lt: 'var(--mint-lt)' };
 
+  // Map case to correct cartoon mascot
+  const pMascot = getPatientMascot({
+    id: c.id,
+    age: c.age,
+    sex: c.sex,
+    complaint: c.complaint,
+    cond: c.cond,
+  });
+
   return (
     <div className="screen" style={{ background: 'var(--bg)', position: 'relative', overflowY: 'auto' }}>
       <TopBar here={3} steps={['Polyclinic', 'GP', 'Case', 'Brief']} />
 
       <div
         style={{
-          padding: '32px 36px 48px',
+          padding: '40px 24px 56px',
           display: 'grid',
           gridTemplateColumns: '1.25fr 1fr',
           gap: 28,
           maxWidth: 1100,
           margin: '0 auto',
+          alignItems: 'start',
         }}
       >
-        {/* ── LEFT: Clinical datapad ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-
+        {/* ── LEFT: MISSION BRIEFS & DOSSIER ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {/* Header */}
           <div>
-            <div className="chip peach" style={{ marginBottom: 12, fontSize: 12, padding: '6px 16px', fontFamily: "'Nunito', sans-serif" }}>
-              📋 Doorway Briefing
+            <div 
+              className="chip peach" 
+              style={{ 
+                marginBottom: 12, 
+                fontSize: 13, 
+                padding: '6px 16px', 
+                fontFamily: "'Fredoka', sans-serif",
+                border: '3px solid #151B3D',
+                boxShadow: '2.5px 2.5px 0px #151B3D',
+              }}
+            >
+              📋 MISSION DOSSIER BRIEFING
             </div>
+            
             <h1
               style={{
-                fontSize: 'clamp(36px, 4vw, 48px)',
+                fontSize: 'clamp(36px, 4vw, 46px)',
                 lineHeight: 1.05,
-                fontFamily: "'Nunito', sans-serif",
-                fontWeight: 900,
-                letterSpacing: '-0.02em',
+                fontFamily: "'Fredoka', sans-serif",
+                fontWeight: 800,
+                color: '#151B3D',
                 marginBottom: 8,
               }}
             >
               {c.name}
             </h1>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 4 }}>
-              <span className="chip sky" style={{ fontSize: 12, fontFamily: "'Nunito', sans-serif" }}>
+            
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+              <span className="chip sky" style={{ fontSize: 13, fontFamily: "'Fredoka', sans-serif", border: '2px solid #151B3D', boxShadow: '1.5px 1.5px 0px #151B3D' }}>
                 {c.age}Y · {c.sex === 'F' ? 'Female' : 'Male'}
               </span>
               <span
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 5,
-                  background: severityChip.lt, border: `1.5px solid ${severityChip.color}`,
-                  borderRadius: 'var(--r-pill)', padding: '4px 14px',
-                  fontSize: 12, fontWeight: 800, color: 'var(--ink)',
-                  fontFamily: "'Nunito', sans-serif",
+                  background: severityChip.lt, border: `2.5px solid #151B3D`,
+                  borderRadius: 'var(--r-pill)', padding: '5px 14px',
+                  fontSize: 13, fontWeight: 800, color: '#151B3D',
+                  fontFamily: "'Fredoka', sans-serif",
+                  boxShadow: '1.5px 1.5px 0px #151B3D',
                 }}
               >
-                <span style={{ width: 7, height: 7, borderRadius: '50%', background: severityChip.color, display: 'inline-block' }} />
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: severityChip.color, border: '1.5px solid #151B3D', display: 'inline-block' }} />
                 {severityChip.label}
               </span>
-              <span className="chip" style={{ fontSize: 11, fontFamily: "'Nunito', sans-serif" }}>
+              <span className="chip" style={{ fontSize: 13, fontFamily: "'Fredoka', sans-serif", border: '2px solid #151B3D', boxShadow: '1.5px 1.5px 0px #151B3D' }}>
                 Chart #{caseId.substring(0, 4).toUpperCase()}
               </span>
             </div>
           </div>
 
-          {/* Speech bubble — chief complaint */}
+          {/* Chief complaint speech bubble */}
           <div
             style={{
               background: 'white',
               borderRadius: 'var(--r-xl)',
               padding: 24,
-              border: '2px solid var(--line)',
-              boxShadow: '0 4px 20px rgba(26,26,46,0.06)',
+              border: '4px solid #151B3D',
+              boxShadow: '4px 4px 0px #151B3D',
               position: 'relative',
             }}
           >
             <div
               style={{
-                position: 'absolute', top: -1, left: 0, right: 0, height: 4,
-                background: 'linear-gradient(90deg, var(--coral) 0%, var(--peach) 50%, var(--butter) 100%)',
-                borderRadius: '32px 32px 0 0',
+                position: 'absolute', top: 0, left: 0, right: 0, height: 8,
+                background: 'var(--peach)',
+                borderBottom: '4px solid #151B3D',
               }}
             />
-            <div style={{ fontSize: 11, fontWeight: 900, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12, marginTop: 2 }}>
-              💬 Chief Complaint
+            <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12, marginTop: 4, fontFamily: "'Fredoka', sans-serif" }}>
+              💬 CHIEF COMPLAINT
             </div>
             <div
               style={{
                 fontSize: 18,
                 fontWeight: 700,
-                lineHeight: 1.5,
-                color: 'var(--ink)',
+                lineHeight: 1.55,
+                color: '#151B3D',
                 fontStyle: 'italic',
                 paddingLeft: 16,
-                borderLeft: '3.5px solid var(--peach)',
+                borderLeft: '4px solid var(--peach)',
+                fontFamily: "'Fredoka', sans-serif",
               }}
             >
               "{chiefComplaint}"
             </div>
           </div>
 
-          {/* Arrival notes */}
+          {/* Clinical observation briefing */}
           <div
             style={{
-              background: 'var(--bg-mint)',
-              border: '1.5px solid var(--mint)',
+              background: 'var(--mint-lt)',
+              border: '3px solid #151B3D',
               borderRadius: 'var(--r-lg)',
               padding: '16px 20px',
+              boxShadow: '3px 3px 0px #151B3D',
             }}
           >
-            <div style={{ fontSize: 11, fontWeight: 900, color: 'var(--mint-deep)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
-              👁️ Presentation & Observation
+            <div style={{ fontSize: 13, fontWeight: 900, color: '#151B3D', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, fontFamily: "'Fredoka', sans-serif" }}>
+              👁️ Doorway Notes & Observation
             </div>
-            <div style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.5, color: 'var(--ink-2)' }}>
+            <div style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.5, color: '#151B3D' }}>
               {arrivalBlurb}
             </div>
           </div>
 
-          {/* Directives panel */}
+          {/* Game objectives card */}
           <div
             style={{
-              background: 'linear-gradient(135deg, var(--sky-lt) 0%, var(--lav-lt) 100%)',
-              border: '2px solid var(--sky)',
+              background: 'var(--lav-lt)',
+              border: '3px solid #151B3D',
               borderRadius: 'var(--r-lg)',
               padding: '18px 22px',
+              boxShadow: '3px 3px 0px #151B3D',
             }}
           >
-            <div style={{ fontSize: 11, fontWeight: 900, color: 'var(--sky-deep)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--sky)', display: 'inline-block' }} />
-              Your Objectives
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#151B3D', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6, fontFamily: "'Fredoka', sans-serif" }}>
+              🎯 CLINICAL QUEST OBJECTIVES
             </div>
             <ol style={{ margin: 0, paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
-                'Take a full clinical history through voice',
-                'Perform diagnostic tests if clinically indicated',
-                'Agree a shared management plan with the patient',
+                'Interrogate patient history using advanced interactive voice dialogue',
+                'Order diagnostic labs, imaging panels and procedures in the examine interface',
+                'Explain your definitive diagnosis and coordinate a consensus management plan',
               ].map((task, i) => (
                 <li
                   key={i}
                   style={{
-                    fontSize: 14, fontWeight: 700,
-                    color: 'var(--ink)',
+                    fontSize: 16, fontWeight: 800,
+                    color: '#151B3D',
                     lineHeight: 1.5,
-                    paddingLeft: 6,
+                    paddingLeft: 4,
                   }}
                 >
                   {task}
@@ -180,149 +205,126 @@ export function BriefScreen() {
           </div>
         </div>
 
-        {/* ── RIGHT: Patient persona + Vitals + CTA ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-
-          {/* Patient persona card */}
+        {/* ── RIGHT: PATIENT DOSSIER CARD & VITALS POWER METERS ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {/* Patient Card dossier */}
           <div
-            className="popin"
             style={{
               background: 'white',
               borderRadius: 'var(--r-xl)',
               padding: 24,
-              border: '2px solid var(--line)',
-              boxShadow: '0 8px 30px rgba(26,26,46,0.08)',
+              border: '4px solid #151B3D',
+              boxShadow: '6px 6px 0px #151B3D',
               position: 'relative',
               overflow: 'hidden',
             }}
           >
-            {/* Gradient top */}
             <div style={{
               position: 'absolute', top: 0, left: 0, right: 0,
-              height: 80,
-              background: 'linear-gradient(135deg, var(--peach-lt) 0%, var(--rose-lt) 100%)',
-              pointerEvents: 'none',
+              height: 90,
+              background: 'var(--rose-lt)',
+              borderBottom: '4px solid #151B3D',
             }} />
 
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', gap: 18, paddingTop: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, paddingTop: 30, zIndex: 5, position: 'relative' }}>
               <div
                 className="floaty"
                 style={{
-                  width: 110,
-                  height: 110,
+                  width: 100,
+                  height: 100,
                   borderRadius: '50%',
                   background: 'white',
-                  border: '3px solid white',
-                  boxShadow: '0 8px 24px rgba(26,26,46,0.12)',
+                  border: '3.5px solid #151B3D',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
                   overflow: 'hidden',
+                  boxShadow: '3px 3px 0px #151B3D',
                 }}
               >
-                <PatientFace
-                  style={tweaks.avatarStyle}
-                  skin={c.skin}
-                  hair={c.hair}
-                  size={105}
-                  mood={c.mood}
-                  accessory={c.accessory}
-                  gender={c.sex}
-                  age={c.age}
-                />
+                <Mascot name={pMascot} size={90} mood={c.mood} />
               </div>
               <div style={{ paddingBottom: 4 }}>
-                <div style={{ fontWeight: 900, fontSize: 26, color: 'var(--ink)', fontFamily: "'Nunito', sans-serif", lineHeight: 1 }}>
-                  {c.name.split(' ')[0]}
+                <div style={{ fontWeight: 800, fontSize: 24, color: 'var(--ink)', fontFamily: "'Fredoka', sans-serif", lineHeight: 1.1 }}>
+                  {c.name}
                 </div>
-                <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--ink-soft)', marginTop: 4 }}>
-                  {c.age} years · {c.sex === 'F' ? 'Female' : 'Male'} · {c.cond}
-                </div>
-                <div style={{ marginTop: 10 }}>
-                  <span
-                    style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 5,
-                      background: 'var(--mint-lt)', border: '1.5px solid var(--mint)',
-                      borderRadius: 'var(--r-pill)', padding: '4px 12px',
-                      fontSize: 11, fontWeight: 800, color: 'var(--mint-deep)',
-                      fontFamily: "'Nunito', sans-serif",
-                    }}
-                  >
-                    <span className="breathe" style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} />
-                    Ready for Encounter
-                  </span>
+                <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--ink-soft)', marginTop: 4, fontFamily: "'Fredoka', sans-serif" }}>
+                  {c.age} yrs · {c.sex === 'F' ? 'Female' : 'Male'} · {c.cond}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Vitals grid */}
+          {/* Vitals power badge parameters */}
           <div
             style={{
               background: 'white',
               borderRadius: 'var(--r-xl)',
               padding: 20,
-              border: '1.5px solid var(--line)',
-              boxShadow: '0 4px 16px rgba(26,26,46,0.06)',
+              border: '4px solid #151B3D',
+              boxShadow: '4px 4px 0px #151B3D',
             }}
           >
-            <div style={{ fontSize: 11, fontWeight: 900, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14 }}>
-              📊 Physiological Telemetry
+            <div style={{ fontSize: 13, fontWeight: 900, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14, fontFamily: "'Fredoka', sans-serif" }}>
+              🩺 PHYSIOLOGICAL GAUGES
             </div>
+            
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
               {VITALS.map((v) => (
                 <div
                   key={v.label}
+                  onMouseEnter={(e) => soundSystem.playCardHover(e.currentTarget)}
                   style={{
                     background: v.lt,
-                    border: `2px solid ${v.color}`,
+                    border: '2.5px solid #151B3D',
                     borderRadius: 16,
                     padding: '12px 4px',
                     textAlign: 'center',
-                    transition: 'all 0.3s',
+                    boxShadow: '2px 2px 0px #151B3D',
+                    transition: 'transform 0.1s ease',
                   }}
                 >
-                  <div style={{ fontSize: 16, color: v.color, marginBottom: 4 }}>{v.icon}</div>
+                  <div style={{ fontSize: 18, color: 'var(--ink)', marginBottom: 4 }}>{v.icon}</div>
                   <div
                     style={{
-                      fontWeight: 900,
-                      fontSize: 17,
-                      lineHeight: 1,
-                      color: 'var(--ink)',
-                      fontFamily: "'Nunito', sans-serif",
+                      fontWeight: 800,
+                      fontSize: 16,
+                      lineHeight: 1.1,
+                      color: '#151B3D',
+                      fontFamily: "'Fredoka', sans-serif",
                     }}
                   >
                     {v.value}
                   </div>
-                  <div style={{ fontSize: 9, fontWeight: 800, color: 'var(--ink-2)', marginTop: 4, textTransform: 'uppercase' }}>
-                    {v.label} <span style={{ color: 'var(--ink-soft)' }}>{v.unit}</span>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: '#151B3D', marginTop: 4, textTransform: 'uppercase', fontFamily: "'Fredoka', sans-serif" }}>
+                    {v.label}
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Simulation time */}
+          {/* Quest target timing */}
           <div
             style={{
               background: 'white',
               borderRadius: 'var(--r-lg)',
               padding: '16px 20px',
-              border: '1.5px solid var(--line)',
-              boxShadow: '0 2px 10px rgba(26,26,46,0.05)',
+              border: '3px solid #151B3D',
+              boxShadow: '3px 3px 0px #151B3D',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
             }}
           >
             <div>
-              <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: "'Fredoka', sans-serif" }}>
                 Target Duration
               </div>
               <div style={{
-                fontSize: 30, fontWeight: 900, color: 'var(--rose)',
-                fontFamily: "'Nunito', sans-serif", marginTop: 2,
+                fontSize: 28, fontWeight: 800, color: 'var(--rose-deep)',
+                fontFamily: "'Fredoka', sans-serif", marginTop: 2,
               }}>
                 08:00
               </div>
@@ -335,35 +337,46 @@ export function BriefScreen() {
                     width: 8,
                     height: 12 + i * 4,
                     borderRadius: 4,
-                    background: `hsl(${160 + i * 8}, 65%, ${68 - i * 4}%)`,
+                    border: '1.5px solid #151B3D',
+                    background: `hsl(${160 + i * 8}, 75%, 60%)`,
                   }}
                 />
               ))}
             </div>
           </div>
 
-          {/* CTA */}
+          {/* Chunky knock CTA button */}
           <button
             type="button"
-            className="btn-plush primary breathe"
+            className="btn-plush primary breathe btn-toy"
             style={{
               fontSize: 18,
-              padding: '20px 0',
+              padding: '18px 0',
               borderRadius: 'var(--r-xl)',
-              fontWeight: 900,
-              fontFamily: "'Nunito', sans-serif",
+              fontWeight: 800,
+              fontFamily: "'Fredoka', sans-serif",
               width: '100%',
+              background: 'var(--green)',
+              color: '#ffffff',
             }}
-            onClick={() => store.acceptNextPatient(caseId)}
+            onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
+            onClick={() => {
+              soundSystem.playClick();
+              store.acceptNextPatient(caseId);
+            }}
           >
             🚪 Knock & Enter Room →
           </button>
 
           <button
             type="button"
-            className="btn-plush ghost"
-            style={{ fontSize: 14, padding: '12px 0', fontFamily: "'Nunito', sans-serif", width: '100%' }}
-            onClick={() => store.setScreen('gpRoom')}
+            className="btn-plush ghost btn-toy"
+            style={{ fontSize: 14, padding: '12px 0', fontFamily: "'Fredoka', sans-serif", width: '100%', color: '#151B3D' }}
+            onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
+            onClick={() => {
+              soundSystem.playClick();
+              store.setScreen('gpRoom');
+            }}
           >
             ← Back to Reception
           </button>

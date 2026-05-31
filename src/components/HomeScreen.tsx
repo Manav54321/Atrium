@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import { PatientFace, TopBar } from './primitives';
-import { store, useTweaks } from '../game/store';
+import { TopBar, Doodle } from './primitives';
+import { Mascot } from './mascots';
+import { store } from '../game/store';
+import { soundSystem } from '../utils/audioSystem';
 import {
   listEvalHistory,
   deleteEvalHistory,
@@ -95,23 +97,27 @@ function StatPill({ value, label, emoji }: { value: string; label: string; emoji
   return (
     <div
       style={{
-        background: 'white',
-        borderRadius: 20,
-        padding: '18px 20px',
+        background: '#ffffff',
+        borderRadius: 'var(--r-md)',
+        padding: '16px 20px',
         display: 'flex',
         flexDirection: 'column',
         gap: 6,
-        boxShadow: '0 4px 16px rgba(26,26,46,0.06)',
-        border: '1.5px solid var(--line)',
+        border: '4px solid #151B3D',
+        boxShadow: '4px 4px 0px #151B3D',
         flex: 1,
         minWidth: 0,
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
-      <div style={{ fontSize: 24 }}>{emoji}</div>
-      <div style={{ fontWeight: 900, fontSize: 30, lineHeight: 1, color: 'var(--ink)', fontFamily: "'Nunito', sans-serif" }}>
+      {/* Decorative top strip */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, background: 'var(--peach)' }} />
+      <div style={{ fontSize: 24, marginTop: 4 }}>{emoji}</div>
+      <div style={{ fontWeight: 800, fontSize: 32, lineHeight: 1, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
         {value}
       </div>
-      <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+      <div style={{ fontSize: 11, fontWeight: 800, color: '#151B3D', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.85 }}>
         {label}
       </div>
     </div>
@@ -119,7 +125,6 @@ function StatPill({ value, label, emoji }: { value: string; label: string; emoji
 }
 
 export function HomeScreen() {
-  const tweaks = useTweaks();
   const [history, setHistory] = useState<EvalHistoryEntry[]>([]);
 
   useEffect(() => {
@@ -140,438 +145,455 @@ export function HomeScreen() {
 
       <div
         style={{
-          padding: '32px 36px 48px',
-          maxWidth: 1180,
+          padding: '24px 24px 60px',
+          maxWidth: 1200,
           margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: '1.35fr 1fr',
-          gap: 28,
-          alignItems: 'start',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 32,
         }}
       >
-        {/* ── LEFT COLUMN ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-
-          {/* Welcome hero */}
-          <div>
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                background: 'var(--mint-lt)',
-                border: '1.5px solid var(--mint)',
-                borderRadius: 'var(--r-pill)',
-                padding: '5px 14px',
-                fontFamily: "'Nunito', sans-serif",
-                fontWeight: 800,
-                fontSize: 12,
-                color: 'var(--mint-deep)',
-                marginBottom: 12,
-                letterSpacing: '0.03em',
-              }}
-            >
-              {stats.streakDays > 0 ? `🔥 ${stats.streakDays}-day streak` : '👋 Welcome'}
-            </div>
-            <h1
-              style={{
-                fontSize: 'clamp(36px, 4vw, 52px)',
-                lineHeight: 1.05,
-                fontFamily: "'Nunito', sans-serif",
-                fontWeight: 900,
-                letterSpacing: '-0.02em',
-                marginBottom: 10,
-              }}
-            >
-              {stats.count === 0 ? (
-                <>Ready when<br />you are! 🌟</>
-              ) : (
-                <>Good to see<br />you, Doctor 👋</>
-              )}
-            </h1>
-            <p
-              style={{
-                fontSize: 16,
-                color: 'var(--ink-2)',
-                fontWeight: 600,
-                lineHeight: 1.55,
-                maxWidth: 480,
-                margin: 0,
-              }}
-            >
-              {stats.count === 0
-                ? 'Pick a polyclinic and your first patient walks in. Your training log starts filling in after that.'
-                : 'Your training log is updating with every case you complete. Keep the streak going!'}
-            </p>
+        {/* ─── REDESIGNED HERO: GAME WORLD CONSULTATION ROOM ─── */}
+        <div
+          className="popin"
+          style={{
+            background: 'var(--butter-lt)',
+            border: '4px solid #151B3D',
+            borderRadius: 'var(--r-xl)',
+            boxShadow: '6px 6px 0px #151B3D',
+            position: 'relative',
+            padding: '40px 48px',
+            overflow: 'hidden',
+            display: 'flex',
+            alignItems: 'center',
+            minHeight: 340,
+          }}
+        >
+          {/* Environment details (Clouds, trees, medical icons, clinic building) */}
+          <div style={{ position: 'absolute', top: '15%', left: '4%', opacity: 0.8 }} className="drift">
+            <Doodle kind="cloud" size={70} color="#ffffff" />
+          </div>
+          <div style={{ position: 'absolute', top: '22%', right: '35%', opacity: 0.6 }} className="drift">
+            <Doodle kind="cloud" size={54} color="#ffffff" />
+          </div>
+          <div style={{ position: 'absolute', bottom: '4%', left: '30%', opacity: 0.2 }}>
+            {/* Cute mini vector clinic building on base */}
+            <svg width="60" height="60" viewBox="0 0 100 100" fill="none">
+              <rect x="10" y="30" width="80" height="70" rx="10" fill="#ffffff" stroke="#151B3D" strokeWidth="4" />
+              <rect x="35" y="10" width="30" height="20" rx="5" fill="#4ECDC4" stroke="#151B3D" strokeWidth="4" />
+              <rect x="42" y="50" width="16" height="50" fill="#FF8A5B" stroke="#151B3D" strokeWidth="4" />
+            </svg>
+          </div>
+          
+          {/* Floating Game World Doodles */}
+          <div style={{ position: 'absolute', top: '12%', left: '42%', opacity: 0.85 }} className="wobble">
+            <Doodle kind="pill" size={40} color="var(--rose)" />
+          </div>
+          <div style={{ position: 'absolute', bottom: '15%', left: '5%', opacity: 0.85 }} className="floaty">
+            <Doodle kind="stetho" size={44} color="var(--mint)" />
+          </div>
+          <div style={{ position: 'absolute', top: '45%', right: '42%', opacity: 0.85 }} className="wobble">
+            <Doodle kind="heart" size={38} color="var(--coral)" />
+          </div>
+          <div style={{ position: 'absolute', top: '8%', right: '8%', opacity: 0.85 }} className="floaty">
+            <Doodle kind="star" size={36} color="var(--butter)" />
           </div>
 
-          {/* Hero action card */}
-          {stats.count === 0 ? (
-            <div
-              className="popin"
-              style={{
-                background: 'white',
-                borderRadius: 'var(--r-xl)',
-                padding: 28,
-                position: 'relative',
-                boxShadow: '0 8px 32px rgba(26,26,46,0.08)',
-                border: '1.5px solid var(--line)',
-                overflow: 'hidden',
-              }}
-            >
-              {/* Top accent bar */}
-              <div style={{
-                position: 'absolute', top: 0, left: 0, right: 0, height: 5,
-                background: 'linear-gradient(90deg, var(--coral) 0%, var(--peach) 50%, var(--butter) 100%)',
-                borderRadius: '32px 32px 0 0',
-              }} />
-              <div style={{ paddingTop: 8, display: 'flex', gap: 20, alignItems: 'center' }}>
-                <div className="floaty" style={{ flexShrink: 0 }}>
-                  <div style={{
-                    width: 90, height: 90, borderRadius: '50%',
-                    background: 'linear-gradient(135deg, var(--bg-soft) 0%, var(--bg-mint) 100%)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    border: '2px solid var(--line)',
-                  }}>
-                    <PatientFace style={tweaks.avatarStyle} skin="#E8B68F" hair="#3B2A1F" size={86} mood="neutral" />
-                  </div>
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 900, fontSize: 20, color: 'var(--ink)', marginBottom: 6, fontFamily: "'Nunito', sans-serif" }}>
-                    No case active yet
-                  </div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink-2)', lineHeight: 1.5, marginBottom: 16 }}>
-                    Choose a polyclinic below — your first patient will walk straight in.
-                  </div>
-                  <button
-                    type="button"
-                    className="btn-plush primary breathe"
-                    style={{ fontSize: 15, padding: '13px 28px', fontFamily: "'Nunito', sans-serif" }}
-                    onClick={() => store.setScreen('mode')}
-                  >
-                    Start Session →
-                  </button>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div
-              className="popin tap"
-              onClick={() => store.viewEvalHistory(history[0].id)}
-              style={{
-                background: 'white',
-                borderRadius: 'var(--r-xl)',
-                padding: 28,
-                position: 'relative',
-                boxShadow: '0 8px 32px rgba(26,26,46,0.08)',
-                border: '1.5px solid var(--line)',
-                overflow: 'hidden',
-                cursor: 'pointer',
-              }}
-            >
-              <div style={{
-                position: 'absolute', top: 0, left: 0, right: 0, height: 5,
-                background: `linear-gradient(90deg, ${VERDICT_COLOR[history[0].verdict]} 0%, ${VERDICT_COLOR[history[0].verdict]}aa 100%)`,
-                borderRadius: '32px 32px 0 0',
-              }} />
-              <div style={{
-                position: 'absolute', top: 20, right: 20,
-                background: VERDICT_BG[history[0].verdict],
-                border: `1.5px solid ${VERDICT_COLOR[history[0].verdict]}`,
-                borderRadius: 'var(--r-pill)',
-                padding: '4px 12px',
-                fontSize: 11, fontWeight: 800, color: 'var(--ink)',
-                fontFamily: "'Nunito', sans-serif",
-              }}>
-                {VERDICT_LABEL[history[0].verdict]}
-              </div>
-              <div style={{ paddingTop: 8, display: 'flex', gap: 20, alignItems: 'center' }}>
-                <div className="floaty" style={{ flexShrink: 0 }}>
-                  <div style={{
-                    width: 90, height: 90, borderRadius: '50%',
-                    background: 'var(--bg-soft)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    border: '2px solid var(--line)',
-                  }}>
-                    <PatientFace
-                      style={tweaks.avatarStyle}
-                      skin={history[0].caseGender === 'F' ? '#F0C4A8' : '#E8B68F'}
-                      hair="#3B2A1F"
-                      size={86}
-                      mood="neutral"
-                    />
-                  </div>
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 900, fontSize: 20, color: 'var(--ink)', marginBottom: 4, fontFamily: "'Nunito', sans-serif" }}>
-                    {history[0].caseName}, {history[0].caseAge}
-                  </div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink-2)', marginBottom: 14 }}>
-                    {history[0].diagnosisLabel}
-                  </div>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                    <span className="chip" style={{ fontSize: 11 }}>🕐 {relativeDate(history[0].savedAt)}</span>
-                    {stats.weakest && (
-                      <span className="chip peach" style={{ fontSize: 11 }}>Focus: {stats.weakest.label}</span>
-                    )}
-                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink-soft)', marginLeft: 'auto' }}>
-                      Review →
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Start session button */}
-          <button
-            type="button"
-            className="btn-plush mint breathe"
-            style={{
-              fontSize: 18,
-              padding: '20px 0',
-              alignSelf: 'stretch',
-              borderRadius: 'var(--r-xl)',
-              fontFamily: "'Nunito', sans-serif",
-              fontWeight: 900,
-              letterSpacing: '-0.01em',
-            }}
-            onClick={() => store.setScreen('mode')}
-          >
-            ▶ Start a New Session
-          </button>
-
-          {/* Recent cases */}
           <div
             style={{
-              background: 'white',
-              borderRadius: 'var(--r-xl)',
-              padding: 24,
-              boxShadow: '0 4px 20px rgba(26,26,46,0.06)',
-              border: '1.5px solid var(--line)',
+              display: 'flex',
+              width: '100%',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              zIndex: 5,
+              flexWrap: 'wrap-reverse',
+              gap: 28,
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <div style={{ fontWeight: 900, fontSize: 15, color: 'var(--ink)', fontFamily: "'Nunito', sans-serif" }}>
-                📚 Recent Cases
-              </div>
-              <span
-                style={{ fontSize: 13, fontWeight: 700, color: 'var(--mint-deep)', cursor: 'pointer' }}
-                onClick={() => store.setScreen('history')}
-              >
-                See all →
-              </span>
-            </div>
-
-            {history.length === 0 ? (
+            {/* Left side info */}
+            <div style={{ flex: '1.2', minWidth: 320 }}>
               <div
                 style={{
-                  background: 'var(--bg-soft)',
-                  borderRadius: 16,
-                  padding: '20px 16px',
-                  textAlign: 'center',
-                  border: '2px dashed var(--line)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  background: 'var(--peach)',
+                  border: '3px solid #151B3D',
+                  borderRadius: 'var(--r-pill)',
+                  padding: '6px 16px',
+                  fontFamily: "'Fredoka', sans-serif",
+                  fontWeight: 800,
+                  fontSize: 13,
+                  color: 'white',
+                  marginBottom: 16,
+                  boxShadow: '2px 2px 0px #151B3D',
                 }}
               >
-                <div style={{ fontSize: 32, marginBottom: 8 }}>🩺</div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink-2)' }}>
-                  No reviews yet — finish an encounter to see your AI feedback here.
-                </div>
+                {stats.streakDays > 0 ? `🔥 ${stats.streakDays}-DAY CLINICAL STREAK!` : '👋 WELCOME TO THE CLINIC'}
               </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {history.slice(0, 6).map((r) => {
-                  const color = VERDICT_COLOR[r.verdict];
-                  const bg = VERDICT_BG[r.verdict];
-                  return (
-                    <div
-                      key={r.id}
-                      className="tap"
-                      onClick={() => store.viewEvalHistory(r.id)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 12,
-                        padding: '10px 14px',
-                        background: 'var(--bg)',
-                        border: '1.5px solid var(--line)',
-                        borderRadius: 16,
-                        cursor: 'pointer',
-                        transition: 'all 150ms ease',
-                      }}
-                    >
-                      <div style={{
-                        width: 10, height: 10, borderRadius: '50%',
-                        background: color, flexShrink: 0,
-                        boxShadow: `0 0 8px ${color}`,
-                      }} />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 800, fontSize: 14, color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {r.caseName} <span style={{ fontWeight: 600, color: 'var(--ink-soft)' }}>· {r.caseAge}{r.caseGender}</span>
-                        </div>
-                        <div style={{ fontSize: 11, color: 'var(--ink-soft)', fontWeight: 600 }}>{r.diagnosisLabel}</div>
-                      </div>
-                      <span style={{ background: bg, border: `1.5px solid ${color}`, borderRadius: 'var(--r-pill)', padding: '3px 10px', fontSize: 10, fontWeight: 800, color: 'var(--ink)', whiteSpace: 'nowrap' }}>
-                        {VERDICT_LABEL[r.verdict]}
-                      </span>
-                      <span style={{ fontSize: 11, color: 'var(--ink-soft)', fontWeight: 700, whiteSpace: 'nowrap' }}>
-                        {relativeDate(r.savedAt)}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (window.confirm(`Delete review for ${r.caseName}?`)) onDelete(r.id);
-                        }}
-                        style={{
-                          background: 'transparent', border: 'none',
-                          fontSize: 14, fontWeight: 800, color: 'var(--ink-soft)',
-                          cursor: 'pointer', padding: 4, fontFamily: 'inherit',
-                          flexShrink: 0,
-                        }}
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  );
-                })}
+              
+              <h1
+                style={{
+                  fontSize: 'clamp(36px, 5vw, 48px)',
+                  lineHeight: 1.05,
+                  fontFamily: "'Fredoka', sans-serif",
+                  fontWeight: 850,
+                  color: '#151B3D',
+                  marginBottom: 14,
+                  textShadow: '1px 1px 0px #ffffff',
+                }}
+              >
+                {stats.count === 0 ? "Ready for your next patient?" : "Good to see you, Doctor!"}
+              </h1>
+              
+              <p
+                style={{
+                  fontSize: 16,
+                  color: '#151B3D',
+                  fontWeight: 750,
+                  lineHeight: 1.6,
+                  maxWidth: 440,
+                  margin: '0 0 24px',
+                }}
+              >
+                Step through the polyclinic doors to meet your simulated patient cases. You can talk to them out loud, order diagnostic tests, and get real Attending critiques!
+              </p>
+
+              <button
+                type="button"
+                className="btn-plush primary breathe btn-toy"
+                style={{ 
+                  fontSize: 18, 
+                  padding: '16px 40px', 
+                  fontFamily: "'Fredoka', sans-serif",
+                  background: 'var(--mint)',
+                  color: '#ffffff',
+                }}
+                onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
+                onClick={() => {
+                  soundSystem.playClick();
+                  store.setScreen('mode');
+                }}
+              >
+                🏥 Start Clinic
+              </button>
+            </div>
+
+            {/* Right side GP Doctor Mascot beside Patient (Occupies at least 60% of layout width in display spacing) */}
+            <div 
+              style={{ 
+                flex: '1.8', 
+                display: 'flex', 
+                alignItems: 'flex-end', 
+                justifyContent: 'center',
+                gap: 0,
+                position: 'relative',
+                height: 250,
+              }}
+            >
+              {/* Doctor speech bubble */}
+              <div 
+                style={{ 
+                  position: 'absolute', 
+                  top: -24, 
+                  right: '30%', 
+                  zIndex: 10,
+                  fontFamily: "'Fredoka', sans-serif",
+                  background: '#ffffff',
+                  border: '3px solid #151B3D',
+                  borderRadius: '20px',
+                  padding: '8px 16px',
+                  boxShadow: '3px 3px 0px #151B3D',
+                  fontWeight: 800,
+                  fontSize: 14,
+                  color: '#151B3D',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Ready for your next patient?
+                <div style={{ position: 'absolute', bottom: -10, right: 30, width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderTop: '10px solid #151B3D' }} />
+                <div style={{ position: 'absolute', bottom: -7, right: 31, width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderTop: '8px solid #ffffff' }} />
               </div>
-            )}
+
+              {/* GPMascot */}
+              <div style={{ transform: 'scale(1.25)', transformOrigin: 'bottom center', zIndex: 3 }}>
+                <Mascot name="gp" size={170} />
+              </div>
+
+              {/* Patient Mascot (Propeller-hat child is super cute!) */}
+              <div style={{ transform: 'scale(1.1) translateX(-20px)', transformOrigin: 'bottom center', zIndex: 2, filter: 'brightness(0.98)' }}>
+                <Mascot name="child" size={150} mood="happy" />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* ── RIGHT COLUMN ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20, position: 'sticky', top: 20 }}>
-
-          {/* Stats tiles */}
-          <div
-            style={{
-              background: 'white',
-              borderRadius: 'var(--r-xl)',
-              padding: 24,
-              boxShadow: '0 4px 20px rgba(26,26,46,0.06)',
-              border: '1.5px solid var(--line)',
-            }}
-          >
-            <div style={{ fontWeight: 900, fontSize: 14, color: 'var(--ink)', marginBottom: 16, fontFamily: "'Nunito', sans-serif" }}>
-              📊 Your Clinical Record
-            </div>
-            <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
-              <StatPill
-                value={stats.count > 0 ? String(stats.count) : '—'}
-                label="Cases Done"
-                emoji="🏥"
-              />
-              <StatPill
-                value={stats.count > 0 ? stats.avgRating.toFixed(1) : '—'}
-                label="Avg Rating"
-                emoji="⭐"
-              />
-            </div>
-
-            {/* Weakest domain highlight */}
+        {/* ─── TWO COLUMN STATS & LOGS GRID ─── */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1.25fr 1fr',
+            gap: 28,
+            alignItems: 'start',
+          }}
+        >
+          {/* ── LEFT COLUMN: RECENT HISTORY ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            {/* Recent cases card */}
+            {/* Recent cases card */}
             <div
               style={{
-                background: stats.weakest ? 'var(--bg-soft)' : 'var(--bg)',
-                borderRadius: 18,
-                padding: '16px 18px',
-                border: '1.5px solid var(--line)',
+                background: 'white',
+                borderRadius: 'var(--r-xl)',
+                padding: '36px 28px 28px',
+                boxShadow: 'var(--shadow-md)',
+                border: '4px solid #151B3D',
+                position: 'relative',
+                overflow: 'hidden',
               }}
             >
-              <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
-                Focus Area
+              {/* Colorful top header strip */}
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 12, background: 'var(--peach)', borderBottom: '4px solid #151B3D' }} />
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, marginTop: 8 }}>
+                <div style={{ fontWeight: 850, fontSize: 18, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
+                  📚 Your Case Portfolio
+                </div>
+                <span
+                  style={{ fontSize: 14, fontWeight: 800, color: 'var(--mint-deep)', cursor: 'pointer', fontFamily: "'Fredoka', sans-serif" }}
+                  onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
+                  onClick={() => {
+                    soundSystem.playClick();
+                    store.setScreen('history');
+                  }}
+                >
+                  See all →
+                </span>
               </div>
-              <div style={{ fontWeight: 900, fontSize: 18, color: 'var(--ink)', marginBottom: 10, fontFamily: "'Nunito', sans-serif" }}>
-                {stats.weakest ? `${stats.weakest.emoji} ${stats.weakest.label}` : '— No reviews yet'}
-              </div>
-              {stats.weakest && (
-                <>
-                  <div style={{
-                    height: 12, background: 'var(--line)',
-                    borderRadius: 'var(--r-pill)', overflow: 'hidden', marginBottom: 6,
-                  }}>
-                    <div style={{
-                      height: '100%', width: `${stats.weakest.pct}%`,
-                      background: stats.weakest.color,
-                      borderRadius: 'var(--r-pill)',
-                      transition: 'width 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
-                    }} />
+
+              {history.length === 0 ? (
+                <div
+                  style={{
+                    background: 'var(--bg-soft)',
+                    borderRadius: 24,
+                    padding: '40px 24px',
+                    textAlign: 'center',
+                    border: '3px dashed #151B3D',
+                  }}
+                >
+                  <div style={{ fontSize: 48, marginBottom: 12 }}>🩺</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: '#151B3D', fontFamily: "'Fredoka', sans-serif" }}>
+                    No reviews in your locker yet!
                   </div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink-soft)' }}>
-                    {stats.weakest.pct}% average · needs practice
-                  </div>
-                </>
+                  <p style={{ fontSize: 14, color: '#151B3D', margin: '6px 0 0', fontWeight: 700 }}>
+                    Your clinical scorecard will be saved here after your first consultation!
+                  </p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {history.slice(0, 5).map((r) => {
+                    const color = VERDICT_COLOR[r.verdict];
+                    const bg = VERDICT_BG[r.verdict];
+                    return (
+                      <div
+                        key={r.id}
+                        className="tap"
+                        onMouseEnter={(e) => soundSystem.playCardHover(e.currentTarget)}
+                        onClick={() => {
+                          soundSystem.playClick();
+                          store.viewEvalHistory(r.id);
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 14,
+                          padding: '14px 18px',
+                          background: '#ffffff',
+                          border: '3px solid #151B3D',
+                          borderRadius: 'var(--r-md)',
+                          cursor: 'pointer',
+                          boxShadow: '3px 3px 0px #151B3D',
+                          transition: 'all 150ms ease',
+                        }}
+                      >
+                        <div style={{
+                          width: 14, height: 14, borderRadius: '50%',
+                          background: color, flexShrink: 0,
+                          border: '2.5px solid #151B3D',
+                        }} />
+                        
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontWeight: 800, fontSize: 16, color: '#151B3D', fontFamily: "'Fredoka', sans-serif", whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {r.caseName} <span style={{ fontWeight: 800, color: '#151B3D', opacity: 0.8, fontSize: 13 }}>· {r.caseAge}{r.caseGender}</span>
+                          </div>
+                          <div style={{ fontSize: 13, color: '#151B3D', opacity: 0.85, fontWeight: 800 }}>{r.diagnosisLabel}</div>
+                        </div>
+
+                        <span 
+                          style={{ 
+                            background: bg, 
+                            border: `2.5px solid #151B3D`, 
+                            borderRadius: 'var(--r-pill)', 
+                            padding: '4px 12px', 
+                            fontSize: 13, 
+                            fontWeight: 800, 
+                            color: '#151B3D', 
+                            whiteSpace: 'nowrap',
+                            boxShadow: '1.5px 1.5px 0px #151B3D',
+                            fontFamily: "'Fredoka', sans-serif",
+                          }}
+                        >
+                          {VERDICT_LABEL[r.verdict]}
+                        </span>
+                        
+                        <span style={{ fontSize: 13, color: '#151B3D', opacity: 0.8, fontWeight: 800, whiteSpace: 'nowrap' }}>
+                          {relativeDate(r.savedAt)}
+                        </span>
+                        
+                        <button
+                          type="button"
+                          onMouseEnter={(e) => soundSystem.playHover(e.currentTarget)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            soundSystem.playClick();
+                            if (window.confirm(`Delete review for ${r.caseName}?`)) onDelete(r.id);
+                          }}
+                          style={{
+                            background: 'transparent', 
+                            border: 'none',
+                            fontSize: 16, 
+                            fontWeight: 900, 
+                            color: '#151B3D',
+                            cursor: 'pointer', 
+                            padding: 4, 
+                            fontFamily: 'inherit',
+                            flexShrink: 0,
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
           </div>
 
-          {/* Domain progress */}
-          <div
-            style={{
-              background: 'white',
-              borderRadius: 'var(--r-xl)',
-              padding: 24,
-              boxShadow: '0 4px 20px rgba(26,26,46,0.06)',
-              border: '1.5px solid var(--line)',
-            }}
-          >
-            <div style={{ fontWeight: 900, fontSize: 14, color: 'var(--ink)', marginBottom: 16, fontFamily: "'Nunito', sans-serif" }}>
-              🎯 Domain Progress
-            </div>
+          {/* ── RIGHT COLUMN: STATS PANELS ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            {/* Stats block */}
+            <div
+              style={{
+                background: 'white',
+                borderRadius: 'var(--r-xl)',
+                padding: '36px 24px 24px',
+                boxShadow: 'var(--shadow-md)',
+                border: '4px solid #151B3D',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Colorful top header strip */}
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 12, background: 'var(--lav)', borderBottom: '4px solid #151B3D' }} />
 
-            {stats.count === 0 ? (
-              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink-soft)', fontStyle: 'italic', textAlign: 'center', padding: '12px 0' }}>
-                Domain breakdown unlocks after your first AI review.
+              <div style={{ fontWeight: 850, fontSize: 18, color: '#151B3D', marginBottom: 18, marginTop: 8, fontFamily: "'Fredoka', sans-serif" }}>
+                📊 Clinician Report Card
               </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                {stats.domains.map((d) => (
-                  <div key={d.label}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 800, marginBottom: 7 }}>
-                      <span style={{ color: 'var(--ink)' }}>{d.emoji} {d.label}</span>
-                      <span style={{ color: d.color, fontWeight: 900 }}>{d.pct}%</span>
-                    </div>
-                    <div style={{ height: 12, background: d.lt, borderRadius: 'var(--r-pill)', overflow: 'hidden', border: '1.5px solid var(--line)' }}>
+              <div style={{ display: 'flex', gap: 14, marginBottom: 18 }}>
+                <StatPill
+                  value={stats.count > 0 ? String(stats.count) : '—'}
+                  label="Cases Managed"
+                  emoji="🏥"
+                />
+                <StatPill
+                  value={stats.count > 0 ? stats.avgRating.toFixed(1) : '—'}
+                  label="Attending Score"
+                  emoji="⭐"
+                />
+              </div>
+
+              {/* Weakest domain highlight */}
+              <div
+                style={{
+                  background: stats.weakest ? 'var(--bg-soft)' : 'var(--cream)',
+                  borderRadius: 'var(--r-md)',
+                  padding: '16px 20px',
+                  border: '3px solid #151B3D',
+                  boxShadow: '3px 3px 0px #151B3D',
+                }}
+              >
+                <div style={{ fontSize: 11, fontWeight: 900, color: '#151B3D', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8, fontFamily: "'Fredoka', sans-serif" }}>
+                  Focus Area Required
+                </div>
+                <div style={{ fontWeight: 800, fontSize: 18, color: '#151B3D', marginBottom: 12, fontFamily: "'Fredoka', sans-serif" }}>
+                  {stats.weakest ? `${stats.weakest.emoji} ${stats.weakest.label}` : '— Portfolio Empty'}
+                </div>
+                {stats.weakest && (
+                  <>
+                    <div style={{
+                      height: 16, background: '#ffffff',
+                      borderRadius: 'var(--r-pill)', overflow: 'hidden', marginBottom: 8,
+                      border: '3px solid #151B3D',
+                    }}>
                       <div style={{
-                        height: '100%', width: `${d.pct}%`,
-                        background: d.color,
+                        height: '100%', width: `${stats.weakest.pct}%`,
+                        background: stats.weakest.color,
                         borderRadius: 'var(--r-pill)',
-                        transition: 'width 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
+                        borderRight: '2px solid #151B3D',
                       }} />
                     </div>
-                  </div>
-                ))}
+                    <div style={{ fontSize: 13, fontWeight: 800, color: '#151B3D', opacity: 0.8, fontFamily: "'Fredoka', sans-serif" }}>
+                      {stats.weakest.pct}% average performance · needs practice
+                    </div>
+                  </>
+                )}
               </div>
-            )}
-          </div>
-
-          {/* Streak card */}
-          <div
-            style={{
-              background: stats.streakDays > 0
-                ? 'linear-gradient(135deg, var(--mint-lt) 0%, var(--sky-lt) 100%)'
-                : 'var(--bg-soft)',
-              borderRadius: 'var(--r-xl)',
-              padding: 20,
-              border: '1.5px solid var(--line)',
-              boxShadow: stats.streakDays > 0 ? '0 4px 20px rgba(78,205,196,0.18)' : 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 16,
-            }}
-          >
-            <div style={{ fontSize: 44 }} className="floaty">
-              {stats.streakDays >= 7 ? '🏆' : stats.streakDays >= 3 ? '🔥' : stats.streakDays >= 1 ? '⚡' : '📚'}
             </div>
-            <div>
-              <div style={{ fontWeight: 900, fontSize: 16, color: 'var(--ink)', fontFamily: "'Nunito', sans-serif" }}>
-                {stats.streakDays === 0 ? 'No streak yet' : `${stats.streakDays}-day streak!`}
+
+            {/* Domain progress */}
+            <div
+              style={{
+                background: 'white',
+                borderRadius: 'var(--r-xl)',
+                padding: '36px 24px 24px',
+                boxShadow: 'var(--shadow-md)',
+                border: '4px solid #151B3D',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Colorful top header strip */}
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 12, background: 'var(--butter)', borderBottom: '4px solid #151B3D' }} />
+
+              <div style={{ fontWeight: 850, fontSize: 18, color: '#151B3D', marginBottom: 18, marginTop: 8, fontFamily: "'Fredoka', sans-serif" }}>
+                🎯 Core Skill Metrics
               </div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink-2)', marginTop: 3 }}>
-                {stats.streakDays === 0
-                  ? 'Finish your first case to start a streak.'
-                  : 'One more case today keeps it alive!'}
-              </div>
+
+              {stats.count === 0 ? (
+                <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink-soft)', fontStyle: 'italic', textAlign: 'center', padding: '12px 0' }}>
+                  Clinical skill meters will unlock after your first Attending review.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  {stats.domains.map((d) => (
+                    <div key={d.label}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 800, marginBottom: 6, fontFamily: "'Fredoka', sans-serif" }}>
+                        <span style={{ color: 'var(--ink)' }}>{d.emoji} {d.label}</span>
+                        <span style={{ color: d.color, fontWeight: 800 }}>{d.pct}%</span>
+                      </div>
+                      <div style={{ height: 16, background: '#ffffff', borderRadius: 'var(--r-pill)', overflow: 'hidden', border: '3px solid #151B3D' }}>
+                        <div style={{
+                          height: '100%', width: `${d.pct}%`,
+                          background: d.color,
+                          borderRadius: 'var(--r-pill)',
+                          borderRight: '2px solid #151B3D',
+                        }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

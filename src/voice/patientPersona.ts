@@ -263,8 +263,7 @@ ${qa}
 function buildPediatricParentPersona(c: PatientCase, setting: 'er' | 'polyclinic'): string {
   const childGenderWord = c.gender === 'F' ? 'girl' : 'boy';
   const childPronoun    = c.gender === 'F' ? 'she' : 'he';
-  const childPossessive = c.gender === 'F' ? 'her' : 'his';
-  const childObject     = c.gender === 'F' ? 'her' : 'him';
+
   const parentGender    = parentGenderFor(c);
   const parentRole      = parentGender === 'F' ? 'mother' : 'father';
   const traits          = derivePersonaTraits(c);

@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useScreen } from '../game/store';
+import { startBackgroundMusic, stopBackgroundMusic } from '../utils/audioSystem';
 
 const MUTED_KEY = 'atrium:music-muted';
-const VOLUME = 0.18;
 
 function readMuted(): boolean {
   try {
@@ -23,60 +23,33 @@ function writeMuted(v: boolean) {
 export function BackgroundMusic() {
   const screen = useScreen();
   const [userMuted, setUserMuted] = useState<boolean>(readMuted);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Lobby = anywhere outside an active encounter. Splash plays too — by
-  // the time the audio context can decode anything the user has clicked
-  // through it, so autoplay is fine there in practice.
+  // Lobby = anywhere outside an active encounter. Splash plays too.
   const inSession = screen === 'encounter';
   const shouldPlay = !userMuted && !inSession;
 
   useEffect(() => {
-    const a = new Audio('/atrium.mp3');
-    a.loop = true;
-    a.volume = VOLUME;
-    a.preload = 'auto';
-    audioRef.current = a;
+    if (shouldPlay) {
+      startBackgroundMusic();
+    } else {
+      stopBackgroundMusic();
+    }
+  }, [shouldPlay]);
 
-    // First user gesture unblocks autoplay on browsers that gate it.
-    const tryPlay = () => {
-      if (!audioRef.current) return;
-      audioRef.current.play().catch(() => {
-        /* still gated — wait for the next gesture */
-      });
-    };
-
+  // Handle first user gesture to trigger the AudioContext loop safely
+  useEffect(() => {
     const onGesture = () => {
-      if (shouldPlayRef.current) tryPlay();
+      if (shouldPlay) {
+        startBackgroundMusic();
+      }
     };
     window.addEventListener('pointerdown', onGesture, { once: false });
     window.addEventListener('keydown', onGesture, { once: false });
 
-    tryPlay();
-
     return () => {
       window.removeEventListener('pointerdown', onGesture);
       window.removeEventListener('keydown', onGesture);
-      a.pause();
-      a.src = '';
-      audioRef.current = null;
     };
-  }, []);
-
-  // Mirror `shouldPlay` into a ref so the gesture handler installed once
-  // on mount sees the latest value without being torn down on every change.
-  const shouldPlayRef = useRef(shouldPlay);
-  useEffect(() => {
-    shouldPlayRef.current = shouldPlay;
-    const a = audioRef.current;
-    if (!a) return;
-    if (shouldPlay) {
-      a.play().catch(() => {
-        /* autoplay may be deferred until the first gesture */
-      });
-    } else {
-      a.pause();
-    }
   }, [shouldPlay]);
 
   const toggle = () => {

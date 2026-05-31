@@ -27,12 +27,72 @@ Key features include:
 
 ---
 
+## Visual Design System
+
+Atrium uses a character-driven cartoon aesthetic inspired by Duolingo, Animal Crossing, and Pokémon:
+
+| Element | Design |
+|---|---|
+| **Color palette** | Warm cream backgrounds, bold saturated accents (mint, peach, coral, butter, lavender) |
+| **Borders** | Thick `4px solid #151B3D` outlines everywhere — flat cartoon sticker style |
+| **Shadows** | 3D offset block shadows (`4px 4px 0px #151B3D`) for tactile depth |
+| **Typography** | Fredoka (headings) + Nunito (body) — round, friendly, highly legible |
+| **Mascots** | 20+ chibi patient characters — large heads, expressive eyes, personality accessories |
+| **Animations** | `floaty`, `wobble`, `breathe`, `popin`, `drift` — every mascot is always gently moving |
+| **Cards** | Collectible trading card format with colored header bands, condition badges, and difficulty stars |
+
+---
+
+## Audio System
+
+The entire audio engine is **procedurally generated** — no MP3 files. Everything runs through the Web Audio API.
+
+### Background Music
+A warm, looping Animal Crossing / Pokémon Center style melody built from:
+- **Fmaj7 → G6 → Em7 → Am7** chord progression
+- Triangle wave arpeggios (soft marimba) + sine wave lead (cozy bells/flute)
+- 5.5 Hz vibrato on lead notes
+- Smooth 1.2s fade-in on every session start
+
+### UI Sounds
+| Sound | When | Character |
+|---|---|---|
+| `playHover()` | Any interactive element — `onMouseEnter` | Tiny upward frequency sweep (`260Hz → 580Hz`) |
+| `playCardHover()` | Patient cards, case cards, domain rings | Soft triangle downward thump |
+| `playClick()` | Any `onClick` | Subtle high-pass noise tick + gentle bell chime (C5/G5) |
+| `playSuccess()` | Debrief load, level complete | Ascending C5→E5→G5→C6 arpeggio cascade |
+| `playTransition()` | Screen navigation | Bandpass noise whoosh |
+
+**Debounce**: All hover sounds use a `WeakMap<EventTarget, number>` per-element cooldown (120ms minimum) — moving the mouse inside the same element never triggers double sounds.
+
+---
+
+## Patient Mascots
+
+Every patient is a unique **chibi cartoon character** — not a generic avatar:
+
+| Mascot | Personality |
+|---|---|
+| Office worker | Messy hair, tired eyes, coffee cup |
+| Elderly male | Warm smile, walking stick |
+| Young athlete | Sporty, energetic pose |
+| Child | Propeller hat, oversized backpack |
+| Pregnant patient | Soft rounded design, serene expression |
+| Emergency patient | Wide eyes, distressed pose |
+| Scientist | Lab coat, clipboard |
+| + 13 more... | Each with unique accessories and mood states |
+
+Mascot selection is **deterministic** — the same patient always gets the same character based on their case ID, age, sex, and chief complaint.
+
+---
+
 ## Technical Stack
 
 | Layer | Technology |
 |---|---|
 | Frontend framework | React 18, TypeScript, Vite |
 | Styling | Vanilla CSS + HSL design tokens |
+| Audio engine | Web Audio API (procedural — zero MP3s for UI sounds) |
 | 3D scene | Three.js via `@react-three/fiber` and `@react-three/drei` |
 | Realtime voice | OpenAI Realtime API over WebRTC (browser-direct) |
 | Attending grader | OpenAI Assistants API (`gpt-5.5`) |
@@ -66,6 +126,9 @@ Atrium/
 │   │   ├── store.ts                 Global consultation state (useSyncExternalStore)
 │   │   ├── types.ts                 Types: PatientCase, ActivePatient, CaseRubric, GameState…
 │   │   └── clinic.ts                Specialty clinic enum (GP, Cardiology, Paediatrics…)
+│   │
+│   ├── utils/
+│   │   └── audioSystem.ts           Procedural audio engine (background music + UI sounds)
 │   │
 │   ├── voice/                       Realtime voice engine
 │   │   ├── conversation.ts          WebRTC session lifecycle, FSM state, emotion/language heuristics
@@ -105,7 +168,9 @@ Atrium/
 │       ├── DebriefScreen.tsx        Attending evaluation sheet (domain scores, guideline citations)
 │       ├── HistoryScreen.tsx        Past evaluations history viewer
 │       ├── GPRoomScreen.tsx         GP room screen
-│       ├── BackgroundMusic.tsx      Ambient audio controller
+│       ├── BackgroundMusic.tsx      Ambient music controller + AudioContext lifecycle
+│       ├── mascots.tsx              All 20+ chibi SVG patient characters
+│       ├── primitives.tsx           Shared UI primitives (TopBar, Breadcrumbs, etc.)
 │       └── three/                   3D scene components
 │           ├── Polyclinic.tsx       Room mesh (furniture, walls, lights, walk-in/out animations)
 │           ├── Player.tsx           First-person camera and pointer-lock

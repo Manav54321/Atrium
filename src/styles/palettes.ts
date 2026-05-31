@@ -2,121 +2,121 @@ export type PaletteName = 'sunshine' | 'candy' | 'forest';
 
 const PALETTES: Record<PaletteName, Record<string, string>> = {
   sunshine: {
-    '--cream': '#FFF8F5',
+    '--cream': '#FFF8EE',
     '--cream-2': '#FFF0E8',
     '--paper': '#FFFFFF',
     
-    '--peach': '#FFA07A',
-    '--peach-lt': '#FFD4C2',
-    '--peach-deep': '#E07A57',
+    '--peach': '#FF8A5B',
+    '--peach-lt': '#FFEADB',
+    '--peach-deep': '#D96232',
     
     '--butter': '#FFD166',
-    '--butter-lt': '#FFF0B3',
-    '--butter-deep': '#B38600',
+    '--butter-lt': '#FFF5D6',
+    '--butter-deep': '#CFA22B',
     
     '--mint': '#4ECDC4',
-    '--mint-lt': '#A8EDE9',
-    '--mint-deep': '#2BB5AB',
+    '--mint-lt': '#CCF5F1',
+    '--mint-deep': '#1CA89E',
     
-    '--sky': '#45B7D1',
-    '--sky-lt': '#B3E5F0',
-    '--sky-deep': '#2896B5',
+    '--sky': '#74CFFF',
+    '--sky-lt': '#D4F3F8',
+    '--sky-deep': '#1D8EA8',
     
-    '--rose': '#FF8FA3',
-    '--rose-lt': '#FFD4DC',
-    '--rose-deep': '#E0607A',
+    '--rose': '#FF8FAB',
+    '--rose-lt': '#FFE5EC',
+    '--rose-deep': '#D96281',
 
     '--coral': '#FF6B6B',
-    '--coral-lt': '#FFBEBE',
-    '--coral-deep': '#E84E4E',
+    '--coral-lt': '#FFE3E3',
+    '--coral-deep': '#D94B4B',
 
-    '--lav': '#9B89FF',
-    '--lav-lt': '#D8D1FF',
-    '--lav-deep': '#7660F5',
+    '--lav': '#9B7EDE',
+    '--lav-lt': '#ECE5FA',
+    '--lav-deep': '#7858BF',
 
-    '--ink': '#1A1A2E',
-    '--ink-2': '#4A4A6A',
-    '--ink-soft': '#8E8EAA',
-    '--line': 'rgba(74, 74, 106, 0.12)',
-    '--shadow': 'rgba(26, 26, 46, 0.06)',
+    '--ink': '#151B3D',
+    '--ink-2': '#2A2F54',
+    '--ink-soft': '#575D8F',
+    '--line': '#151B3D',
+    '--shadow': '#151B3D',
   },
   candy: {
-    '--cream': '#FCF6FC',
-    '--cream-2': '#F7ECF7',
+    '--cream': '#FFF5F8',
+    '--cream-2': '#FFE5EC',
     '--paper': '#FFFFFF',
     
-    '--peach': '#FF7597',
-    '--peach-lt': '#FFD4DF',
-    '--peach-deep': '#D63E63',
+    '--peach': '#FF8FAB',
+    '--peach-lt': '#FFE5EC',
+    '--peach-deep': '#D96281',
     
-    '--butter': '#FFD375',
-    '--butter-lt': '#FFEAB5',
-    '--butter-deep': '#B2831E',
+    '--butter': '#FFD166',
+    '--butter-lt': '#FFF5D6',
+    '--butter-deep': '#CFA22B',
     
-    '--mint': '#70D6BC',
-    '--mint-lt': '#C5F2E6',
-    '--mint-deep': '#2E997D',
+    '--mint': '#4ECDC4',
+    '--mint-lt': '#CCF5F1',
+    '--mint-deep': '#1CA89E',
     
-    '--sky': '#92A8D1',
-    '--sky-lt': '#D0DBEE',
-    '--sky-deep': '#4F679B',
+    '--sky': '#9B7EDE',
+    '--sky-lt': '#ECE5FA',
+    '--sky-deep': '#7858BF',
     
-    '--rose': '#FF7597',
-    '--rose-lt': '#FFD4DF',
-    '--rose-deep': '#D63E63',
+    '--rose': '#FF8FAB',
+    '--rose-lt': '#FFE5EC',
+    '--rose-deep': '#D96281',
 
     '--coral': '#FF6B6B',
-    '--coral-lt': '#FFBEBE',
-    '--coral-deep': '#E84E4E',
+    '--coral-lt': '#FFE3E3',
+    '--coral-deep': '#D94B4B',
 
-    '--lav': '#9B89FF',
-    '--lav-lt': '#D8D1FF',
-    '--lav-deep': '#7660F5',
+    '--lav': '#9B7EDE',
+    '--lav-lt': '#ECE5FA',
+    '--lav-deep': '#7858BF',
 
-    '--ink': '#332733',
-    '--ink-2': '#665266',
-    '--ink-soft': '#948294',
-    '--line': 'rgba(90, 69, 90, 0.12)',
-    '--shadow': 'rgba(44, 30, 44, 0.06)',
+    '--ink': '#151B3D',
+    '--ink-2': '#2A2F54',
+    '--ink-soft': '#575D8F',
+    '--line': '#151B3D',
+    '--shadow': '#151B3D',
   },
   forest: {
-    '--cream': '#F4F8F4',
-    '--cream-2': '#E3EEE3',
+    '--cream': '#F3F8F3',
+    '--cream-2': '#E1F7E4',
     '--paper': '#FFFFFF',
     
-    '--peach': '#81B214',
-    '--peach-lt': '#D4E9A4',
-    '--peach-deep': '#4E7805',
+    '--peach': '#6BCB77',
+    '--peach-lt': '#E1F7E4',
+    '--peach-deep': '#41A84D',
     
-    '--butter': '#FDE24F',
-    '--butter-lt': '#FFF3B8',
-    '--butter-deep': '#A28A07',
+    '--butter': '#FFD166',
+    '--butter-lt': '#FFF5D6',
+    '--butter-deep': '#CFA22B',
     
-    '--mint': '#5EAAA8',
-    '--mint-lt': '#C9E3E2',
-    '--mint-deep': '#2C7573',
+    '--mint': '#4ECDC4',
+    '--mint-lt': '#CCF5F1',
+    '--mint-deep': '#1CA89E',
     
-    '--sky': '#8FA7DC',
-    '--sky-lt': '#D1DCF2',
-    '--sky-deep': '#4964A1',
+    '--sky': '#45B7D1',
+    '--sky-lt': '#D4F3F8',
+    '--sky-deep': '#1D8EA8',
     
-    '--rose': '#E98B8B',
-    '--rose-lt': '#F8DADA',
-    '--rose-deep': '#AD4343',
+    '--rose': '#FF8FAB',
+    '--rose-lt': '#FFE5EC',
+    '--rose-deep': '#D96281',
 
     '--coral': '#FF6B6B',
-    '--coral-lt': '#FFBEBE',
-    '--coral-deep': '#E84E4E',
+    '--coral-lt': '#FFE3E3',
+    '--coral-deep': '#D94B4B',
 
-    '--lav': '#9B89FF',
-    '--lav-lt': '#D8D1FF',
-    '--lav-deep': '#7660F5',
+    '--lav': '#9B7EDE',
+    '--lav-lt': '#ECE5FA',
+    '--lav-deep': '#7858BF',
 
-    '--ink': '#243124',
-    '--ink-2': '#4D5C4D',
-    '--ink-soft': '#7D8D7D',
-    '--line': 'rgba(94, 170, 168, 0.12)',
-    '--shadow': 'rgba(26, 40, 26, 0.06)',
+    '--ink': '#151B3D',
+    '--ink-2': '#2A2F54',
+    '--ink-soft': '#575D8F',
+    '--line': '#151B3D',
+    '--shadow': '#151B3D',
   },
 };
 
@@ -126,9 +126,9 @@ export function applyPalette(name: PaletteName) {
   for (const [k, v] of Object.entries(p)) root.style.setProperty(k, v);
 }
 
-export function applyIntensity(intensity: number) {
+export function applyIntensity(_intensity: number) {
   const root = document.documentElement;
-  root.style.setProperty('--stroke', intensity >= 1.5 ? '2px' : intensity <= 0.6 ? '0.5px' : '1px');
-  root.style.setProperty('--stroke-thick', intensity >= 1.5 ? '3px' : intensity <= 0.6 ? '1.5px' : '2px');
+  // Enforce bold cartoon borders of 4px regardless of intensity slider
+  root.style.setProperty('--stroke', '4px');
+  root.style.setProperty('--stroke-thick', '4px');
 }
-
