@@ -8,6 +8,8 @@ export const config = {
   matcher: ['/agent/:path*', '/voice/:path*'],
 };
 
+declare const process: { env: Record<string, string | undefined> };
+
 // NOTE: Reads target backend URL from environment variable, falling back to Render production domain.
 const BACKEND_URL = process.env.BACKEND_URL || 'https://grand-rounds-backend.onrender.com';
 
